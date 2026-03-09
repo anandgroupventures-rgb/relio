@@ -1,0 +1,120 @@
+.card {
+  background:    var(--relio-bg-card);
+  border:        1px solid var(--relio-border);
+  border-left:   4px solid #ccc;
+  border-radius: var(--relio-radius);
+  padding:       14px 14px 12px;
+  margin:        0 16px 10px;
+  cursor:        pointer;
+  transition:    box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.card:active { box-shadow: var(--relio-shadow); }
+
+.top { margin-bottom: 10px; }
+.info { flex: 1; }
+
+.nameRow {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  margin-bottom: 4px;
+}
+
+.project {
+  font-size:     15px;
+  font-weight:   700;
+  color:         var(--relio-text);
+  flex:          1;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.availBadge {
+  font-size:     11px;
+  font-weight:   700;
+  padding:       2px 8px;
+  border-radius: 20px;
+  flex-shrink:   0;
+  white-space:   nowrap;
+}
+
+.details {
+  font-size:  13px;
+  color:      var(--relio-text-mid);
+  display:    flex;
+  align-items: center;
+  gap:         4px;
+  flex-wrap:   wrap;
+  margin-bottom: 4px;
+}
+
+.price { font-weight: 700; color: var(--relio-text); }
+
+.owner {
+  font-size:  13px;
+  color:      var(--relio-text-muted);
+  display:    flex;
+  align-items: center;
+  gap:         4px;
+}
+
+.dot { color: var(--relio-border); }
+
+/* Bottom */
+.bottom {
+  display:        flex;
+  flex-direction: column;
+  gap:            8px;
+}
+
+.staleRow {
+  display:     flex;
+  align-items: center;
+  justify-content: space-between;
+  gap:         8px;
+}
+
+.staleBadge {
+  font-size:     12px;
+  font-weight:   600;
+  padding:       3px 8px;
+  border-radius: 10px;
+}
+
+.contactedBtn {
+  font-size:     12px;
+  font-weight:   600;
+  color:         var(--relio-success);
+  background:    var(--relio-success-bg);
+  border:        1px solid var(--relio-greenBorder, #7DC49A);
+  border-radius: 20px;
+  padding:       4px 12px;
+  cursor:        pointer;
+  white-space:   nowrap;
+  transition:    all 0.15s;
+}
+.contactedBtn:active { opacity: 0.7; }
+
+.actions {
+  display:     flex;
+  gap:         6px;
+  justify-content: flex-end;
+}
+
+.actionBtn {
+  width:           36px;
+  height:          36px;
+  border-radius:   50%;
+  background:      var(--relio-bg-subtle);
+  border:          1px solid var(--relio-border);
+  font-size:       16px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  transition:      background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.actionBtn:active { background: var(--relio-gold-light); }

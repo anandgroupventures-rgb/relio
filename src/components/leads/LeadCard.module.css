@@ -1,0 +1,126 @@
+.card {
+  background:    var(--relio-bg-card);
+  border:        1px solid var(--relio-border);
+  border-left:   4px solid #ccc;
+  border-radius: var(--relio-radius);
+  padding:       14px 14px 12px;
+  margin:        0 16px 10px;
+  cursor:        pointer;
+  transition:    box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.card:active { box-shadow: var(--relio-shadow); }
+
+/* Top row */
+.top {
+  display: flex;
+  gap:     12px;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width:           38px;
+  height:          38px;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       13px;
+  font-weight:     800;
+  flex-shrink:     0;
+}
+
+.info { flex: 1; min-width: 0; }
+
+.nameRow {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  margin-bottom: 2px;
+}
+
+.name {
+  font-size:     15px;
+  font-weight:   700;
+  color:         var(--relio-text);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  flex:          1;
+}
+
+.tempBadge {
+  font-size:     11px;
+  font-weight:   700;
+  padding:       2px 7px;
+  border-radius: 20px;
+  white-space:   nowrap;
+  flex-shrink:   0;
+}
+
+.mobile {
+  font-size: 13px;
+  color:     var(--relio-text-mid);
+  margin-bottom: 3px;
+}
+
+.meta {
+  font-size: 13px;
+  color:     var(--relio-text-muted);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.dot { margin: 0 4px; }
+
+/* Bottom row */
+.bottom {
+  display:     flex;
+  align-items: center;
+  justify-content: space-between;
+  gap:         8px;
+}
+
+.bottomLeft {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+  flex:        1;
+  min-width:   0;
+  overflow:    hidden;
+}
+
+.statusBadge {
+  font-size:  12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.followUp {
+  font-size:  12px;
+  white-space: nowrap;
+}
+
+/* Action buttons */
+.actions {
+  display: flex;
+  gap:     6px;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  width:           36px;
+  height:          36px;
+  border-radius:   50%;
+  background:      var(--relio-bg-subtle);
+  border:          1px solid var(--relio-border);
+  font-size:       16px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  transition:      background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.actionBtn:active { background: var(--relio-gold-light); }

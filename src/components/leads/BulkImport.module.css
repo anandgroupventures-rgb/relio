@@ -1,0 +1,39 @@
+.wrap { padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+.uploadZone {
+  border: 2px dashed var(--relio-border); border-radius: var(--relio-radius);
+  padding: 32px 20px; text-align: center; cursor: pointer;
+  background: var(--relio-bg-subtle); transition: border-color 0.15s;
+}
+.uploadZone:hover { border-color: var(--relio-gold); }
+.uploadIcon { font-size: 36px; display: block; margin-bottom: 10px; }
+.uploadTitle { font-size: 16px; font-weight: 700; color: var(--relio-text); margin-bottom: 6px; }
+.uploadSub { font-size: 13px; color: var(--relio-text-muted); }
+
+.template {
+  background: var(--relio-gold-light); border: 1px solid var(--relio-gold-border);
+  border-radius: var(--relio-radius-sm); padding: 12px;
+}
+.templateTitle { font-size: 12px; font-weight: 700; color: var(--relio-gold); margin-bottom: 4px; }
+.templateCols  { font-size: 13px; color: var(--relio-text-mid); }
+
+.previewHeader { display: flex; align-items: center; justify-content: space-between; }
+.previewCount  { font-size: 14px; color: var(--relio-text); }
+.reupload { font-size: 13px; color: var(--relio-gold); font-weight: 600; background: none; border: none; cursor: pointer; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { text-align: left; padding: 6px 8px; font-size: 11px; font-weight: 700;
+  color: var(--relio-text-muted); border-bottom: 2px solid var(--relio-border);
+  text-transform: uppercase; }
+.table td { padding: 8px 8px; border-bottom: 1px solid var(--relio-border); color: var(--relio-text); }
+.table tr:last-child td { border-bottom: none; }
+.missing { color: var(--relio-text-muted); }
+
+.more    { font-size: 12px; color: var(--relio-text-muted); text-align: center; }
+.dupNote { font-size: 12px; color: var(--relio-text-muted); }
+
+.done { text-align: center; padding: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.doneIcon  { font-size: 44px; }
+.doneTitle { font-size: 20px; font-weight: 800; color: var(--relio-text); }
+.doneSub   { font-size: 16px; color: var(--relio-success); font-weight: 600; }
+.skipped   { font-size: 13px; color: var(--relio-text-muted); }
