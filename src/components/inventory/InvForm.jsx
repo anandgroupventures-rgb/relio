@@ -54,14 +54,20 @@ export default function InvForm({ item, onDone, onCancel }) {
     if (!form.projectName.trim()) { setError("Project name is required"); return; }
     if (!form.ownerName.trim())   { setError("Owner name is required");   return; }
     if (!form.ownerMobile.trim()) { setError("Owner mobile is required"); return; }
+    if (!user?.uid)               { setError("Not signed in — please refresh and sign in again."); return; }
     setError(""); setBusy(true);
     try {
       const data = { ...form, projectName: form.projectName.trim() };
       if (isEdit) await updateInventory(user.uid, item.id, data);
       else        await addInventory(user.uid, data);
       onDone?.();
-    } catch {
-      setError("Failed to save. Please try again.");
+    } catch (err) {
+      console.error("InvForm save error:", err);
+      const code = err?.code || "";
+      if (code === "permission-denied")    setError("Firebase permission denied — check Firestore rules are deployed.");
+      else if (code === "unavailable")     setError("No internet connection. Please try again.");
+      else if (code === "unauthenticated") setError("Session expired — please sign out and sign back in.");
+      else setError(err?.message || "Failed to save. Please try again.");
     } finally {
       setBusy(false);
     }

@@ -65,14 +65,20 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
   async function handleSave() {
     if (!form.name.trim())   { setError("Name is required");   return; }
     if (!form.mobile.trim()) { setError("Mobile is required"); return; }
+    if (!user?.uid)          { setError("Not signed in — please refresh and sign in again."); return; }
     setError(""); setBusy(true);
     try {
       const data = { ...form, name: form.name.trim(), mobile: form.mobile.trim() };
       if (isEdit) await updateLead(user.uid, lead.id, data);
       else        await addLead(user.uid, data);
       onDone?.();
-    } catch {
-      setError("Failed to save. Please try again.");
+    } catch (err) {
+      console.error("LeadForm save error:", err);
+      const code = err?.code || "";
+      if (code === "permission-denied")    setError("Firebase permission denied — check Firestore rules are deployed.");
+      else if (code === "unavailable")     setError("No internet connection. Please try again.");
+      else if (code === "unauthenticated") setError("Session expired — please sign out and sign back in.");
+      else setError(err?.message || "Failed to save. Please try again.");
     } finally {
       setBusy(false);
     }
