@@ -4,7 +4,7 @@ import * as XLSX from "xlsx";
 import { addLead } from "@/lib/firebase/leads";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { findDuplicate } from "@/lib/utils/leadHelpers";
-import styles from "./BulkImport.module.css";
+import styles from "../leads/BulkImport.module.css";
 
 // Flexible column name mapping
 const COL_MAP = {
