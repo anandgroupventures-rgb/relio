@@ -26,6 +26,19 @@
   font-size: 14px; font-weight: 700; cursor: pointer;
 }
 
+/* Selection mode header elements */
+.cancelSelBtn {
+  font-size: 14px; font-weight: 700; color: var(--relio-danger);
+  background: none; border: none; cursor: pointer; padding: 4px 8px;
+}
+.selCount {
+  font-size: 16px; font-weight: 800; color: var(--relio-text);
+}
+.selAllBtn {
+  font-size: 14px; font-weight: 700; color: var(--relio-gold);
+  background: none; border: none; cursor: pointer; padding: 4px 8px;
+}
+
 .searchRow { position: relative; padding: 12px 16px 0; }
 .searchInput {
   width: 100%; padding: 10px 36px 10px 14px;
@@ -66,6 +79,12 @@
 .list { padding-top: 4px; }
 .loadingMsg { font-size: 14px; color: var(--relio-text-muted); padding: 24px; text-align: center; }
 
+/* Long press hint */
+.longPressHint {
+  font-size: 11px; color: var(--relio-text-muted); text-align: center;
+  padding: 4px 16px 8px; font-style: italic;
+}
+
 .fab {
   position: fixed; bottom: calc(var(--nav-height) + 16px);
   right: max(20px, calc(50vw - 220px));
@@ -76,3 +95,37 @@
   cursor: pointer; z-index: 50; transition: transform 0.15s;
 }
 .fab:active { transform: scale(0.94); }
+
+/* ── Bulk action bar ────────────────────────────────────────────────────── */
+.bulkBar {
+  position:  fixed;
+  bottom:    calc(var(--nav-height) + 8px);
+  left:      50%;
+  transform: translateX(-50%);
+  width:     calc(100% - 32px);
+  max-width: 440px;
+  display:   flex;
+  gap:       10px;
+  background: var(--relio-bg-card);
+  border:    1.5px solid var(--relio-border);
+  border-radius: var(--relio-radius);
+  padding:   12px 14px;
+  box-shadow: var(--relio-shadow-lg);
+  z-index:   80;
+  animation: slideUpBar 0.2s ease;
+}
+@keyframes slideUpBar { from { transform: translateX(-50%) translateY(20px); opacity:0; } to { transform: translateX(-50%) translateY(0); opacity:1; } }
+
+.bulkBtn {
+  flex: 1; padding: 10px 12px; border-radius: var(--relio-radius-sm);
+  font-size: 13px; font-weight: 700; cursor: pointer; border: 1.5px solid transparent;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.bulkBtnStatus {
+  background: var(--relio-gold-light); color: var(--relio-gold);
+  border-color: var(--relio-gold-border);
+}
+.bulkBtnDelete {
+  background: var(--relio-danger-bg); color: var(--relio-danger);
+  border-color: var(--relio-danger) + "40";
+}

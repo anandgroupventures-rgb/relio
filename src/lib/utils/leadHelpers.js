@@ -2,25 +2,43 @@ import { todayStr, addDays, daysSince } from "./dateHelpers";
 import { TEMP_COLORS, STATUS_COLOR } from "./constants";
 
 // Auto-calculate temperature from lead data
+// FIX #2: Previously, brand-new leads always showed as "Hot" because
+// calcTemperature used createdAt as fallback → daysSince = 0 ≤ 3 → "hot".
+// Now we only mark "hot" based on lastContactedAt (an actual interaction),
+// or a follow-up date that is very soon. A fresh lead with no calls
+// starts as "warm" until there is real engagement.
 export function calcTemperature(lead) {
   const dead = ["converted", "lost", "disqualified", "invalid_number"];
   if (dead.includes(lead.status)) return "dormant";
 
-  const lastContact = daysSince(lead.lastContactedAt || lead.updatedAt || lead.createdAt);
-  const followUp    = lead.followUpDate;
-  const today       = todayStr();
-  const in7         = addDays(7);
+  const followUp   = lead.followUpDate;
+  const today      = todayStr();
+  const in7        = addDays(7);
+  const in30       = addDays(30);
 
-  // Hot: follow-up is today, overdue, or within 7 days
-  if (followUp && followUp <= in7) return "hot";
-  // Hot: contacted recently
+  // Use ONLY lastContactedAt for recency — not createdAt / updatedAt.
+  // lastContactedAt is only set when the broker actually calls / logs an interaction.
+  const lastContact = daysSince(lead.lastContactedAt);   // 9999 if never contacted
+
+  // Hot: follow-up is overdue, today, or within 7 days  AND  was contacted at least once
+  if (followUp && followUp <= in7 && lead.lastContactedAt) return "hot";
+
+  // Hot: actual recent contact in last 3 days
   if (lastContact <= 3) return "hot";
-  // Warm: contacted within 14 days or follow-up within 30 days
+
+  // Warm: follow-up coming within 30 days (even if not yet contacted)
+  if (followUp && followUp <= in30) return "warm";
+
+  // Warm: contacted within 14 days
   if (lastContact <= 14) return "warm";
-  if (followUp && followUp <= addDays(30)) return "warm";
-  // Cold: no contact 30+ days
+
+  // Cold: contacted before but fading (15–60 days)
   if (lastContact <= 60) return "cold";
-  // Dormant: 60+ days
+
+  // If never contacted (lastContact = 9999) and no follow-up set → warm (new lead, give benefit of doubt)
+  if (!lead.lastContactedAt) return "warm";
+
+  // Dormant: 60+ days since last contact
   return "dormant";
 }
 
@@ -54,8 +72,8 @@ export function sortLeads(leads, sortBy, sortDir) {
       case "name":       va = a.name?.toLowerCase();     vb = b.name?.toLowerCase();     break;
       case "followUp":   va = a.followUpDate || "9999";  vb = b.followUpDate || "9999";  break;
       case "status":     va = a.status || "";            vb = b.status || "";            break;
-      case "priority":   va = ["hot","warm","cold","dormant"].indexOf(a.temperature||"cold");
-                         vb = ["hot","warm","cold","dormant"].indexOf(b.temperature||"cold"); break;
+      case "priority":   va = ["hot","warm","cold","dormant"].indexOf(a.temperature||"warm");
+                         vb = ["hot","warm","cold","dormant"].indexOf(b.temperature||"warm"); break;
       case "source":     va = a.source || "";            vb = b.source || "";            break;
       default:           va = a.createdAt?.seconds || 0; vb = b.createdAt?.seconds || 0; break;
     }

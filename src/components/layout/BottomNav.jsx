@@ -20,6 +20,8 @@ export default function BottomNav() {
         return (
           <Link key={href} href={href}
             className={`${styles.item} ${active ? styles.active : ""}`}>
+            {/* Active indicator bar at top */}
+            <span className={`${styles.indicator} ${active ? styles.indicatorVisible : ""}`} />
             <span className={styles.icon}>{icon}</span>
             <span className={styles.label}>{label}</span>
           </Link>
