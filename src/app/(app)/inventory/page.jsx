@@ -12,18 +12,32 @@ import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
 import styles from "./inventory.module.css";
 
+// ─── sessionStorage helpers ───────────────────────────────────────────────────
+function ssGet(key, fallback) {
+  try { const v = sessionStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+function ssSet(key, value) {
+  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+
 export default function InventoryPage() {
   const { user } = useAuth();
   const { inventory, loading } = useInventory();
 
-  const [search,      setSearch]      = useState("");
-  const [filterAvail, setFilterAvail] = useState("");
-  const [filterStale, setFilterStale] = useState("");
+  const [search,      setSearch]      = useState(() => ssGet("inv_search",      ""));
+  const [filterAvail, setFilterAvail] = useState(() => ssGet("inv_filterAvail", ""));
+  const [filterStale, setFilterStale] = useState(() => ssGet("inv_filterStale", ""));
   const [showAdd,     setShowAdd]     = useState(false);
   const [showBulk,    setShowBulk]    = useState(false);
   const [editItem,    setEditItem]    = useState(null);
   const [showDelete,  setShowDelete]  = useState(null);
   const [showShare,   setShowShare]   = useState(null);
+
+  // Persist every change to sessionStorage
+  function handleSearch(val)      { setSearch(val);      ssSet("inv_search",      val); }
+  function handleFilterAvail(val) { setFilterAvail(val); ssSet("inv_filterAvail", val); }
+  function handleFilterStale(val) { setFilterStale(val); ssSet("inv_filterStale", val); }
 
   const displayed = useMemo(() => inventory.filter(i => {
     if (search) {
@@ -72,18 +86,18 @@ export default function InventoryPage() {
       <div className={styles.searchRow}>
         <input className={styles.searchInput}
           placeholder="Search project, area, owner…"
-          value={search} onChange={e => setSearch(e.target.value)} />
-        {search && <button className={styles.clearBtn} onClick={() => setSearch("")}>✕</button>}
+          value={search} onChange={e => handleSearch(e.target.value)} />
+        {search && <button className={styles.clearBtn} onClick={() => handleSearch("")}>✕</button>}
       </div>
 
       <div className={styles.filterRow}>
         <select className={styles.filterSelect} value={filterAvail}
-          onChange={e => setFilterAvail(e.target.value)}>
+          onChange={e => handleFilterAvail(e.target.value)}>
           <option value="">All availability</option>
           {AVAILABILITY.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
         </select>
         <select className={styles.filterSelect} value={filterStale}
-          onChange={e => setFilterStale(e.target.value)}>
+          onChange={e => handleFilterStale(e.target.value)}>
           <option value="">All freshness</option>
           <option value="fresh">🟢 Fresh (&lt;14 days)</option>
           <option value="aging">🟡 Aging (14–21 days)</option>

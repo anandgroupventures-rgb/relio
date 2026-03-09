@@ -12,17 +12,38 @@ import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
 import styles from "./leads.module.css";
 
+// ─── sessionStorage helpers ───────────────────────────────────────────────────
+function ssGet(key, fallback) {
+  try { const v = sessionStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+function ssSet(key, value) {
+  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+
 export default function LeadsPage() {
   const { user }           = useAuth();
   const { leads, loading } = useLeads();
 
-  const [search,  setSearch]  = useState("");
-  const [filter,  setFilter]  = useState({ status:"", source:"", type:"", priority:"" });
-  const [sortBy,  setSortBy]  = useState("createdAt");
-  const [sortDir, setSortDir] = useState("desc");
+  const [search,  setSearch]  = useState(() => ssGet("leads_search",  ""));
+  const [filter,  setFilter]  = useState(() => ssGet("leads_filter",  { status:"", source:"", type:"", priority:"" }));
+  const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy",  "createdAt"));
+  const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "desc"));
   const [showAdd,  setShowAdd]  = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [postCall, setPostCall] = useState(null);
+
+  // Persist every change to sessionStorage
+  function handleSearch(val)  { setSearch(val);  ssSet("leads_search",  val); }
+  function handleFilter(fn)   {
+    setFilter(prev => {
+      const next = typeof fn === "function" ? fn(prev) : fn;
+      ssSet("leads_filter", next);
+      return next;
+    });
+  }
+  function handleSortBy(val)  { setSortBy(val);  ssSet("leads_sortBy",  val); }
+  function handleSortDir(val) { setSortDir(val); ssSet("leads_sortDir", val); }
 
   const displayed = useMemo(() => {
     const filtered = filterLeads(leads, { search, ...filter });
@@ -30,8 +51,13 @@ export default function LeadsPage() {
   }, [leads, search, filter, sortBy, sortDir]);
 
   function toggleSort(field) {
-    if (sortBy === field) setSortDir(d => d === "asc" ? "desc" : "asc");
-    else { setSortBy(field); setSortDir("desc"); }
+    if (sortBy === field) {
+      const next = sortDir === "asc" ? "desc" : "asc";
+      handleSortDir(next);
+    } else {
+      handleSortBy(field);
+      handleSortDir("desc");
+    }
   }
 
   function handleCall(lead) {
@@ -65,23 +91,23 @@ export default function LeadsPage() {
       <div className={styles.searchRow}>
         <input className={styles.searchInput}
           placeholder="Search name, mobile, project…"
-          value={search} onChange={e => setSearch(e.target.value)} />
-        {search && <button className={styles.clearBtn} onClick={() => setSearch("")}>✕</button>}
+          value={search} onChange={e => handleSearch(e.target.value)} />
+        {search && <button className={styles.clearBtn} onClick={() => handleSearch("")}>✕</button>}
       </div>
 
       <div className={styles.filterRow}>
         <select className={styles.filterSelect} value={filter.status}
-          onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}>
+          onChange={e => handleFilter(f => ({ ...f, status: e.target.value }))}>
           <option value="">All statuses</option>
           {LEAD_STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
         </select>
         <select className={styles.filterSelect} value={filter.source}
-          onChange={e => setFilter(f => ({ ...f, source: e.target.value }))}>
+          onChange={e => handleFilter(f => ({ ...f, source: e.target.value }))}>
           <option value="">All sources</option>
           {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
         <select className={styles.filterSelect} value={filter.priority}
-          onChange={e => setFilter(f => ({ ...f, priority: e.target.value }))}>
+          onChange={e => handleFilter(f => ({ ...f, priority: e.target.value }))}>
           <option value="">All temps</option>
           <option value="hot">🔥 Hot</option>
           <option value="warm">☀ Warm</option>
