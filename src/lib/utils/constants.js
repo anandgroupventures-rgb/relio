@@ -38,9 +38,11 @@ export const LEAD_TYPES = ["Buy", "Rent"];
 
 export const PRIORITIES = ["Hot", "Warm", "Cold"];
 
+// FIX #7: Renamed "Plot" → "Plot / Land" for clarity.
+// All options now visible in forms (previously .slice(0,6) was hiding the last 4).
 export const BHK_OPTIONS = [
   "Studio", "1 BHK", "2 BHK", "3 BHK", "4 BHK",
-  "5 BHK", "Villa", "Plot", "Commercial", "Other",
+  "5 BHK", "Villa", "Plot / Land", "Commercial", "Other",
 ];
 
 export const INVENTORY_TYPES = ["Sale", "Rent"];

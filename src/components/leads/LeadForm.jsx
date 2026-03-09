@@ -7,6 +7,20 @@ import { todayStr } from "@/lib/utils/dateHelpers";
 import { LEAD_STATUSES, LEAD_SOURCES, LEAD_TYPES, BHK_OPTIONS } from "@/lib/utils/constants";
 import styles from "./LeadForm.module.css";
 
+// ─── CRITICAL FIX: Row is defined OUTSIDE the component ──────────────────────
+// When Row was defined inside LeadForm, React saw it as a NEW component on every
+// re-render (because the function reference changed). This caused React to
+// unmount + remount the inputs on every keystroke, making focus jump back to
+// the first field after typing just one character in any other field.
+function Row({ label, children }) {
+  return (
+    <div className={styles.row}>
+      <label className={styles.label}>{label}</label>
+      {children}
+    </div>
+  );
+}
+
 export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode = false }) {
   const { user } = useAuth();
   const isEdit   = !!lead;
@@ -31,11 +45,11 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
   const [dupLead,  setDupLead]  = useState(null);
   const [showFull, setShowFull] = useState(!quickMode);
 
-  // Focus first field ONCE on mount only — not on every re-render
+  // Focus first field ONCE on mount only
   useEffect(() => {
     const t = setTimeout(() => firstRef.current?.focus(), 100);
     return () => clearTimeout(t);
-  }, []);
+  }, []); // eslint-disable-line
 
   // Duplicate check — only runs when mobile changes
   useEffect(() => {
@@ -45,7 +59,7 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
     setDupLead(dup || null);
   }, [form.mobile]); // eslint-disable-line
 
-  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+  const set    = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
   const setVal = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   async function handleSave() {
@@ -63,13 +77,6 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
       setBusy(false);
     }
   }
-
-  const Row = ({ label, children }) => (
-    <div className={styles.row}>
-      <label className={styles.label}>{label}</label>
-      {children}
-    </div>
-  );
 
   return (
     <div className={styles.form}>
@@ -117,9 +124,11 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
             </div>
           </Row>
 
+          {/* FIX #7: Show ALL BHK options including Plot/Land & Commercial
+              Previously used .slice(0,6) which cut off Plot/Land and Commercial */}
           <Row label="Configuration">
             <div className={styles.chips}>
-              {BHK_OPTIONS.slice(0, 6).map(b => (
+              {BHK_OPTIONS.map(b => (
                 <button key={b} type="button"
                   className={`${styles.chip} ${form.bhk === b ? styles.chipActive : ""}`}
                   onClick={() => setVal("bhk", form.bhk === b ? "" : b)}>{b}</button>

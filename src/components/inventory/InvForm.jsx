@@ -5,6 +5,20 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { INVENTORY_TYPES, BHK_OPTIONS, AVAILABILITY } from "@/lib/utils/constants";
 import styles from "./InvForm.module.css";
 
+// ─── CRITICAL FIX: Row is defined OUTSIDE the component ──────────────────────
+// When Row was defined inside InvForm, React saw it as a NEW component on every
+// re-render (new function reference). This caused React to unmount + remount the
+// input fields on every keystroke, making focus jump back to the first field
+// after typing just one character in any other field.
+function Row({ label, children }) {
+  return (
+    <div className={styles.row}>
+      <label className={styles.label}>{label}</label>
+      {children}
+    </div>
+  );
+}
+
 export default function InvForm({ item, onDone, onCancel }) {
   const { user } = useAuth();
   const isEdit   = !!item;
@@ -31,9 +45,9 @@ export default function InvForm({ item, onDone, onCancel }) {
   useEffect(() => {
     const t = setTimeout(() => firstRef.current?.focus(), 100);
     return () => clearTimeout(t);
-  }, []);
+  }, []); // eslint-disable-line
 
-  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+  const set    = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
   const setVal = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   async function handleSave() {
@@ -53,13 +67,6 @@ export default function InvForm({ item, onDone, onCancel }) {
     }
   }
 
-  const Row = ({ label, children }) => (
-    <div className={styles.row}>
-      <label className={styles.label}>{label}</label>
-      {children}
-    </div>
-  );
-
   return (
     <div className={styles.form}>
 
@@ -78,9 +85,11 @@ export default function InvForm({ item, onDone, onCancel }) {
         </div>
       </Row>
 
+      {/* FIX #7: Show ALL BHK options including Plot/Land & Commercial
+          Previously .slice(0,6) cut off the last 4 options */}
       <Row label="Configuration">
         <div className={styles.chips}>
-          {BHK_OPTIONS.slice(0, 6).map(b => (
+          {BHK_OPTIONS.map(b => (
             <button key={b} type="button"
               className={`${styles.chip} ${form.bhk === b ? styles.chipActive : ""}`}
               onClick={() => setVal("bhk", form.bhk === b ? "" : b)}>{b}</button>

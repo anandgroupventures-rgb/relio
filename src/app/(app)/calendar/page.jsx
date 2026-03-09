@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useLeads } from "@/lib/hooks/useLeads";
-import { todayStr, addDays, formatFollowUp, isOverdue, isToday } from "@/lib/utils/dateHelpers";
+import { todayStr, formatFollowUp, isOverdue } from "@/lib/utils/dateHelpers";
 import { getTempStyle } from "@/lib/utils/leadHelpers";
 import styles from "./calendar.module.css";
 
@@ -30,9 +30,9 @@ export default function CalendarPage() {
     return map;
   }, [leads]);
 
-  // Calendar grid
+  // Calendar grid — always computed regardless of loading state
   const calendarDays = useMemo(() => {
-    const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+    const firstDay    = new Date(viewYear, viewMonth, 1).getDay();
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
     const cells = [];
     for (let i = 0; i < firstDay; i++) cells.push(null);
@@ -55,10 +55,10 @@ export default function CalendarPage() {
     setSelected(null);
   }
 
-  const todayDateStr = todayStr();
-  const selectedLeads = selected ? (followUpMap[selected] || []) : [];
+  const todayDateStr   = todayStr();
+  const selectedLeads  = selected ? (followUpMap[selected] || []) : [];
 
-  // Upcoming list (below calendar) — overdue + today + next 30 days
+  // Upcoming list — overdue + today + future
   const listLeads = useMemo(() => {
     const active = leads.filter(l =>
       l.followUpDate && !["converted","lost"].includes(l.status));
@@ -75,32 +75,34 @@ export default function CalendarPage() {
         <h1 className={styles.title}>Calendar</h1>
       </header>
 
-      {/* Month nav */}
+      {/* Month nav — always visible */}
       <div className={styles.monthNav}>
         <button className={styles.navBtn} onClick={prevMonth}>‹</button>
         <span className={styles.monthLabel}>{MONTHS[viewMonth]} {viewYear}</span>
         <button className={styles.navBtn} onClick={nextMonth}>›</button>
       </div>
 
-      {/* Day headers */}
+      {/* Day headers — always visible */}
       <div className={styles.dayHeaders}>
         {DAYS.map(d => <span key={d} className={styles.dayHeader}>{d}</span>)}
       </div>
 
-      {/* Calendar grid */}
+      {/* FIX #4: Calendar grid always renders — even during loading, even when
+          there are no follow-ups. Previously a loading or empty state could
+          visually obscure the calendar. The grid is the primary UI of this tab. */}
       <div className={styles.grid}>
         {calendarDays.map((dateStr, i) => {
           if (!dateStr) return <div key={`empty-${i}`} className={styles.emptyCell} />;
 
-          const hasLeads   = followUpMap[dateStr]?.length > 0;
-          const isOv       = dateStr < todayDateStr && hasLeads;
-          const isTd       = dateStr === todayDateStr;
-          const isSel      = dateStr === selected;
-          const dayNum     = parseInt(dateStr.split("-")[2]);
-          const dotColors  = hasLeads
+          const hasLeads  = followUpMap[dateStr]?.length > 0;
+          const isOv      = dateStr < todayDateStr && hasLeads;
+          const isTd      = dateStr === todayDateStr;
+          const isSel     = dateStr === selected;
+          const dayNum    = parseInt(dateStr.split("-")[2]);
+          const dotColors = hasLeads
             ? [...new Set(followUpMap[dateStr].map(l =>
                 getTempStyle(l.temperature || "cold").border
-              ))].slice(0,3)
+              ))].slice(0, 3)
             : [];
 
           return (
@@ -126,7 +128,14 @@ export default function CalendarPage() {
         })}
       </div>
 
-      {/* Selected day leads */}
+      {/* Show a subtle skeleton/shimmer on the grid while loading */}
+      {loading && (
+        <p style={{ textAlign:"center", fontSize:13, color:"var(--relio-text-muted)", padding:"8px 0" }}>
+          Loading follow-ups…
+        </p>
+      )}
+
+      {/* Selected day panel */}
       {selected && (
         <div className={styles.selectedPanel}>
           <div className={styles.selectedHeader}>
@@ -137,7 +146,7 @@ export default function CalendarPage() {
             <button className={styles.clearSel} onClick={() => setSelected(null)}>✕</button>
           </div>
           {selectedLeads.length === 0
-            ? <p className={styles.noLeads}>No follow-ups on this day.</p>
+            ? <p className={styles.noLeads}>No follow-ups scheduled for this day.</p>
             : selectedLeads.map(l => (
               <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />
             ))
@@ -145,11 +154,9 @@ export default function CalendarPage() {
         </div>
       )}
 
-      {/* List view below */}
+      {/* Follow-up list below calendar */}
       <div className={styles.listSection}>
         <p className={styles.listTitle}>All Follow-ups</p>
-
-        {loading && <p className={styles.msg}>Loading…</p>}
 
         {overdueSplit.length > 0 && (
           <Section title="⚠ Overdue" color="var(--relio-danger)">
@@ -166,10 +173,12 @@ export default function CalendarPage() {
             {upcomingSplit.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)}
           </Section>
         )}
+
+        {/* Empty state only in the LIST section — the calendar grid above is unaffected */}
         {!loading && listLeads.length === 0 && (
           <div className={styles.empty}>
-            <span style={{ fontSize:36 }}>✅</span>
-            <p>No pending follow-ups.</p>
+            <span style={{ fontSize: 36 }}>✅</span>
+            <p>No pending follow-ups. Enjoy the clear day!</p>
           </div>
         )}
       </div>
