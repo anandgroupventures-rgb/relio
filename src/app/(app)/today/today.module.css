@@ -1,0 +1,122 @@
+.page {
+  padding: 0 0 24px;
+}
+
+/* ── Header ── */
+.header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         20px 20px 16px;
+  background:      var(--relio-bg-card);
+  border-bottom:   1px solid var(--relio-border);
+  position:        sticky;
+  top:             0;
+  z-index:         10;
+}
+
+.greeting {
+  font-size: 13px;
+  color:     var(--relio-text-muted);
+}
+
+.name {
+  font-size:   22px;
+  font-weight: 800;
+  color:       var(--relio-text);
+  letter-spacing: -0.3px;
+}
+
+.avatarBtn {
+  width:           40px;
+  height:          40px;
+  border-radius:   50%;
+  background:      var(--relio-gold-light);
+  color:           var(--relio-gold);
+  font-size:       16px;
+  font-weight:     800;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  border:          1.5px solid var(--relio-gold-border);
+  cursor:          pointer;
+}
+
+/* ── Status Card ── */
+.statusCard {
+  margin:        20px 16px 0;
+  background:    var(--relio-bg-card);
+  border:        1px solid var(--relio-border);
+  border-radius: var(--relio-radius);
+  padding:       24px 20px;
+  text-align:    center;
+}
+
+.statusIcon {
+  font-size:     36px;
+  margin-bottom: 12px;
+}
+
+.statusTitle {
+  font-size:     20px;
+  font-weight:   800;
+  color:         var(--relio-success);
+  margin-bottom: 8px;
+}
+
+.statusBody {
+  font-size:  15px;
+  color:      var(--relio-text-mid);
+  line-height: 1.5;
+}
+
+.statusMeta {
+  margin-top:    16px;
+  padding-top:   16px;
+  border-top:    1px solid var(--relio-border);
+  font-size:     13px;
+  color:         var(--relio-text-muted);
+}
+
+/* ── Coming Soon ── */
+.comingSoon {
+  margin: 20px 16px 0;
+}
+
+.comingSoonLabel {
+  font-size:     12px;
+  font-weight:   700;
+  color:         var(--relio-text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.comingCard {
+  display:       flex;
+  align-items:   center;
+  gap:           14px;
+  background:    var(--relio-bg-card);
+  border:        1px solid var(--relio-border);
+  border-radius: var(--relio-radius-sm);
+  padding:       14px 16px;
+  margin-bottom: 8px;
+  opacity:       0.7;
+}
+
+.comingIcon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.comingTitle {
+  font-size:   15px;
+  font-weight: 700;
+  color:       var(--relio-text);
+}
+
+.comingDesc {
+  font-size:  13px;
+  color:      var(--relio-text-muted);
+  margin-top: 2px;
+}

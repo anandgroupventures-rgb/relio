@@ -1,0 +1,35 @@
+.loading {
+  min-height:     100dvh;
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  justify-content: center;
+  background:     var(--relio-bg);
+}
+
+.loadingLogo {
+  width:           52px;
+  height:          52px;
+  background:      var(--relio-gold);
+  color:           #fff;
+  font-size:       24px;
+  font-weight:     800;
+  border-radius:   14px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  box-shadow:      0 4px 16px rgba(196,154,42,0.35);
+}
+
+.layout {
+  position:   relative;
+  min-height: 100dvh;
+  display:    flex;
+  flex-direction: column;
+}
+
+.main {
+  flex:           1;
+  padding-bottom: var(--nav-height);
+  overflow-y:     auto;
+}
