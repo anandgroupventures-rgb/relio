@@ -1,0 +1,25 @@
+.form {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.row { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 13px; font-weight: 600; color: var(--relio-text-mid); }
+.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--relio-border);
+  font-size: 13px; font-weight: 500; color: var(--relio-text-mid);
+  background: var(--relio-bg-card); cursor: pointer; transition: all 0.15s;
+}
+.chipActive {
+  background: var(--relio-gold-light); border-color: var(--relio-gold-border);
+  color: var(--relio-gold); font-weight: 700;
+}
+.textarea { resize: none; min-height: 72px; }
+.error {
+  font-size: 13px; color: var(--relio-danger); background: var(--relio-danger-bg);
+  padding: 10px 12px; border-radius: var(--relio-radius-sm);
+}
+.buttons { display: flex; gap: 10px; padding-top: 4px; }

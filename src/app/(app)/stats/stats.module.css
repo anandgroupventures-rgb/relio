@@ -1,0 +1,57 @@
+.page { min-height: 100dvh; padding-bottom: 80px; }
+
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; background: var(--relio-bg-card);
+  border-bottom: 1px solid var(--relio-border);
+  position: sticky; top: 0; z-index: 10;
+}
+.title { font-size: 22px; font-weight: 800; color: var(--relio-text); }
+.customBtn {
+  font-size: 13px; font-weight: 700; color: var(--relio-gold);
+  background: var(--relio-gold-light); border: 1.5px solid var(--relio-gold-border);
+  padding: 7px 14px; border-radius: var(--relio-radius-sm); cursor: pointer;
+}
+
+/* Widget picker */
+.picker {
+  background: var(--relio-bg-card); border-bottom: 2px solid var(--relio-gold-border);
+  padding: 16px 20px;
+}
+.pickerTitle { font-size: 13px; font-weight: 700; color: var(--relio-text-muted); margin-bottom: 12px; }
+.pickerRow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--relio-border);
+  font-size: 14px; color: var(--relio-text); cursor: pointer;
+}
+.pickerRow:last-child { border-bottom: none; }
+.pickerRow input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--relio-gold); cursor: pointer; }
+
+.content { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+.section {
+  background: var(--relio-bg-card); border: 1px solid var(--relio-border);
+  border-radius: var(--relio-radius); padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.sectionTitle { font-size: 15px; font-weight: 700; color: var(--relio-text); }
+.subNote { font-size: 12px; color: var(--relio-text-muted); margin-top: -6px; }
+
+.grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.statCard {
+  background: var(--relio-bg-subtle); border-radius: var(--relio-radius-sm);
+  padding: 12px 6px; text-align: center;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.statValue { font-size: 20px; font-weight: 800; }
+.statLabel { font-size: 10px; color: var(--relio-text-muted); }
+
+.barRow { display: flex; align-items: center; gap: 10px; }
+.barLabel { font-size: 12px; color: var(--relio-text-mid); width: 100px; flex-shrink: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.barTrack { flex:1; height: 8px; background: var(--relio-bg-subtle); border-radius: 4px; overflow: hidden; }
+.barFill  { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+.barCount { font-size: 12px; font-weight: 700; color: var(--relio-text); width: 30px; text-align: right; }
+
+.noData { font-size: 13px; color: var(--relio-text-muted); }
+.empty  { text-align: center; padding: 40px 0; color: var(--relio-text-muted); font-size: 15px; }

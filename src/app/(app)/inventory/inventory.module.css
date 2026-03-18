@@ -1,0 +1,59 @@
+.page { min-height: 100dvh; padding-bottom: 80px; }
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; background: var(--relio-bg-card);
+  border-bottom: 1px solid var(--relio-border);
+  position: sticky; top: 0; z-index: 10;
+}
+.title {
+  font-size: 22px; font-weight: 800; color: var(--relio-text);
+  display: flex; align-items: center; gap: 8px;
+}
+.count {
+  font-size: 13px; font-weight: 700; padding: 2px 8px;
+  background: var(--relio-gold-light); color: var(--relio-gold); border-radius: 20px;
+}
+.headerBtns { display: flex; gap: 8px; }
+.importBtn {
+  background: var(--relio-bg-subtle); color: var(--relio-text-mid);
+  border: 1.5px solid var(--relio-border); padding: 7px 12px;
+  border-radius: var(--relio-radius-sm); font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.addBtn {
+  background: var(--relio-gold); color: #fff; border: none;
+  padding: 8px 16px; border-radius: var(--relio-radius-sm);
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.searchRow { position: relative; padding: 12px 16px 0; }
+.searchInput {
+  width: 100%; padding: 10px 36px 10px 14px;
+  border: 1.5px solid var(--relio-border); border-radius: 10px;
+  font-size: 14px; background: var(--relio-bg-card); color: var(--relio-text); outline: none;
+}
+.searchInput:focus { border-color: var(--relio-gold); }
+.clearBtn {
+  position: absolute; right: 24px; top: 50%; transform: translateY(-30%);
+  background: none; border: none; font-size: 14px; color: var(--relio-text-muted); cursor: pointer;
+}
+.filterRow {
+  display: flex; gap: 8px; padding: 10px 16px 12px; overflow-x: auto; scrollbar-width: none;
+}
+.filterRow::-webkit-scrollbar { display: none; }
+.filterSelect {
+  flex-shrink: 0; padding: 7px 10px;
+  border: 1.5px solid var(--relio-border); border-radius: 20px;
+  font-size: 12px; background: var(--relio-bg-card); color: var(--relio-text-mid);
+  outline: none; cursor: pointer;
+}
+.list { padding-top: 4px; }
+.msg { font-size: 14px; color: var(--relio-text-muted); padding: 24px; text-align: center; }
+.fab {
+  position: fixed; bottom: calc(var(--nav-height) + 16px);
+  right: max(20px, calc(50vw - 220px));
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--relio-gold); color: #fff; font-size: 28px;
+  border: none; box-shadow: 0 4px 16px rgba(196,154,42,0.45);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 50; transition: transform 0.15s;
+}
+.fab:active { transform: scale(0.94); }

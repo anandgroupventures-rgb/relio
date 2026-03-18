@@ -1,0 +1,78 @@
+.form {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size:   13px;
+  font-weight: 600;
+  color:       var(--relio-text-mid);
+}
+
+.chips {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       8px;
+}
+
+.chip {
+  padding:       7px 14px;
+  border-radius: 20px;
+  border:        1.5px solid var(--relio-border);
+  font-size:     13px;
+  font-weight:   500;
+  color:         var(--relio-text-mid);
+  background:    var(--relio-bg-card);
+  cursor:        pointer;
+  transition:    all 0.15s;
+}
+.chipActive {
+  background:   var(--relio-gold-light);
+  border-color: var(--relio-gold-border);
+  color:        var(--relio-gold);
+  font-weight:  700;
+}
+
+.textarea { resize: none; min-height: 72px; }
+
+.expandBtn {
+  font-size:   14px;
+  color:       var(--relio-gold);
+  font-weight: 600;
+  padding:     8px 0;
+  text-align:  left;
+  background:  none;
+  border:      none;
+  cursor:      pointer;
+}
+
+.dupWarn {
+  font-size:     13px;
+  color:         var(--relio-warning);
+  background:    var(--relio-warning-bg);
+  padding:       8px 12px;
+  border-radius: var(--relio-radius-sm);
+  margin-top:    4px;
+}
+
+.error {
+  font-size:     13px;
+  color:         var(--relio-danger);
+  background:    var(--relio-danger-bg);
+  padding:       10px 12px;
+  border-radius: var(--relio-radius-sm);
+}
+
+.buttons {
+  display: flex;
+  gap:     10px;
+  padding-top: 4px;
+}

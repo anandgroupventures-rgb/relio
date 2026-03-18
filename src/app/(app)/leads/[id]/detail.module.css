@@ -1,0 +1,81 @@
+.page { min-height: 100dvh; background: var(--relio-bg); }
+
+.loading {
+  min-height: 100dvh; display: flex;
+  align-items: center; justify-content: center;
+}
+
+.header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; background: var(--relio-bg-card);
+  border-bottom: 1px solid var(--relio-border);
+  position: sticky; top: 0; z-index: 10;
+}
+.backBtn {
+  font-size: 20px; color: var(--relio-text); background: none; border: none;
+  cursor: pointer; padding: 4px 8px; flex-shrink: 0;
+}
+.headerInfo { flex: 1; min-width: 0; }
+.headerName {
+  font-size: 18px; font-weight: 800; color: var(--relio-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.headerSub { font-size: 13px; color: var(--relio-text-muted); }
+.editBtn {
+  font-size: 14px; font-weight: 700; color: var(--relio-gold);
+  background: var(--relio-gold-light); border: 1.5px solid var(--relio-gold-border);
+  padding: 6px 14px; border-radius: var(--relio-radius-sm); cursor: pointer; flex-shrink: 0;
+}
+
+.strip {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 20px; border-bottom: 1.5px solid;
+}
+.tempLabel { font-size: 13px; font-weight: 800; }
+.statusLabel { font-size: 13px; font-weight: 600; }
+.fuLabel { font-size: 13px; font-weight: 700; margin-left: auto; }
+
+.actions {
+  display: flex; gap: 8px; padding: 14px 16px;
+  border-bottom: 1px solid var(--relio-border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.actions::-webkit-scrollbar { display: none; }
+
+.actionBtn {
+  flex-shrink: 0; padding: 10px 16px; border-radius: var(--relio-radius-sm);
+  font-size: 13px; font-weight: 700; border: 1.5px solid; cursor: pointer;
+  transition: all 0.15s;
+}
+.callBtn {
+  background: var(--relio-success-bg); color: var(--relio-success);
+  border-color: var(--relio-success);
+}
+.waBtn {
+  background: #E8F5F1; color: #128C7E; border-color: #128C7E;
+}
+.noteBtn {
+  background: var(--relio-bg-subtle); color: var(--relio-text-mid);
+  border-color: var(--relio-border);
+}
+.deleteBtn {
+  background: var(--relio-danger-bg); color: var(--relio-danger);
+  border-color: var(--relio-danger); margin-left: auto;
+}
+
+.tabs {
+  display: flex; border-bottom: 1px solid var(--relio-border);
+  background: var(--relio-bg-card);
+}
+.tab {
+  flex: 1; padding: 13px; font-size: 14px; font-weight: 500;
+  color: var(--relio-text-muted); background: none; border: none;
+  border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.15s;
+}
+.tabActive {
+  color: var(--relio-text); font-weight: 700;
+  border-bottom-color: var(--relio-gold);
+}
+
+.details { background: var(--relio-bg-card); margin-top: 10px; }
+.timelineWrap { padding: 0 16px 24px; margin-top: 10px; }
