@@ -1,172 +1,72 @@
-/* ─── Relio Design System v2.0 ──────────────────────────────────────────────
- * 
- * Philosophy: "The Broker's Pocket Diary"
- * Primary: Deep Indigo (#4338ca) - Trust & Authority
- * Accent: Indian Saffron (#ea580c) - Action & Urgency  
- * Background: Warm Paper (#fefcf8) - Natural diary feel
- */
-
-/* ─── Light Mode (Default) ────────────────────────────────────────────────── */
+/* ─── Relio Brand Tokens ─────────────────────────────────────────────────── */
 :root {
-  /* Primary Palette - Indigo */
-  --relio-primary:           #4338ca;
-  --relio-primary-light:     #e0e7ff;
-  --relio-primary-dark:      #3730a3;
-  --relio-primary-fade:      rgba(67, 56, 202, 0.08);
+  /* Sage Green Primary Palette (Professional Property Management Dashboard) */
+  --relio-sage:         #7A9E7E;  /* Primary brand color */
+  --relio-sage-light:   #E8F0E8;  /* Light backgrounds */
+  --relio-sage-border:  #C5D9C7;  /* Subtle borders */
+  --relio-sage-dark:    #5A7D5E;  /* Darker accent */
   
-  /* Accent - Saffron */
-  --relio-accent:            #ea580c;
-  --relio-accent-light:      #ffedd5;
-  --relio-accent-dark:       #c2410c;
-  --relio-accent-fade:       rgba(234, 88, 12, 0.08);
-  
-  /* Backgrounds - Paper Diary */
-  --relio-bg:                #fefcf8;
-  --relio-bg-card:           #ffffff;
-  --relio-bg-elevated:       #fafaf9;
-  --relio-bg-subtle:         #f5f5f4;
-  --relio-bg-warm:           #faf7f2;
-  
-  /* Text */
-  --relio-text:              #1c1917;
-  --relio-text-secondary:    #57534e;
-  --relio-text-muted:        #a8a29e;
-  --relio-text-inverse:      #ffffff;
-  
-  /* Status Colors */
-  --relio-hot:               #dc2626;
-  --relio-hot-bg:            #fef2f2;
-  --relio-warm:              #ea580c;
-  --relio-warm-bg:           #fff7ed;
-  --relio-cold:              #2563eb;
-  --relio-cold-bg:           #eff6ff;
-  --relio-dormant:           #6b7280;
-  --relio-dormant-bg:        #f3f4f6;
-  --relio-success:           #16a34a;
-  --relio-success-bg:        #f0fdf4;
-  --relio-danger:            #dc2626;
-  --relio-danger-bg:         #fef2f2;
-  --relio-warning:           #d97706;
-  --relio-warning-bg:        #fffbeb;
-  
-  /* UI Elements */
-  --relio-border:            #e7e5e4;
-  --relio-border-light:      #f5f5f4;
-  --relio-shadow:            0 1px 3px 0 rgba(0, 0, 0, 0.08);
-  --relio-shadow-md:         0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --relio-shadow-lg:         0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --relio-shadow-xl:         0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  
-  /* Radius */
-  --relio-radius:            16px;
-  --relio-radius-md:         12px;
-  --relio-radius-sm:         8px;
-  --relio-radius-lg:         24px;
-  --relio-radius-full:       9999px;
-  
-  /* Spacing */
-  --nav-height:              72px;
-  --header-height:           64px;
-  
-  /* Typography */
-  --font-family:             'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  
-  /* Transitions */
-  --transition-fast:           150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base:         200ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow:         300ms cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Focus Ring */
-  --focus-ring:              0 0 0 3px rgba(67, 56, 202, 0.3);
-  --focus-ring-accent:       0 0 0 3px rgba(234, 88, 12, 0.3);
-}
+  /* Forest Accents */
+  --relio-forest:       #4A6B4E;  /* Secondary green */
+  --relio-forest-light: #D4E4D5;  /* Light forest bg */
+  --relio-forest-dark:  #2D4A30;  /* Dark forest for text */
 
-/* ─── Dark Mode ──────────────────────────────────────────────────────────── */
-[data-theme="dark"] {
-  /* Primary - Brighter Indigo for dark */
-  --relio-primary:           #6366f1;
-  --relio-primary-light:     #312e81;
-  --relio-primary-dark:      #818cf8;
-  --relio-primary-fade:      rgba(99, 102, 241, 0.15);
+  /* Cream & Neutral Backgrounds */
+  --relio-cream:        #F5F5F0;  /* Page background */
+  --relio-cream-light:  #FAFAF7;  /* Card backgrounds */
+  --relio-cream-warm:   #EFECE5;  /* Warm cream accents */
   
-  /* Accent - Brighter Saffron */
-  --relio-accent:            #fb923c;
-  --relio-accent-light:      #7c2d12;
-  --relio-accent-dark:       #fdba74;
-  --relio-accent-fade:       rgba(251, 146, 60, 0.15);
-  
-  /* Backgrounds - Dark */
-  --relio-bg:                #0c0a09;
-  --relio-bg-card:           #1c1917;
-  --relio-bg-elevated:       #292524;
-  --relio-bg-subtle:         #44403c;
-  --relio-bg-warm:           #1c1917;
-  
-  /* Text - Light */
-  --relio-text:              #fafaf9;
-  --relio-text-secondary:    #d6d3d1;
-  --relio-text-muted:        #a8a29e;
-  --relio-text-inverse:      #1c1917;
-  
-  /* Status - Adjusted for dark */
-  --relio-hot-bg:            #450a0a;
-  --relio-warm-bg:           #431407;
-  --relio-cold-bg:           #172554;
-  --relio-dormant-bg:        #1f2937;
-  --relio-success-bg:        #052e16;
-  --relio-danger-bg:         #450a0a;
-  --relio-warning-bg:        #451a03;
-  
-  /* UI Elements */
-  --relio-border:            #44403c;
-  --relio-border-light:      #292524;
-  --relio-shadow:            0 1px 3px 0 rgba(0, 0, 0, 0.4);
-  --relio-shadow-md:         0 4px 6px -1px rgba(0, 0, 0, 0.5);
-  --relio-shadow-lg:         0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --relio-shadow-xl:         0 20px 25px -5px rgba(0, 0, 0, 0.6);
-  
-  /* Focus Ring */
-  --focus-ring:              0 0 0 3px rgba(99, 102, 241, 0.4);
-  --focus-ring-accent:       0 0 0 3px rgba(251, 146, 60, 0.4);
-}
+  /* Text Colors */
+  --relio-text:         #1C2416;  /* Primary text - dark forest */
+  --relio-text-mid:     #4A5D45;  /* Secondary text */
+  --relio-text-muted:   #7A8B70;  /* Muted text */
+  --relio-text-light:   #FFFFFF;  /* White text for dark bg */
 
-/* ─── Auto Dark Mode (System Preference) ────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    /* Same as [data-theme="dark"] */
-    --relio-primary:           #6366f1;
-    --relio-primary-light:     #312e81;
-    --relio-primary-dark:      #818cf8;
-    --relio-primary-fade:      rgba(99, 102, 241, 0.15);
-    --relio-accent:            #fb923c;
-    --relio-accent-light:      #7c2d12;
-    --relio-accent-dark:       #fdba74;
-    --relio-accent-fade:       rgba(251, 146, 60, 0.15);
-    --relio-bg:                #0c0a09;
-    --relio-bg-card:           #1c1917;
-    --relio-bg-elevated:       #292524;
-    --relio-bg-subtle:         #44403c;
-    --relio-bg-warm:           #1c1917;
-    --relio-text:              #fafaf9;
-    --relio-text-secondary:    #d6d3d1;
-    --relio-text-muted:        #a8a29e;
-    --relio-text-inverse:      #1c1917;
-    --relio-hot-bg:            #450a0a;
-    --relio-warm-bg:           #431407;
-    --relio-cold-bg:           #172554;
-    --relio-dormant-bg:        #1f2937;
-    --relio-success-bg:        #052e16;
-    --relio-danger-bg:         #450a0a;
-    --relio-warning-bg:        #451a03;
-    --relio-border:            #44403c;
-    --relio-border-light:      #292524;
-    --relio-shadow:            0 1px 3px 0 rgba(0, 0, 0, 0.4);
-    --relio-shadow-md:         0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    --relio-shadow-lg:         0 10px 15px -3px rgba(0, 0, 0, 0.5);
-    --relio-shadow-xl:         0 20px 25px -5px rgba(0, 0, 0, 0.6);
-    --focus-ring:              0 0 0 3px rgba(99, 102, 241, 0.4);
-    --focus-ring-accent:       0 0 0 3px rgba(251, 146, 60, 0.4);
-  }
+  /* Status Colors (Sage-themed) */
+  --relio-hot:          #D46464;  /* Soft red for hot */
+  --relio-hot-bg:       #FCE8E8;  
+  --relio-warm:         #C9A458;  /* Muted gold for warm */
+  --relio-warm-bg:      #F8F2E3;
+  --relio-cold:         #5A8CA8;  /* Soft blue for cold */
+  --relio-cold-bg:      #E8F2F7;
+  --relio-dormant:      #8B9A80;  /* Sage for dormant */
+  --relio-dormant-bg:   #EDF1EA;
+
+  /* Semantic Colors */
+  --relio-success:      #5A9A6E;  /* Sage success */
+  --relio-success-bg:   #E8F5EC;
+  --relio-warning:      #C9A458;  /* Muted gold warning */
+  --relio-warning-bg:   #F8F2E3;
+  --relio-danger:       #C45A50;  /* Soft red danger */
+  --relio-danger-bg:    #FCE8E5;
+
+  /* UI Elements */
+  --relio-border:       #D8DDD3;  /* Subtle borders */
+  --relio-border-light: #E8EBE5;
+  --relio-shadow:       0 2px 12px rgba(74, 107, 78, 0.08);
+  --relio-shadow-lg:    0 8px 32px rgba(74, 107, 78, 0.12);
+  
+  /* Border Radius (Professional Dashboard Style) */
+  --relio-radius:       16px;     /* Standard cards */
+  --relio-radius-sm:    8px;      /* Buttons, inputs */
+  --relio-radius-lg:    24px;     /* Large cards, modals */
+  --relio-radius-xl:    32px;     /* Feature cards */
+  
+  /* Legacy aliases for backwards compatibility */
+  --relio-gold:         var(--relio-sage);
+  --relio-gold-light:   var(--relio-sage-light);
+  --relio-gold-border:  var(--relio-sage-border);
+  --relio-bg:           var(--relio-cream);
+  --relio-bg-card:      var(--relio-cream-light);
+  --relio-bg-subtle:    var(--relio-cream-warm);
+
+  /* Nav & Layout */
+  --nav-height:         72px;
+  --header-height:      64px;
+  
+  /* Dashboard specific */
+  --dash-card-bg:       rgba(250, 250, 247, 0.9);
+  --dash-card-border:   rgba(216, 221, 211, 0.6);
 }
 
 /* ─── Reset & Base ───────────────────────────────────────────────────────── */
@@ -179,331 +79,264 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
-  font-family: var(--font-family);
+  background: var(--relio-cream);
 }
 
 body {
-  font-family: var(--font-family);
-  background: var(--relio-bg);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  background: var(--relio-cream);
   color: var(--relio-text);
   line-height: 1.5;
   min-height: 100dvh;
   overflow-x: hidden;
   overscroll-behavior: none;
-  transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
-/* ─── Typography ────────────────────────────────────────────────────────── */
+/* ─── Typography ─────────────────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
-  line-height: 1.25;
+  line-height: 1.2;
   font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--relio-text);
 }
 
+h1 { font-size: 28px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+h4 { font-size: 16px; }
+
 a {
-  color: inherit;
+  color: var(--relio-sage);
   text-decoration: none;
+  transition: color 0.15s ease;
 }
 
-/* ─── Focus Accessibility ───────────────────────────────────────────────── */
-:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
+a:hover {
+  color: var(--relio-sage-dark);
 }
 
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
 }
 
-button:focus-visible.accent,
-.accent:focus-visible {
-  box-shadow: var(--focus-ring-accent);
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
 }
 
-/* ─── Utility Classes ─────────────────────────────────────────────────────── */
-.relio-card {
-  background: var(--relio-bg-card);
+/* ─── Dashboard Card System ──────────────────────────────────────────────── */
+.dash-card {
+  background: var(--dash-card-bg);
   border-radius: var(--relio-radius);
-  border: 1px solid var(--relio-border);
+  border: 1px solid var(--dash-card-border);
   box-shadow: var(--relio-shadow);
-  transition: box-shadow var(--transition-base), transform var(--transition-base);
+  backdrop-filter: blur(8px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.relio-card:hover {
-  box-shadow: var(--relio-shadow-md);
+.dash-card:hover {
+  box-shadow: var(--relio-shadow-lg);
 }
 
-/* Buttons - Primary (Indigo) */
-.relio-btn {
+.dash-card-large {
+  border-radius: var(--relio-radius-lg);
+  padding: 24px;
+}
+
+/* ─── Button System ─────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--relio-radius-lg);
+  background: var(--relio-sage);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-height: 52px;
+  box-shadow: 0 2px 8px rgba(122, 158, 126, 0.3);
+}
+
+.btn-primary:hover {
+  background: var(--relio-sage-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(122, 158, 126, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 12px 24px;
-  border-radius: var(--relio-radius-sm);
-  font-size: 15px;
-  font-weight: 600;
-  transition: all var(--transition-fast);
-  min-height: 48px;
-  cursor: pointer;
-  border: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.relio-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.relio-btn:hover::after {
-  opacity: 1;
-}
-
-.relio-btn:active {
-  transform: scale(0.98);
-}
-
-.relio-btn-primary {
-  background: var(--relio-primary);
-  color: #ffffff;
-  box-shadow: 0 1px 2px 0 rgba(67, 56, 202, 0.3);
-}
-
-.relio-btn-primary:hover {
-  background: var(--relio-primary-dark);
-  box-shadow: 0 4px 12px 0 rgba(67, 56, 202, 0.4);
-}
-
-/* Buttons - Accent (Saffron) */
-.relio-btn-accent {
-  background: var(--relio-accent);
-  color: #ffffff;
-  box-shadow: 0 1px 2px 0 rgba(234, 88, 12, 0.3);
-}
-
-.relio-btn-accent:hover {
-  background: var(--relio-accent-dark);
-  box-shadow: 0 4px 12px 0 rgba(234, 88, 12, 0.4);
-}
-
-.relio-btn-ghost {
+  border-radius: var(--relio-radius-lg);
   background: transparent;
-  color: var(--relio-text-secondary);
+  color: var(--relio-text-mid);
+  font-size: 14px;
+  font-weight: 500;
   border: 1.5px solid var(--relio-border);
+  transition: all 0.15s ease;
+  min-height: 44px;
 }
 
-.relio-btn-ghost:hover {
-  background: var(--relio-bg-subtle);
-  border-color: var(--relio-primary);
-  color: var(--relio-primary);
+.btn-ghost:hover {
+  background: var(--relio-sage-light);
+  border-color: var(--relio-sage-border);
+  color: var(--relio-sage);
 }
 
-.relio-btn-danger {
-  background: var(--relio-danger);
-  color: #ffffff;
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--relio-cream-light);
+  border: 1px solid var(--relio-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.15s ease;
+  color: var(--relio-text-mid);
 }
 
-.relio-btn-danger:hover {
-  background: #b91c1c;
+.btn-icon:hover {
+  background: var(--relio-sage-light);
+  border-color: var(--relio-sage);
+  color: var(--relio-sage);
 }
 
-/* Input Fields */
-.relio-input {
+/* ─── Form Elements ──────────────────────────────────────────────────────── */
+.input-primary {
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border: 1.5px solid var(--relio-border);
-  border-radius: var(--relio-radius-sm);
+  border-radius: var(--relio-radius-lg);
   font-size: 15px;
-  background: var(--relio-bg-card);
+  background: var(--relio-cream-light);
   color: var(--relio-text);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-  min-height: 48px;
-  font-family: inherit;
+  transition: all 0.15s ease;
+  min-height: 52px;
+  outline: none;
 }
 
-.relio-input:hover {
-  border-color: var(--relio-primary-light);
+.input-primary:focus {
+  border-color: var(--relio-sage);
+  box-shadow: 0 0 0 3px rgba(122, 158, 126, 0.1);
 }
 
-.relio-input:focus {
-  border-color: var(--relio-primary);
-  box-shadow: var(--focus-ring);
-}
-
-.relio-input::placeholder {
+.input-primary::placeholder {
   color: var(--relio-text-muted);
 }
 
-.relio-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: var(--relio-bg-subtle);
-}
-
-/* ─── Page Layout ─────────────────────────────────────────────────────────── */
+/* ─── Page Layout ────────────────────────────────────────────────────────── */
 .page-container {
   max-width: 480px;
   margin: 0 auto;
   min-height: 100dvh;
   position: relative;
-  background: var(--relio-bg);
-  transition: background-color var(--transition-slow);
+  background: var(--relio-cream);
 }
 
 .page-content {
-  padding-bottom: calc(var(--nav-height) + 16px);
+  padding-bottom: calc(var(--nav-height) + 24px);
   padding-top: var(--header-height);
 }
 
-/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--relio-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--relio-sage-border); }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--relio-border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--relio-text-muted);
-}
-
-/* ─── Loading Spinner ─────────────────────────────────────────────────────── */
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* ─── Loading Spinner ────────────────────────────────────────────────────── */
+@keyframes spin { 
+  to { transform: rotate(360deg); } 
 }
 
 .spinner {
   width: 24px;
   height: 24px;
   border: 2.5px solid var(--relio-border);
-  border-top-color: var(--relio-primary);
+  border-top-color: var(--relio-sage);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
-/* ─── Animations ───────────────────────────────────────────────────────────── */
+.spinner-large {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideDown {
-  from { transform: translateY(-10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+.slide-up { animation: slideUp 0.4s ease forwards; }
+.scale-in { animation: scaleIn 0.25s ease forwards; }
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+
+/* ─── Status Badges ──────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--relio-radius-lg);
+  font-size: 13px;
+  font-weight: 600;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+.badge-hot { 
+  background: var(--relio-hot-bg); 
+  color: var(--relio-hot); 
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.badge-warm { 
+  background: var(--relio-warm-bg); 
+  color: var(--relio-warm); 
 }
 
-.fade-in {
-  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.badge-cold { 
+  background: var(--relio-cold-bg); 
+  color: var(--relio-cold); 
 }
 
-.slide-up {
-  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.badge-dormant { 
+  background: var(--relio-dormant-bg); 
+  color: var(--relio-dormant); 
 }
 
-.slide-down {
-  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.bounce {
-  animation: bounce 1s ease-in-out infinite;
-}
-
-/* ─── Micro-interactions ──────────────────────────────────────────────────── */
-.hover-lift {
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--relio-shadow-md);
-}
-
-.hover-scale {
-  transition: transform var(--transition-fast);
-}
-
-.hover-scale:hover {
-  transform: scale(1.02);
-}
-
-.press-effect {
-  transition: transform var(--transition-fast);
-}
-
-.press-effect:active {
-  transform: scale(0.96);
-}
-
-/* ─── Selection ────────────────────────────────────────────────────────────── */
-::selection {
-  background: var(--relio-primary-light);
-  color: var(--relio-primary-dark);
-}
-
-/* ─── Utility Classes ─────────────────────────────────────────────────────── */
-.text-primary { color: var(--relio-primary); }
-.text-accent { color: var(--relio-accent); }
-.text-secondary { color: var(--relio-text-secondary); }
-.text-muted { color: var(--relio-text-muted); }
-.text-success { color: var(--relio-success); }
-.text-danger { color: var(--relio-danger); }
-.text-warning { color: var(--relio-warning); }
-
-.bg-primary { background-color: var(--relio-primary); }
-.bg-accent { background-color: var(--relio-accent); }
-.bg-card { background-color: var(--relio-bg-card); }
-.bg-subtle { background-color: var(--relio-bg-subtle); }
-
-.border-primary { border-color: var(--relio-primary); }
-.border-accent { border-color: var(--relio-accent); }
-
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-[data-theme="dark"] .glass {
-  background: rgba(28, 25, 23, 0.8);
+.badge-sage { 
+  background: var(--relio-sage-light); 
+  color: var(--relio-sage); 
 }
