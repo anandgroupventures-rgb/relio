@@ -1,316 +1,228 @@
 .card {
-  background:    var(--relio-bg-card);
-  border:        1px solid var(--relio-border);
-  border-left:   4px solid #ccc;
+  background: var(--relio-cream-light);
+  border: 1px solid var(--relio-border);
+  border-left: 4px solid var(--relio-sage);
   border-radius: var(--relio-radius);
-  padding:       12px 12px 10px;
-  margin:        0 16px 8px;
-  cursor:        pointer;
-  transition:    box-shadow 0.15s, background 0.1s;
+  padding: 14px;
+  margin: 0 16px 10px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, background 0.1s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
-  position:      relative;
-  display:       flex;
+  position: relative;
+  display: flex;
   flex-direction: column;
-  gap:           8px;
+  gap: 10px;
 }
 
-.card:active { box-shadow: var(--relio-shadow); }
+.card:active { 
+  transform: scale(0.995);
+}
+
+.card:hover {
+  box-shadow: var(--relio-shadow);
+}
 
 /* Selection mode */
 .selected {
-  background: var(--relio-gold-light);
-  border-color: var(--relio-gold-border);
+  background: var(--relio-sage-light);
+  border-color: var(--relio-sage);
 }
 
 .checkbox {
-  position:        absolute;
-  top:             10px;
-  right:           10px;
-  width:           22px;
-  height:          22px;
-  border-radius:   50%;
-  border:          2px solid var(--relio-border);
-  display:         flex;
-  align-items:     center;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--relio-border);
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size:       12px;
-  font-weight:     800;
-  background:      var(--relio-bg-card);
-  color:           var(--relio-text-muted);
-  transition:      all 0.1s;
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--relio-cream-light);
+  color: var(--relio-text-muted);
+  transition: all 0.1s;
 }
 .checkboxChecked {
-  background:   var(--relio-gold);
-  border-color: var(--relio-gold);
-  color:        #fff;
+  background: var(--relio-sage);
+  border-color: var(--relio-sage);
+  color: #fff;
 }
 
 /* ── Top row ────────────────────────────────────────────────────────────── */
 .top {
-  display:     flex;
+  display: flex;
   align-items: flex-start;
-  gap:         10px;
+  gap: 12px;
 }
 
 .avatar {
-  width:           36px;
-  height:          36px;
-  border-radius:   50%;
-  display:         flex;
-  align-items:     center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size:       13px;
-  font-weight:     800;
-  flex-shrink:     0;
-  margin-top:      1px;
-}
-
-.info {
-  flex:      1;
-  min-width: 0;
-  display:   flex;
-  flex-direction: column;
-  gap:       2px;
-}
-
-.name {
-  font-size:     15px;
-  font-weight:   700;
-  color:         var(--relio-text);
-  white-space:   nowrap;
-  overflow:      hidden;
-  text-overflow: ellipsis;
-}
-
-.project {
-  font-size:     12px;
-  color:         var(--relio-text-mid);
-  white-space:   nowrap;
-  overflow:      hidden;
-  text-overflow: ellipsis;
-  display:       flex;
-  align-items:   center;
-  gap:           4px;
-}
-
-.sep { color: var(--relio-text-muted); }
-
-/* Action buttons */
-.actions {
-  display:    flex;
-  gap:        6px;
+  font-size: 14px;
+  font-weight: 800;
   flex-shrink: 0;
 }
 
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-right: 80px; /* Make room for action buttons */
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--relio-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.project {
+  font-size: 13px;
+  color: var(--relio-text-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sep { 
+  color: var(--relio-text-muted); 
+  font-size: 10px;
+}
+
+/* Action buttons - fixed position on right */
+.actions {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
 .actionBtn {
-  width:           34px;
-  height:          34px;
-  border-radius:   50%;
-  background:      var(--relio-bg-subtle);
-  border:          1px solid var(--relio-border);
-  display:         flex;
-  align-items:     center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white;
+  border: 1.5px solid var(--relio-border);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  cursor:          pointer;
-  transition:      background 0.15s, color 0.15s;
+  cursor: pointer;
+  transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
-  color:           var(--relio-text-mid);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
+
 .actionBtn:hover {
-  background: var(--relio-gold-light);
-  color: var(--relio-gold);
+  background: var(--relio-sage-light);
+  border-color: var(--relio-sage);
+  transform: scale(1.05);
 }
-.actionBtn:active { 
-  background: var(--relio-gold-light);
+
+.actionBtn:active {
   transform: scale(0.95);
 }
 
 /* ── Tags row ───────────────────────────────────────────────────────────── */
 .tagsRow {
-  display:   flex;
+  display: flex;
   flex-wrap: wrap;
-  gap:       5px;
+  gap: 6px;
   align-items: center;
 }
 
 /* Sale/Rent type chip */
 .typeChip {
-  font-size:     11px;
-  font-weight:   700;
-  padding:       2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
   border-radius: 20px;
-  border:        1.5px solid currentColor;
-  white-space:   nowrap;
+  border: 1.5px solid currentColor;
+  white-space: nowrap;
 }
 .typeChip[data-type="Buy"]  { color: #1A7842; background: #E8F5EE; border-color: #1A784240; }
 .typeChip[data-type="Rent"] { color: #5C3A8C; background: #F2EBFB; border-color: #5C3A8C40; }
 
 /* Status chip */
 .statusChip {
-  font-size:     11px;
-  font-weight:   600;
-  padding:       2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
   border-radius: 20px;
-  border:        1.5px solid transparent;
-  white-space:   nowrap;
-  display:       inline-flex;
-  align-items:   center;
-  gap:           3px;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* Source tag — plain text style */
 .sourceTag {
-  font-size:  11px;
-  color:      var(--relio-text-muted);
+  font-size: 12px;
+  color: var(--relio-text-muted);
   font-weight: 500;
   white-space: nowrap;
 }
 
 /* Follow-up tag */
 .followUpTag {
-  font-size:     11px;
-  padding:       2px 6px;
+  font-size: 11px;
+  padding: 3px 8px;
   border-radius: 6px;
-  white-space:   nowrap;
-  display:       inline-flex;
-  align-items:   center;
-  gap:           2px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
-/* Temperature badge */
+/* Temperature badge - removed margin-left: auto, now inline */
 .tempBadge {
-  font-size:     11px;
-  font-weight:   700;
-  padding:       2px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
   border-radius: 20px;
-  white-space:   nowrap;
-  margin-left:   auto; /* push to right */
-  flex-shrink:   0;
+  white-space: nowrap;
 }
 
 /* ── Bottom row ─────────────────────────────────────────────────────────── */
 .bottomRow {
-  display:     flex;
+  display: flex;
   align-items: center;
-  gap:         10px;
-  flex-wrap:   wrap;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+  border-top: 1px dashed var(--relio-border-light);
 }
 
 .budget {
-  font-size:   12px;
-  color:       var(--relio-text-mid);
+  font-size: 13px;
+  color: var(--relio-text-mid);
   font-weight: 600;
-  display:     inline-flex;
-  align-items: center;
-  gap:         3px;
 }
 
 .referral {
-  font-size:     12px;
-  color:         var(--relio-text-muted);
-  font-style:    italic;
-  white-space:   nowrap;
-  overflow:      hidden;
-  text-overflow: ellipsis;
-}
-
-/* ── Score Badge ─────────────────────────────────────────────────────────── */
-.scoreBadge {
-  position:        absolute;
-  top:             10px;
-  right:           10px;
-  display:         flex;
-  align-items:     center;
-  gap:             4px;
-  padding:         4px 8px;
-  border-radius:   20px;
-  border:          1.5px solid;
-  font-size:       11px;
-  font-weight:       800;
-  background:      var(--relio-bg-card);
-}
-
-.scoreBadge span {
   font-size: 12px;
-}
-
-/* ── Closed/Archived Card ───────────────────────────────────────────────── */
-.closed {
-  opacity: 0.75;
-  background: var(--relio-bg-subtle);
-}
-
-.closed .name {
-  text-decoration: line-through;
   color: var(--relio-text-muted);
-}
-
-/* ── Category Chip ──────────────────────────────────────────────────────── */
-.categoryChip {
-  font-size:     11px;
-  font-weight:   700;
-  padding:       2px 8px;
-  border-radius:   20px;
-  border:        1.5px solid;
-  white-space:   nowrap;
-  display:       inline-flex;
-  align-items:   center;
-  gap:           3px;
-}
-
-/* ── Stage Chip ─────────────────────────────────────────────────────────── */
-.stageChip {
-  font-size:     11px;
-  font-weight:   600;
-  padding:       2px 8px;
-  border-radius:   20px;
-  border:        1.5px solid transparent;
-  white-space:   nowrap;
-  display:       inline-flex;
-  align-items:   center;
-  gap:           3px;
-}
-
-/* ── Suggested Action ─────────────────────────────────────────────────── */
-.suggestedAction {
-  padding:       4px 0;
-  margin-top:    2px;
-}
-
-.actionHint {
-  font-size:     12px;
-  color:         var(--relio-gold);
-  font-weight:   600;
-  background:    var(--relio-gold-light);
-  padding:       4px 10px;
-  border-radius: 20px;
-  display:       inline-flex;
-  align-items:   center;
-  gap:           4px;
-}
-
-/* ── Archive Button ───────────────────────────────────────────────────────── */
-.archiveBtn {
-  margin-left:   auto;
-  display:       inline-flex;
-  align-items:   center;
-  gap:           4px;
-  padding:       4px 10px;
-  border-radius: 20px;
-  border:        1.5px solid var(--relio-danger);
-  background:    var(--relio-danger-bg);
-  color:         var(--relio-danger);
-  font-size:     11px;
-  font-weight:   600;
-  cursor:        pointer;
-  transition:    all 0.15s;
-}
-
-.archiveBtn:hover {
-  background:    var(--relio-danger);
-  color:         #fff;
-}
-
-.archiveBtn:active {
-  transform:     scale(0.95);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

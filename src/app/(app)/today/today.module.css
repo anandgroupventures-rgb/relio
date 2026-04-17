@@ -21,25 +21,24 @@
   margin: 0 auto;
 }
 
-.greetingBlock {
+.logoBlock {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
-.greeting {
-  font-size: 14px;
-  color: var(--relio-text-muted);
-  font-weight: 500;
-  margin: 0;
+.logoIcon {
+  font-size: 24px;
+  line-height: 1;
 }
 
-.name {
-  font-size: 28px;
+.logoText {
+  font-size: 26px;
   font-weight: 800;
-  color: var(--relio-text);
+  color: var(--relio-sage);
   letter-spacing: -0.5px;
-  margin: 4px 0 0 0;
-  line-height: 1.1;
+  margin: 0;
+  line-height: 1;
 }
 
 .avatar {

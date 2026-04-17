@@ -5,7 +5,7 @@
   align-items:    center;
   justify-content: center;
   padding:    24px 20px 40px;
-  background: var(--relio-bg);
+  background: var(--relio-cream);
 }
 
 .loading {
@@ -22,41 +22,41 @@
 }
 
 .logoIcon {
-  width:           56px;
-  height:          56px;
-  background:      var(--relio-gold);
+  width:           64px;
+  height:          64px;
+  background:      var(--relio-sage);
   color:           #fff;
-  font-size:       26px;
+  font-size:       28px;
   font-weight:     800;
-  border-radius:   16px;
+  border-radius:   var(--relio-radius-lg);
   display:         flex;
   align-items:     center;
   justify-content: center;
-  margin:          0 auto 12px;
-  box-shadow:      0 4px 16px rgba(196,154,42,0.35);
+  margin:          0 auto 16px;
+  box-shadow:      0 4px 20px rgba(122, 158, 126, 0.35);
   letter-spacing:  -0.5px;
 }
 
 .logoText {
-  font-size:   28px;
+  font-size:   30px;
   font-weight: 800;
-  color:       var(--relio-text);
+  color:       var(--relio-sage);
   letter-spacing: -0.5px;
 }
 
 .logoSub {
-  font-size: 15px;
+  font-size: 16px;
   color:     var(--relio-text-muted);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 /* ── Card ── */
 .card {
   width:         100%;
   max-width:     400px;
-  background:    var(--relio-bg-card);
-  border:        1px solid var(--relio-border);
-  border-radius: var(--relio-radius-lg);
+  background:    var(--relio-cream-light);
+  border:        2px solid var(--relio-border);
+  border-radius: var(--relio-radius-xl);
   box-shadow:    var(--relio-shadow-lg);
   overflow:      hidden;
 }
@@ -64,99 +64,105 @@
 /* ── Tabs ── */
 .tabs {
   display:        flex;
-  border-bottom:  1px solid var(--relio-border);
+  border-bottom:  2px solid var(--relio-border);
 }
 
 .tab {
   flex:        1;
-  padding:     14px;
+  padding:     16px;
   font-size:   15px;
-  font-weight: 500;
+  font-weight: 600;
   color:       var(--relio-text-muted);
   background:  transparent;
   transition:  all 0.15s;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--relio-text-mid);
+  background: var(--relio-cream-warm);
 }
 
 .tabActive {
-  color:        var(--relio-text);
+  color:        var(--relio-sage);
   font-weight:  700;
-  border-bottom-color: var(--relio-gold);
+  border-bottom-color: var(--relio-sage);
 }
 
 /* ── Form ── */
 .form {
-  padding: 24px 24px 20px;
+  padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .field {
   display:        flex;
   flex-direction: column;
-  gap:            6px;
+  gap:            8px;
 }
 
 .label {
-  font-size:   13px;
-  font-weight: 600;
+  font-size:   14px;
+  font-weight:  700;
   color:       var(--relio-text-mid);
   letter-spacing: 0.2px;
-  display:     flex;
-  align-items: center;
-  gap:         6px;
 }
 
-.label svg {
-  color: var(--relio-gold);
-}
-
+/* Submit button - ensure it looks like a proper button */
 .submit {
   width:      100%;
-  margin-top: 4px;
+  margin-top: 8px;
+  min-height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
 .forgotBtn {
-  font-size:  13px;
-  color:      var(--relio-text-muted);
+  font-size:  14px;
+  font-weight: 600;
+  color:      var(--relio-sage);
   text-align: center;
-  padding:    4px;
+  padding:    10px;
   width:      100%;
-  display:    inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap:        6px;
-  transition: color 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
 }
 .forgotBtn:hover {
-  color: var(--relio-gold);
-}
-.forgotBtn svg {
-  color: var(--relio-gold);
+  color: var(--relio-sage-dark);
+  text-decoration: underline;
 }
 
 /* ── Messages ── */
 .error {
-  font-size:     13px;
+  font-size:     14px;
+  font-weight:   600;
   color:         var(--relio-danger);
   background:    var(--relio-danger-bg);
-  padding:       10px 12px;
-  border-radius: var(--relio-radius-sm);
+  padding:       12px 16px;
+  border-radius: var(--relio-radius);
+  border:        1px solid var(--relio-danger);
 }
 
 .success {
-  font-size:     13px;
+  font-size:     14px;
+  font-weight:   600;
   color:         var(--relio-success);
   background:    var(--relio-success-bg);
-  padding:       10px 12px;
-  border-radius: var(--relio-radius-sm);
+  padding:       12px 16px;
+  border-radius: var(--relio-radius);
+  border:        1px solid var(--relio-success);
 }
 
 /* ── Footer ── */
 .footer {
-  margin-top: 24px;
-  font-size:  12px;
+  margin-top: 28px;
+  font-size:  13px;
   color:      var(--relio-text-muted);
   text-align: center;
 }

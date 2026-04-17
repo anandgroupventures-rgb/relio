@@ -1,11 +1,8 @@
 "use client";
-export const dynamic = 'force-dynamic';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
-import { Mail, User, Lock, Palette, LayoutGrid, FormInput, LogOut, Check, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { useToast } from "@/components/shared/Toast";
 import { logOut } from "@/lib/firebase/auth";
 import { auth } from "@/lib/firebase/config";
 import styles from "./settings.module.css";
@@ -52,7 +49,6 @@ function savePref(key, val) {
 export default function SettingsPage() {
   const { user }  = useAuth();
   const router    = useRouter();
-  const toast = useToast();
 
   // Password change
   const [curPass,  setCurPass]  = useState("");
@@ -112,27 +108,14 @@ export default function SettingsPage() {
 
   async function handleChangePassword() {
     setPwMsg({ type:"", text:"" });
-    if (!curPass)               { 
-      toast.error("Enter your current password.");
-      setPwMsg({ type:"error", text:"Enter your current password." }); 
-      return; 
-    }
-    if (newPass.length < 6)     { 
-      toast.error("New password must be at least 6 characters.");
-      setPwMsg({ type:"error", text:"New password must be at least 6 characters." }); 
-      return; 
-    }
-    if (newPass !== confPass)   { 
-      toast.error("New passwords do not match.");
-      setPwMsg({ type:"error", text:"New passwords do not match." }); 
-      return; 
-    }
+    if (!curPass)               { setPwMsg({ type:"error", text:"Enter your current password." }); return; }
+    if (newPass.length < 6)     { setPwMsg({ type:"error", text:"New password must be at least 6 characters." }); return; }
+    if (newPass !== confPass)   { setPwMsg({ type:"error", text:"New passwords do not match." }); return; }
     setPwBusy(true);
     try {
       const cred = EmailAuthProvider.credential(user.email, curPass);
       await reauthenticateWithCredential(auth.currentUser, cred);
       await updatePassword(auth.currentUser, newPass);
-      toast.success("Password changed successfully");
       setPwMsg({ type:"success", text:"Password changed successfully." });
       setCurPass(""); setNewPass(""); setConfPass("");
     } catch (err) {
@@ -141,9 +124,7 @@ export default function SettingsPage() {
         "auth/weak-password":    "New password is too weak.",
         "auth/too-many-requests":"Too many attempts. Try again later.",
       };
-      const errorMsg = map[err.code] || "Failed. Try again.";
-      toast.error(errorMsg);
-      setPwMsg({ type:"error", text: errorMsg });
+      setPwMsg({ type:"error", text: map[err.code] || "Failed. Try again." });
     } finally {
       setPwBusy(false);
     }
@@ -151,7 +132,6 @@ export default function SettingsPage() {
 
   async function handleLogout() {
     await logOut();
-    toast.success("Signed out successfully");
     router.replace("/login");
   }
 
@@ -165,28 +145,20 @@ export default function SettingsPage() {
 
         {/* Account info */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>
-            <User size={18} /> Account
-          </h2>
+          <h2 className={styles.sectionTitle}>Account</h2>
           <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>
-              <Mail size={14} /> Email
-            </span>
+            <span className={styles.infoLabel}>Email</span>
             <span className={styles.infoValue}>{user?.email}</span>
           </div>
           <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>
-              <User size={14} /> Name
-            </span>
+            <span className={styles.infoLabel}>Name</span>
             <span className={styles.infoValue}>{user?.displayName || "—"}</span>
           </div>
         </div>
 
         {/* Change password */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>
-            <Lock size={18} /> Change Password
-          </h2>
+          <h2 className={styles.sectionTitle}>Change Password</h2>
           <div className={styles.formGroup}>
             <label className={styles.fieldLabel}>Current Password</label>
             <input className="relio-input" type="password" placeholder="••••••••"
@@ -207,15 +179,13 @@ export default function SettingsPage() {
           )}
           <button className="relio-btn relio-btn-primary" onClick={handleChangePassword}
             disabled={pwBusy} style={{ width:"100%", marginTop:4 }}>
-            {pwBusy ? <><Loader2 size={18} className="spinner" /> Updating…</> : "Update Password"}
+            {pwBusy ? "Updating…" : "Update Password"}
           </button>
         </div>
 
         {/* Appearance / theme */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>
-            <Palette size={18} /> App Theme
-          </h2>
+          <h2 className={styles.sectionTitle}>App Theme</h2>
           <p className={styles.hint}>Changes apply immediately to this session.</p>
           <div className={styles.themeGrid}>
             {THEMES.map(t => (
@@ -226,7 +196,7 @@ export default function SettingsPage() {
                 <span className={styles.themeCircle}
                   style={{ background: t.gold }} />
                 <span className={styles.themeLabel}>{t.label}</span>
-                {theme === t.id && <span className={styles.themeCheck}><Check size={14} /></span>}
+                {theme === t.id && <span className={styles.themeCheck}>✓</span>}
               </button>
             ))}
           </div>
@@ -234,9 +204,7 @@ export default function SettingsPage() {
 
         {/* Lead card fields */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>
-            <LayoutGrid size={18} /> Lead Card — Visible Fields
-          </h2>
+          <h2 className={styles.sectionTitle}>Lead Card — Visible Fields</h2>
           <p className={styles.hint}>Choose what information shows on each lead card.</p>
           {LEAD_CARD_FIELDS.map(f => (
             <label key={f.key} className={styles.toggleRow}>
@@ -251,9 +219,7 @@ export default function SettingsPage() {
 
         {/* Lead form fields */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>
-            <FormInput size={18} /> Lead Form — Visible Fields
-          </h2>
+          <h2 className={styles.sectionTitle}>Lead Form — Visible Fields</h2>
           <p className={styles.hint}>Hide fields you never use to keep the form minimal.</p>
           {LEAD_FIELDS.map(f => (
             <label key={f.key} className={styles.toggleRow}>
@@ -268,8 +234,8 @@ export default function SettingsPage() {
 
         {/* Sign out */}
         <button className="relio-btn relio-btn-ghost" onClick={handleLogout}
-          style={{ width:"100%", color:"var(--relio-danger)", borderColor:"var(--relio-danger)", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-          <LogOut size={18} /> Sign Out
+          style={{ width:"100%", color:"var(--relio-danger)", borderColor:"var(--relio-danger)" }}>
+          Sign Out
         </button>
 
       </div>

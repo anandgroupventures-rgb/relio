@@ -29,9 +29,7 @@ export default function TodayDashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  const firstName = user?.displayName?.split(" ")[0] || "there";
-  const hour = currentTime.getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const firstName = user?.displayName?.split(" ")[0] || "";
 
   // Calculate stats
   const activeLeads = leads.filter(l => !["converted", "lost", "disqualified"].includes(l.status));
@@ -62,15 +60,15 @@ export default function TodayDashboard() {
 
   return (
     <div className={styles.dashboard}>
-      {/* Header Section */}
+      {/* Header Section - Shows Relio logo and user avatar */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <div className={styles.greetingBlock}>
-            <p className={styles.greeting}>{greeting},</p>
-            <h1 className={styles.name}>{firstName}</h1>
+          <div className={styles.logoBlock}>
+            <span className={styles.logoIcon}>🌿</span>
+            <h1 className={styles.logoText}>Relio</h1>
           </div>
           <button className={styles.avatar} onClick={handleLogout} title="Sign out">
-            {firstName[0]?.toUpperCase()}
+            {firstName[0]?.toUpperCase() || "U"}
           </button>
         </div>
       </header>

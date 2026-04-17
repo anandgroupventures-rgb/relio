@@ -15,19 +15,6 @@
   font-size:   13px;
   font-weight: 600;
   color:       var(--relio-text-mid);
-  display:     flex;
-  align-items: center;
-  gap:         6px;
-}
-
-.label svg {
-  color: var(--relio-gold);
-}
-
-.optional {
-  font-weight: 400;
-  color: var(--relio-text-muted);
-  font-style: italic;
 }
 
 .chips {
@@ -74,13 +61,6 @@
   padding:       8px 12px;
   border-radius: var(--relio-radius-sm);
   margin-top:    4px;
-  display:       flex;
-  align-items:   center;
-  gap:           6px;
-}
-
-.dupWarn svg {
-  flex-shrink: 0;
 }
 
 .error {
@@ -95,133 +75,4 @@
   display: flex;
   gap:     10px;
   padding-top: 4px;
-}
-
-/* Lead Score Display */
-.scoreDisplay {
-  background: var(--relio-bg-subtle);
-  border: 1.5px solid var(--relio-border);
-  border-radius: var(--relio-radius);
-  padding: 14px 16px;
-  margin-bottom: 8px;
-}
-
-.scoreHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--relio-text);
-  margin-bottom: 8px;
-}
-
-.scoreValue {
-  margin-left: auto;
-  font-weight: 800;
-  font-size: 16px;
-}
-
-.temperatureBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1.5px solid;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.scoreBar {
-  height: 6px;
-  background: var(--relio-border);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.scoreFill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-/* Category Grid */
-.categoryGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-.categoryChip {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 10px 12px;
-  border-radius: var(--relio-radius-sm);
-  border: 1.5px solid var(--relio-border);
-  background: var(--relio-bg-card);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.categoryChip:hover {
-  border-color: var(--relio-gold-border);
-  background: var(--relio-bg-subtle);
-}
-
-.categoryActive {
-  border-width: 2px;
-}
-
-.categoryChip span {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.categoryChip small {
-  font-size: 11px;
-  color: var(--relio-text-muted);
-  font-weight: 400;
-  line-height: 1.3;
-}
-
-/* Quick Followup */
-.quickFollowup {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--relio-border);
-}
-
-.quickFollowup span {
-  font-size: 12px;
-  color: var(--relio-text-muted);
-}
-
-.quickBtn {
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid var(--relio-border);
-  background: var(--relio-bg-card);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--relio-text-mid);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.quickBtn:hover {
-  background: var(--relio-gold-light);
-  border-color: var(--relio-gold-border);
-  color: var(--relio-gold);
-}
-
-.quickBtn:active {
-  transform: scale(0.95);
 }

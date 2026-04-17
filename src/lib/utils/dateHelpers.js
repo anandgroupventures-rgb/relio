@@ -75,25 +75,3 @@ export function formatTimelineDate(ts) {
   if (diffDays < 7)   return `${diffDays}d ago`;
   return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
-
-// Format distance to now (e.g., "2 days ago", "in 3 hours")
-export function formatDistanceToNow(date, options = {}) {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  const now = new Date();
-  const diffMs = now - d;
-  const diffMins = Math.floor(Math.abs(diffMs) / 60000);
-  const diffHrs = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHrs / 24);
-  
-  const suffix = options.addSuffix ? (diffMs > 0 ? ' ago' : ' from now') : '';
-  
-  if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? 's' : ''}${suffix}`;
-  if (diffHrs > 0) return `${diffHrs} hour${diffHrs > 1 ? 's' : ''}${suffix}`;
-  if (diffMins > 0) return `${diffMins} minute${diffMins > 1 ? 's' : ''}${suffix}`;
-  return `Just now${suffix}`;
-}
-
-// Parse ISO date string
-export function parseISO(dateString) {
-  return new Date(dateString);
-}

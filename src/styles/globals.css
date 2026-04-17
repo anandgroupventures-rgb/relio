@@ -148,12 +148,13 @@ input, textarea, select {
 }
 
 /* ─── Button System ─────────────────────────────────────────────────────── */
-.btn-primary {
+.btn-primary,
+.relio-btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 28px;
+  padding: 16px 28px;
   border-radius: var(--relio-radius-lg);
   background: var(--relio-sage);
   color: white;
@@ -162,38 +163,69 @@ input, textarea, select {
   transition: all 0.2s ease;
   min-height: 52px;
   box-shadow: 0 2px 8px rgba(122, 158, 126, 0.3);
+  border: none;
+  cursor: pointer;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.relio-btn-primary:hover {
   background: var(--relio-sage-dark);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(122, 158, 126, 0.4);
 }
 
-.btn-primary:active {
+.btn-primary:active,
+.relio-btn-primary:active {
   transform: translateY(0);
 }
 
-.btn-ghost {
+.btn-ghost,
+.relio-btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 14px 24px;
   border-radius: var(--relio-radius-lg);
-  background: transparent;
+  background: white;
   color: var(--relio-text-mid);
-  font-size: 14px;
-  font-weight: 500;
-  border: 1.5px solid var(--relio-border);
+  font-size: 15px;
+  font-weight: 600;
+  border: 2px solid var(--relio-border);
   transition: all 0.15s ease;
-  min-height: 44px;
+  min-height: 48px;
+  cursor: pointer;
 }
 
-.btn-ghost:hover {
+.btn-ghost:hover,
+.relio-btn-ghost:hover {
   background: var(--relio-sage-light);
-  border-color: var(--relio-sage-border);
+  border-color: var(--relio-sage);
   color: var(--relio-sage);
+}
+
+.btn-danger,
+.relio-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: var(--relio-radius-lg);
+  background: var(--relio-danger);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.15s ease;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.btn-danger:hover,
+.relio-btn-danger:hover {
+  background: #b04840;
+  transform: translateY(-1px);
 }
 
 .btn-icon {
@@ -217,26 +249,56 @@ input, textarea, select {
 }
 
 /* ─── Form Elements ──────────────────────────────────────────────────────── */
-.input-primary {
+.input-primary,
+.relio-input {
   width: 100%;
-  padding: 14px 18px;
-  border: 1.5px solid var(--relio-border);
+  padding: 16px 20px;
+  border: 2px solid var(--relio-border);
   border-radius: var(--relio-radius-lg);
-  font-size: 15px;
-  background: var(--relio-cream-light);
+  font-size: 16px;
+  background: white;
   color: var(--relio-text);
-  transition: all 0.15s ease;
-  min-height: 52px;
+  transition: all 0.2s ease;
+  min-height: 56px;
   outline: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-.input-primary:focus {
+.input-primary:hover,
+.relio-input:hover {
+  border-color: var(--relio-sage-border);
+}
+
+.input-primary:focus,
+.relio-input:focus {
   border-color: var(--relio-sage);
-  box-shadow: 0 0 0 3px rgba(122, 158, 126, 0.1);
+  box-shadow: 0 0 0 4px rgba(122, 158, 126, 0.15);
+  background: white;
 }
 
-.input-primary::placeholder {
+.input-primary::placeholder,
+.relio-input::placeholder {
   color: var(--relio-text-muted);
+  font-weight: 400;
+}
+
+/* Modern select styling */
+select.relio-input,
+select.input-primary {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237A8B70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 20px;
+  padding-right: 48px;
+}
+
+/* Modern textarea styling */
+textarea.relio-input,
+textarea.input-primary {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
 }
 
 /* ─── Page Layout ────────────────────────────────────────────────────────── */

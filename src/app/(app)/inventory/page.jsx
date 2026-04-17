@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = 'force-dynamic';
 import { useState, useMemo } from "react";
 import { deleteInventory } from "@/lib/firebase/inventory";
 import { useAuth } from "@/lib/hooks/useAuth";
