@@ -12,6 +12,7 @@ export const metadata = {
   themeColor:  "#C49A2A",
 };
 
+export const dynamic = 'force-dynamic';
 export const viewport = {
   width: "device-width",
   initialScale: 1,

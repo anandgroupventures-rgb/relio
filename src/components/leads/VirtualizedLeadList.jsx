@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
-import { FixedSizeList as List } from "react-window";
-import InfiniteLoader from "react-window-infinite-loader";
+import { FixedSizeList } from "react-window";
+import { InfiniteLoader } from "react-window-infinite-loader";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { localLeads } from "@/lib/firebase/offlineDB";
 import LeadCard from "./LeadCard";
@@ -194,7 +194,7 @@ export default function VirtualizedLeadList({
         threshold={BUFFER_SIZE}
       >
         {({ onItemsRendered, ref }) => (
-          <List
+          <FixedSizeList
             className={styles.list}
             height={listHeight}
             itemCount={itemCount}
@@ -214,7 +214,7 @@ export default function VirtualizedLeadList({
             overscanCount={3}
           >
             {Row}
-          </List>
+          </FixedSizeList>
         )}
       </InfiniteLoader>
 

@@ -208,6 +208,9 @@ export const STAGE_COLOR = Object.fromEntries(
   LEAD_STAGES.map((s) => [s.value, s.color])
 );
 
+// ─── Legacy Status Color (for backward compatibility) ─────────────────────────
+export const STATUS_COLOR = STAGE_COLOR;
+
 // ─── Suggested Next Actions by Stage ────────────────────────────────────────
 export const STAGE_ACTIONS = {
   new:                ["Call within 24 hours", "Send welcome message"],

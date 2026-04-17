@@ -22,6 +22,11 @@ import {
 
 const PAGE_SIZE = 20;
 
+// Legacy export for backward compatibility
+export function useLeads() {
+  return usePaginatedLeads();
+}
+
 export function usePaginatedLeads() {
   const { user } = useAuth();
   

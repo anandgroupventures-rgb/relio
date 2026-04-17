@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 import { useState, useMemo } from "react";
 import { useLeads } from "@/lib/hooks/useLeads";
 import { useInventory } from "@/lib/hooks/useInventory";

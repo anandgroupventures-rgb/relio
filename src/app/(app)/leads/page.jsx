@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 import { useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { usePaginatedLeads } from "@/lib/hooks/useLeads";
