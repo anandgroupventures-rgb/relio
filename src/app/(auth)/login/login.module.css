@@ -103,6 +103,13 @@
   font-weight: 600;
   color:       var(--relio-text-mid);
   letter-spacing: 0.2px;
+  display:     flex;
+  align-items: center;
+  gap:         6px;
+}
+
+.label svg {
+  color: var(--relio-gold);
 }
 
 .submit {
@@ -116,9 +123,17 @@
   text-align: center;
   padding:    4px;
   width:      100%;
+  display:    inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap:        6px;
+  transition: color 0.15s;
 }
 .forgotBtn:hover {
-  color: var(--relio-text);
+  color: var(--relio-gold);
+}
+.forgotBtn svg {
+  color: var(--relio-gold);
 }
 
 /* ── Messages ── */

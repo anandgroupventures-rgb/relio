@@ -1,12 +1,18 @@
 import "@/styles/globals.css";
 import { AuthProvider } from "@/lib/hooks/useAuth";
+import { ToastProvider } from "@/components/shared/Toast";
 
 export const metadata = {
   title:       "Relio",
   description: "Your leads. Your follow-ups. Nothing missed.",
   manifest:    "/manifest.json",
   themeColor:  "#C49A2A",
-  viewport:    "width=device-width, initial-scale=1, maximum-scale=1",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }) {
@@ -19,9 +25,11 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <AuthProvider>
-          <div className="page-container">
-            {children}
-          </div>
+          <ToastProvider>
+            <div className="page-container">
+              {children}
+            </div>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

@@ -2,9 +2,12 @@
 import { useState, useEffect, useRef } from "react";
 import { addLead, updateLead } from "@/lib/firebase/leads";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToast } from "@/components/shared/Toast";
+import { sanitizeLeadData, cleanMobile } from "@/lib/utils/security";
 import { findDuplicate } from "@/lib/utils/leadHelpers";
 import { todayStr } from "@/lib/utils/dateHelpers";
 import { LEAD_STATUSES, LEAD_SOURCES, LEAD_TYPES, BHK_OPTIONS } from "@/lib/utils/constants";
+import { AlertTriangle } from "lucide-react";
 import styles from "./LeadForm.module.css";
 
 // ─── CRITICAL FIX: Row is defined OUTSIDE the component ──────────────────────
@@ -23,6 +26,7 @@ function Row({ label, children }) {
 
 export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode = false }) {
   const { user } = useAuth();
+  const toast = useToast();
   const isEdit   = !!lead;
   const firstRef = useRef(null);
 
@@ -53,7 +57,7 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
 
   // Duplicate check — only runs when mobile changes
   useEffect(() => {
-    const clean = form.mobile.replace(/\D/g, "");
+    const clean = cleanMobile(form.mobile);
     if (clean.length < 10) { setDupLead(null); return; }
     const dup = findDuplicate(leads, form.mobile, lead?.id);
     setDupLead(dup || null);
@@ -63,22 +67,49 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
   const setVal = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   async function handleSave() {
-    if (!form.name.trim())   { setError("Name is required");   return; }
-    if (!form.mobile.trim()) { setError("Mobile is required"); return; }
-    if (!user?.uid)          { setError("Not signed in — please refresh and sign in again."); return; }
+    if (!form.name.trim())   { 
+      toast.error("Name is required"); 
+      setError("Name is required");
+      return; 
+    }
+    if (!form.mobile.trim()) { 
+      toast.error("Mobile is required");
+      setError("Mobile is required"); 
+      return; 
+    }
+    if (!user?.uid)          { 
+      toast.error("Not signed in — please refresh and sign in again.");
+      setError("Not signed in — please refresh and sign in again."); 
+      return; 
+    }
     setError(""); setBusy(true);
     try {
-      const data = { ...form, name: form.name.trim(), mobile: form.mobile.trim() };
-      if (isEdit) await updateLead(user.uid, lead.id, data);
-      else        await addLead(user.uid, data);
+      // Sanitize data before saving
+      const data = sanitizeLeadData({ 
+        ...form, 
+        name: form.name.trim(), 
+        mobile: cleanMobile(form.mobile)
+      });
+      
+      if (isEdit) {
+        await updateLead(user.uid, lead.id, data);
+        toast.success("Lead updated successfully");
+      } else {
+        await addLead(user.uid, data);
+        toast.success("Lead added successfully");
+      }
       onDone?.();
     } catch (err) {
       console.error("LeadForm save error:", err);
       const code = err?.code || "";
-      if (code === "permission-denied")    setError("Firebase permission denied — check Firestore rules are deployed.");
-      else if (code === "unavailable")     setError("No internet connection. Please try again.");
-      else if (code === "unauthenticated") setError("Session expired — please sign out and sign back in.");
-      else setError(err?.message || "Failed to save. Please try again.");
+      let errorMsg = "Failed to save. Please try again.";
+      if (code === "permission-denied")    errorMsg = "Firebase permission denied — check Firestore rules are deployed.";
+      else if (code === "unavailable")     errorMsg = "No internet connection. Please try again.";
+      else if (code === "unauthenticated") errorMsg = "Session expired — please sign out and sign back in.";
+      else if (err?.message) errorMsg = err.message;
+      
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setBusy(false);
     }
@@ -107,7 +138,7 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
         />
         {dupLead && (
           <p className={styles.dupWarn}>
-            ⚠ This number belongs to <strong>{dupLead.name}</strong> (already in your leads).
+            <AlertTriangle size={14} /> This number belongs to <strong>{dupLead.name}</strong> (already in your leads).
           </p>
         )}
       </Row>

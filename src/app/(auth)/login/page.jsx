@@ -1,20 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
 import { signIn, resetPassword } from "@/lib/firebase/auth";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useToast } from "@/components/shared/Toast";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const toast = useToast();
 
   const [mode,    setMode]    = useState("signin"); // signin | reset
   const [email,   setEmail]   = useState("");
   const [pass,    setPass]    = useState("");
   const [busy,    setBusy]    = useState(false);
-  const [error,   setError]   = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (!loading && user) router.replace("/today");
@@ -22,17 +23,19 @@ export default function LoginPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError(""); setSuccess(""); setBusy(true);
+    setBusy(true);
     try {
       if (mode === "signin") {
         await signIn(email, pass);
+        toast.success("Welcome back!");
         router.replace("/today");
       } else {
         await resetPassword(email);
-        setSuccess("Reset link sent — check your email.");
+        toast.success("Reset link sent — check your email.");
+        setMode("signin");
       }
     } catch (err) {
-      setError(friendlyError(err.code));
+      toast.error(friendlyError(err.code));
     } finally {
       setBusy(false);
     }
@@ -52,7 +55,7 @@ export default function LoginPage() {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <div className="spinner" />
+        <Loader2 size={32} className="spinner" />
       </div>
     );
   }
@@ -71,7 +74,9 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className={styles.form}>
 
           <div className={styles.field}>
-            <label className={styles.label}>Email</label>
+            <label className={styles.label}>
+              <Mail size={14} /> Email
+            </label>
             <input
               className="relio-input"
               type="email"
@@ -85,7 +90,9 @@ export default function LoginPage() {
 
           {mode === "signin" && (
             <div className={styles.field}>
-              <label className={styles.label}>Password</label>
+              <label className={styles.label}>
+                <Lock size={14} /> Password
+              </label>
               <input
                 className="relio-input"
                 type="password"
@@ -98,30 +105,32 @@ export default function LoginPage() {
             </div>
           )}
 
-          {error   && <p className={styles.error}>{error}</p>}
-          {success && <p className={styles.success}>{success}</p>}
-
           <button
             className={`relio-btn relio-btn-primary ${styles.submit}`}
             type="submit"
             disabled={busy}
           >
-            {busy
-              ? <span className="spinner" style={{ borderTopColor: "#fff" }} />
-              : mode === "signin" ? "Sign In" : "Send Reset Link"
-            }
+            {busy ? (
+              <>
+                <Loader2 size={18} className="spinner" /> Please wait...
+              </>
+            ) : mode === "signin" ? (
+              "Sign In"
+            ) : (
+              "Send Reset Link"
+            )}
           </button>
 
           {mode === "signin" && (
             <button type="button" className={styles.forgotBtn}
-              onClick={() => { setMode("reset"); setError(""); }}>
+              onClick={() => { setMode("reset"); }}>
               Forgot password?
             </button>
           )}
           {mode === "reset" && (
             <button type="button" className={styles.forgotBtn}
-              onClick={() => { setMode("signin"); setError(""); setSuccess(""); }}>
-              ← Back to Sign In
+              onClick={() => { setMode("signin"); }}>
+              <ArrowLeft size={14} /> Back to Sign In
             </button>
           )}
         </form>

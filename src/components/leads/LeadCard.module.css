@@ -108,15 +108,22 @@
   border-radius:   50%;
   background:      var(--relio-bg-subtle);
   border:          1px solid var(--relio-border);
-  font-size:       15px;
   display:         flex;
   align-items:     center;
   justify-content: center;
   cursor:          pointer;
-  transition:      background 0.15s;
+  transition:      background 0.15s, color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  color:           var(--relio-text-mid);
 }
-.actionBtn:active { background: var(--relio-gold-light); }
+.actionBtn:hover {
+  background: var(--relio-gold-light);
+  color: var(--relio-gold);
+}
+.actionBtn:active { 
+  background: var(--relio-gold-light);
+  transform: scale(0.95);
+}
 
 /* ── Tags row ───────────────────────────────────────────────────────────── */
 .tagsRow {
@@ -193,6 +200,9 @@
   font-size:   12px;
   color:       var(--relio-text-mid);
   font-weight: 600;
+  display:     inline-flex;
+  align-items: center;
+  gap:         3px;
 }
 
 .referral {

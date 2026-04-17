@@ -4,12 +4,15 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { useLeads } from "@/lib/hooks/useLeads";
 import { filterLeads, sortLeads } from "@/lib/utils/leadHelpers";
 import { LEAD_STATUSES, LEAD_SOURCES } from "@/lib/utils/constants";
+import { useToast } from "@/components/shared/Toast";
+import { SkeletonList } from "@/components/shared/Skeleton";
 import LeadCard from "@/components/leads/LeadCard";
 import LeadForm from "@/components/leads/LeadForm";
 import BulkImport from "@/components/leads/BulkImport";
 import PostCallSheet from "@/components/leads/PostCallSheet";
 import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
+import { Users, Upload, Plus, X, Search, Flame, Sun, Snowflake, Moon } from "lucide-react";
 import styles from "./leads.module.css";
 
 // ─── sessionStorage helpers ───────────────────────────────────────────────────
@@ -24,6 +27,7 @@ function ssSet(key, value) {
 export default function LeadsPage() {
   const { user }           = useAuth();
   const { leads, loading } = useLeads();
+  const toast = useToast();
 
   const [search,  setSearch]  = useState(() => ssGet("leads_search",  ""));
   const [filter,  setFilter]  = useState(() => ssGet("leads_filter",  { status:"", source:"", type:"", priority:"" }));
@@ -83,16 +87,25 @@ export default function LeadsPage() {
           <span className={styles.count}>{displayed.length}</span>
         </h1>
         <div className={styles.headerBtns}>
-          <button className={styles.importBtn} onClick={() => setShowBulk(true)}>⬆ Import</button>
-          <button className={styles.addBtn}    onClick={() => setShowAdd(true)}>+ Add</button>
+          <button className={styles.importBtn} onClick={() => setShowBulk(true)}>
+            <Upload size={16} /> Import
+          </button>
+          <button className={styles.addBtn} onClick={() => setShowAdd(true)}>
+            <Plus size={18} /> Add
+          </button>
         </div>
       </header>
 
       <div className={styles.searchRow}>
+        <Search size={18} className={styles.searchIcon} />
         <input className={styles.searchInput}
           placeholder="Search name, mobile, project…"
           value={search} onChange={e => handleSearch(e.target.value)} />
-        {search && <button className={styles.clearBtn} onClick={() => handleSearch("")}>✕</button>}
+        {search && (
+          <button className={styles.clearBtn} onClick={() => handleSearch("")} aria-label="Clear search">
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       <div className={styles.filterRow}>
@@ -109,10 +122,10 @@ export default function LeadsPage() {
         <select className={styles.filterSelect} value={filter.priority}
           onChange={e => handleFilter(f => ({ ...f, priority: e.target.value }))}>
           <option value="">All temps</option>
-          <option value="hot">🔥 Hot</option>
-          <option value="warm">☀ Warm</option>
-          <option value="cold">❄ Cold</option>
-          <option value="dormant">💤 Dormant</option>
+          <option value="hot">Hot</option>
+          <option value="warm">Warm</option>
+          <option value="cold">Cold</option>
+          <option value="dormant">Dormant</option>
         </select>
       </div>
 
@@ -127,14 +140,18 @@ export default function LeadsPage() {
       </div>
 
       <div className={styles.list}>
-        {loading && <p className={styles.loadingMsg}>Loading leads…</p>}
+        {loading && <SkeletonList count={5} />}
         {!loading && displayed.length === 0 && (
-          <EmptyState icon="👤" title="No leads yet"
+          <EmptyState icon={<Users size={48} />} title="No leads yet"
             body="Tap + Add to capture your first lead. Takes 20 seconds."
             action={
               <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
-                <button className="relio-btn relio-btn-primary" onClick={() => setShowAdd(true)}>+ Add Lead</button>
-                <button className="relio-btn relio-btn-ghost"   onClick={() => setShowBulk(true)}>⬆ Bulk Import</button>
+                <button className="relio-btn relio-btn-primary" onClick={() => setShowAdd(true)}>
+                  <Plus size={18} /> Add Lead
+                </button>
+                <button className="relio-btn relio-btn-ghost" onClick={() => setShowBulk(true)}>
+                  <Upload size={18} /> Bulk Import
+                </button>
               </div>
             } />
         )}

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 import styles from "./BottomSheet.module.css";
 
 // FIX #6: Swipe-down-to-close now works from the ENTIRE header area
@@ -118,7 +119,9 @@ export default function BottomSheet({ open, onClose, title, children, tall = fal
               className={styles.closeBtn}
               onClick={e => { e.stopPropagation(); onClose(); }}
               aria-label="Close"
-            >✕</button>
+            >
+              <X size={18} />
+            </button>
           </div>
         )}
 

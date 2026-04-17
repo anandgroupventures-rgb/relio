@@ -61,6 +61,13 @@
   padding:       8px 12px;
   border-radius: var(--relio-radius-sm);
   margin-top:    4px;
+  display:       flex;
+  align-items:   center;
+  gap:           6px;
+}
+
+.dupWarn svg {
+  flex-shrink: 0;
 }
 
 .error {

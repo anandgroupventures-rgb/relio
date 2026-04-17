@@ -2,6 +2,68 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidLeadData() {
+      return request.resource.data.keys().hasAll(['name', 'mobile']) &&
+             request.resource.data.name is string &&
+             request.resource.data.name.size() > 0 &&
+             request.resource.data.name.size() <= 100 &&
+             request.resource.data.mobile is string &&
+             request.resource.data.mobile.size() <= 20;
+    }
+    
+    function isValidUserProfile() {
+      return request.resource.data.keys().hasAll(['displayName', 'email']) &&
+             request.resource.data.displayName is string &&
+             request.resource.data.displayName.size() > 0 &&
+             request.resource.data.displayName.size() <= 50 &&
+             request.resource.data.email is string &&
+             request.resource.data.email.size() <= 100;
+    }
+
+    // User profiles - users can only access their own profile
+    match /users/{userId} {
+      match /profile/{profileId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidUserProfile();
+        allow update: if isOwner(userId) && isValidUserProfile();
+        allow delete: if isOwner(userId);
+      }
+      
+      // Leads collection - users can only access their own leads
+      match /leads/{leadId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidLeadData();
+        allow update: if isOwner(userId) && isValidLeadData();
+        allow delete: if isOwner(userId);
+      }
+      
+      // Lead interactions subcollection
+      match /leads/{leadId}/interactions/{interactionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId);
+      }
+      
+      // Inventory collection
+      match /inventory/{itemId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId);
+      }
+    }
+    
+    // Default deny - any unmatched paths
     match /{document=**} {
       allow read, write: if false;
     }

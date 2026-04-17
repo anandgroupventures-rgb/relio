@@ -44,6 +44,69 @@
   /* Nav */
   --nav-height:         64px;
   --header-height:      56px;
+  
+  /* Focus ring */
+  --focus-ring:         0 0 0 3px rgba(196, 154, 42, 0.4);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --relio-bg:           #1A1612;
+    --relio-bg-card:      #252018;
+    --relio-bg-subtle:    #302A22;
+    
+    --relio-text:         #F7F3ED;
+    --relio-text-mid:     #B8A994;
+    --relio-text-muted:   #8A8070;
+    
+    --relio-border:       #3D3529;
+    --relio-shadow:       0 2px 12px rgba(0,0,0,0.3);
+    --relio-shadow-lg:    0 8px 32px rgba(0,0,0,0.4);
+    
+    --relio-gold-light:   #3D3010;
+    --relio-gold-border:  #6B5420;
+    
+    --relio-hot-bg:       #3D1810;
+    --relio-warm-bg:      #3D3010;
+    --relio-cold-bg:      #1A2D4A;
+    --relio-dormant-bg:   #302A22;
+    
+    --relio-success-bg:   #103320;
+    --relio-warning-bg:   #3D2810;
+    --relio-danger-bg:    #3D1510;
+    
+    --focus-ring:         0 0 0 3px rgba(196, 154, 42, 0.3);
+  }
+}
+
+/* Manual dark mode class */
+.dark-mode {
+  --relio-bg:           #1A1612;
+  --relio-bg-card:      #252018;
+  --relio-bg-subtle:    #302A22;
+  
+  --relio-text:         #F7F3ED;
+  --relio-text-mid:     #B8A994;
+  --relio-text-muted:   #8A8070;
+  
+  --relio-border:       #3D3529;
+  --relio-shadow:       0 2px 12px rgba(0,0,0,0.3);
+  --relio-shadow-lg:    0 8px 32px rgba(0,0,0,0.4);
+  
+  --relio-gold-light:   #3D3010;
+  --relio-gold-border:  #6B5420;
+  
+  --relio-hot-bg:       #3D1810;
+  --relio-warm-bg:      #3D3010;
+  --relio-cold-bg:      #1A2D4A;
+  --relio-dormant-bg:   #302A22;
+  
+  --relio-success-bg:   #103320;
+  --relio-warning-bg:   #3D2810;
+  --relio-danger-bg:    #3D1510;
+  
+  --focus-ring:         0 0 0 3px rgba(196, 154, 42, 0.3);
 }
 
 /* ─── Reset & Base ───────────────────────────────────────────────────────── */
@@ -68,6 +131,7 @@ body {
   overflow-x:  hidden;
   /* Prevent bounce scroll showing white on iOS */
   overscroll-behavior: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ─── Typography ─────────────────────────────────────────────────────────── */
@@ -91,6 +155,27 @@ button {
 input, textarea, select {
   font-family: inherit;
   font-size: inherit;
+}
+
+/* ─── Focus Accessibility ────────────────────────────────────────────────── */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Remove default focus for mouse users, keep for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 
 /* ─── Utility Classes ────────────────────────────────────────────────────── */
@@ -121,6 +206,9 @@ input, textarea, select {
 .relio-btn-primary:hover {
   background: #B08820;
 }
+.relio-btn-primary:active {
+  transform: scale(0.98);
+}
 
 .relio-btn-ghost {
   background: transparent;
@@ -130,10 +218,16 @@ input, textarea, select {
 .relio-btn-ghost:hover {
   background: var(--relio-bg-subtle);
 }
+.relio-btn-ghost:active {
+  transform: scale(0.98);
+}
 
 .relio-btn-danger {
   background: var(--relio-danger);
   color:      #FFFFFF;
+}
+.relio-btn-danger:hover {
+  background: #A32815;
 }
 
 .relio-input {
@@ -144,15 +238,22 @@ input, textarea, select {
   font-size:     15px;
   background:    var(--relio-bg-card);
   color:         var(--relio-text);
-  transition:    border-color 0.15s;
+  transition:    border-color 0.15s, box-shadow 0.15s;
   min-height:    48px;
-  outline:       none;
+}
+.relio-input:hover {
+  border-color: var(--relio-gold-border);
 }
 .relio-input:focus {
   border-color: var(--relio-gold);
+  box-shadow: var(--focus-ring);
 }
 .relio-input::placeholder {
   color: var(--relio-text-muted);
+}
+.relio-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ─── Page Layout ────────────────────────────────────────────────────────── */
@@ -192,4 +293,10 @@ input, textarea, select {
 }
 .fade-in {
   animation: fadeIn 0.2s ease forwards;
+}
+
+/* ─── Selection ────────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--relio-gold-light);
+  color: var(--relio-gold);
 }

@@ -1,0 +1,92 @@
+.card {
+  background: var(--relio-bg-card);
+  border: 1px solid var(--relio-border);
+  border-radius: var(--relio-radius);
+  padding: 12px 12px 10px;
+  margin: 0 16px 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--relio-bg-subtle);
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.name {
+  height: 16px;
+  width: 60%;
+  background: var(--relio-bg-subtle);
+  border-radius: 4px;
+}
+
+.project {
+  height: 12px;
+  width: 40%;
+  background: var(--relio-bg-subtle);
+  border-radius: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--relio-bg-subtle);
+}
+
+.tagsRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  height: 22px;
+  width: 60px;
+  background: var(--relio-bg-subtle);
+  border-radius: 11px;
+}
+
+.tempBadge {
+  height: 22px;
+  width: 50px;
+  background: var(--relio-bg-subtle);
+  border-radius: 11px;
+  margin-left: auto;
+}
+
+.list {
+  padding-top: 4px;
+}

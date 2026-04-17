@@ -1,27 +1,41 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
+import { 
+  Sparkles, Phone, CheckCircle, FileText, Calendar, Home, 
+  Handshake, PartyPopper, PhoneCall, VolumeX, Clock, 
+  PowerOff, XCircle, HeartCrack, Ban, DollarSign,
+  Phone as PhoneIcon, MessageCircle, AlertTriangle, Flame, Snowflake, Moon
+} from "lucide-react";
 import { getTempStyle, getStatusColor, getStatusLabel } from "@/lib/utils/leadHelpers";
 import { formatFollowUp, isOverdue, isToday } from "@/lib/utils/dateHelpers";
 import styles from "./LeadCard.module.css";
 
-// Status icons map
+// Status icons map using Lucide
 const STATUS_ICONS = {
-  new:              "🆕",
-  contacted:        "📱",
-  interested:       "✅",
-  details_shared:   "📄",
-  visit_scheduled:  "🗓",
-  visit_done:       "🏠",
-  negotiating:      "🤝",
-  converted:        "🎉",
-  call_back:        "📞",
-  not_answering:    "🔕",
-  busy:             "⏳",
-  switched_off:     "📵",
-  not_interested:   "❌",
-  lost:             "💔",
-  invalid_number:   "🚫",
+  new:              Sparkles,
+  contacted:        Phone,
+  interested:       CheckCircle,
+  details_shared:   FileText,
+  visit_scheduled:  Calendar,
+  visit_done:       Home,
+  negotiating:      Handshake,
+  converted:        PartyPopper,
+  call_back:        PhoneCall,
+  not_answering:    VolumeX,
+  busy:             Clock,
+  switched_off:     PowerOff,
+  not_interested:   XCircle,
+  lost:             HeartCrack,
+  invalid_number:   Ban,
+};
+
+// Temperature icons
+const TEMP_ICONS = {
+  Hot: Flame,
+  Warm: Sparkles,
+  Cold: Snowflake,
+  Dormant: Moon,
 };
 
 // Wrapped in memo so re-renders only happen when lead data actually changes
@@ -32,7 +46,8 @@ const LeadCard = memo(function LeadCard({ lead, onCall, onWhatsApp, selected, on
   const overdue   = isOverdue(lead.followUpDate);
   const dueToday  = isToday(lead.followUpDate);
   const initials  = lead.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
-  const statusIcon = STATUS_ICONS[lead.status] || "•";
+  const StatusIconComponent = STATUS_ICONS[lead.status] || null;
+  const TempIconComponent = TEMP_ICONS[tempStyle.label] || null;
 
   // Long press detection
   let pressTimer;
@@ -68,7 +83,7 @@ const LeadCard = memo(function LeadCard({ lead, onCall, onWhatsApp, selected, on
       {/* Selection checkbox (shown in selection mode) */}
       {selectionMode && (
         <div className={`${styles.checkbox} ${selected ? styles.checkboxChecked : ""}`}>
-          {selected ? "✓" : ""}
+          {selected && <CheckCircle size={14} />}
         </div>
       )}
 
@@ -91,8 +106,12 @@ const LeadCard = memo(function LeadCard({ lead, onCall, onWhatsApp, selected, on
         {/* Action buttons — always visible, top-right */}
         {!selectionMode && (
           <div className={styles.actions} onClick={e => e.stopPropagation()}>
-            <button className={styles.actionBtn} onClick={() => onCall?.(lead)} aria-label="Call">📞</button>
-            <button className={styles.actionBtn} onClick={() => onWhatsApp?.(lead)} aria-label="WhatsApp">💬</button>
+            <button className={styles.actionBtn} onClick={() => onCall?.(lead)} aria-label="Call">
+              <PhoneIcon size={16} />
+            </button>
+            <button className={styles.actionBtn} onClick={() => onWhatsApp?.(lead)} aria-label="WhatsApp">
+              <MessageCircle size={16} />
+            </button>
           </div>
         )}
       </div>
@@ -109,7 +128,7 @@ const LeadCard = memo(function LeadCard({ lead, onCall, onWhatsApp, selected, on
 
         {/* Status chip */}
         <span className={styles.statusChip} style={{ color: getStatusColor(lead.status), borderColor: getStatusColor(lead.status) + "40", background: getStatusColor(lead.status) + "12" }}>
-          {statusIcon} {getStatusLabel(lead.status) || "New"}
+          {StatusIconComponent && <StatusIconComponent size={12} />} {getStatusLabel(lead.status) || "New"}
         </span>
 
         {/* Source */}
@@ -124,13 +143,13 @@ const LeadCard = memo(function LeadCard({ lead, onCall, onWhatsApp, selected, on
             fontWeight: (overdue || dueToday) ? 700 : 500,
             background: overdue ? "var(--relio-danger-bg)" : dueToday ? "var(--relio-gold-light)" : "transparent",
           }}>
-            {overdue ? "⚠" : "📅"} {fuStr}
+            {overdue ? <AlertTriangle size={12} /> : <Calendar size={12} />} {fuStr}
           </span>
         )}
 
         {/* Temperature badge */}
         <span className={styles.tempBadge} style={{ background: tempStyle.bg, color: tempStyle.border }}>
-          {tempStyle.label === "Hot" ? "🔥" : tempStyle.label === "Warm" ? "✦" : tempStyle.label === "Cold" ? "❄" : "💤"} {tempStyle.label}
+          {TempIconComponent && <TempIconComponent size={12} />} {tempStyle.label}
         </span>
       </div>
 
@@ -138,7 +157,9 @@ const LeadCard = memo(function LeadCard({ lead, onCall, onWhatsApp, selected, on
       {(lead.budget || lead.referredBy) && (
         <div className={styles.bottomRow}>
           {lead.budget && (
-            <span className={styles.budget}>💰 {lead.budget}</span>
+            <span className={styles.budget}>
+              <DollarSign size={14} /> {lead.budget}
+            </span>
           )}
           {lead.referredBy && (
             <span className={styles.referral}>via {lead.referredBy}</span>
