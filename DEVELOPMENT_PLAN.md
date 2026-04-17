@@ -13,7 +13,7 @@
 |------|--------|------------|
 | 1.1 Offline-First Architecture | ✅ **COMPLETED** | Apr 2026 |
 | 1.2 Lead Management System | ✅ **COMPLETED** | Apr 2026 |
-| 1.3 Pagination & Performance | ⏳ Pending | - |
+| 1.3 Pagination & Performance | ✅ **COMPLETED** | Apr 2026 |
 | 1.4 UI Foundation (New Design System) | ⏳ Pending | - |
 
 ### Phase 2: Core Features (Not Started)
@@ -553,6 +553,17 @@ users/{uid}/
 ---
 
 ## Changelog
+
+### April 17, 2026 - v1.3
+- ✅ Completed: Phase 1.3 - Pagination & Performance
+- Added: Virtualized lead list using react-window (handles 1000+ leads smoothly)
+- Added: Cursor-based pagination with 20 leads per page
+- Added: Infinite scroll with automatic loading
+- Added: Debounced search (300ms delay for performance)
+- Added: Filter panel with stage, source, category, and temperature filters
+- Added: Refresh button for manual sync
+- Updated: usePaginatedLeads hook for efficient data fetching
+- Updated: Leads page with virtualized list and improved filter UI
 
 ### April 17, 2026 - v1.2
 - ✅ Completed: Phase 1.2 - Lead Management System

@@ -1,0 +1,91 @@
+.container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.countIndicator {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--relio-text-muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--relio-border);
+  background: var(--relio-bg-card);
+}
+
+.list {
+  flex: 1;
+  overflow-x: hidden !important;
+}
+
+/* Override react-window styles for smooth scrolling */
+.list > div {
+  scrollbar-width: thin;
+  scrollbar-color: var(--relio-border) transparent;
+}
+
+.list > div::-webkit-scrollbar {
+  width: 6px;
+}
+
+.list > div::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list > div::-webkit-scrollbar-thumb {
+  background: var(--relio-border);
+  border-radius: 3px;
+}
+
+.row {
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.loadingContainer {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.loadingMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  color: var(--relio-text-muted);
+  font-size: 13px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--relio-border);
+  border-top-color: var(--relio-gold);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.endOfList {
+  text-align: center;
+  padding: 20px;
+  color: var(--relio-text-muted);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--relio-text-muted);
+}
