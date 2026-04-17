@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { usePaginatedLeads } from "@/lib/hooks/useLeads";
 import { LEAD_STAGES, LEAD_SOURCES, LEAD_CATEGORIES } from "@/lib/utils/constants";
 import { useToast } from "@/components/shared/Toast";
-import VirtualizedLeadList from "@/components/leads/VirtualizedLeadList";
+import LeadList from "@/components/leads/LeadList";
 import LeadForm from "@/components/leads/LeadForm";
 import BulkImport from "@/components/leads/BulkImport";
 import PostCallSheet from "@/components/leads/PostCallSheet";
@@ -304,7 +304,7 @@ export default function LeadsPage() {
 
       {/* Virtualized Lead List */}
       <div className={styles.listContainer}>
-        <VirtualizedLeadList
+        <LeadList
           leads={leads}
           onCall={handleCall}
           onWhatsApp={handleWA}
