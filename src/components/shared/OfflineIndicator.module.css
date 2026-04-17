@@ -1,0 +1,126 @@
+.offlineBanner {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--relio-danger-bg, #FCEAE8);
+  color: var(--relio-danger, #C43018);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.offlineBanner svg {
+  flex-shrink: 0;
+}
+
+.syncBanner {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--relio-gold-light, #FBF3DC);
+  color: var(--relio-gold, #C49A2A);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  animation: slideDown 0.3s ease;
+}
+
+.syncBanner.syncing {
+  background: var(--relio-bg-subtle, #F0EBE3);
+  color: var(--relio-text-mid, #6B5F53);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.syncBtn {
+  margin-left: auto;
+  padding: 4px 12px;
+  background: var(--relio-gold);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.syncBtn:hover {
+  background: #B08820;
+}
+
+.syncBtn:active {
+  transform: scale(0.95);
+}
+
+/* Compact version */
+.compactOffline,
+.compactSyncing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--relio-bg-subtle);
+  color: var(--relio-text-mid);
+  position: relative;
+}
+
+.compactOffline {
+  color: var(--relio-danger);
+  background: var(--relio-danger-bg);
+}
+
+.compactSyncing.spinning svg {
+  animation: spin 1s linear infinite;
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: var(--relio-gold);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

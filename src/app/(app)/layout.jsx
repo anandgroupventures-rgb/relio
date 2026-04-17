@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import BottomNav from "@/components/layout/BottomNav";
 import ThemeLoader from "@/components/shared/ThemeLoader";
+import OfflineIndicator from "@/components/shared/OfflineIndicator";
 import styles from "./app-layout.module.css";
 
 export default function AppLayout({ children }) {
@@ -25,6 +26,9 @@ export default function AppLayout({ children }) {
 
   return (
     <div className={styles.layout}>
+      {/* Offline status indicator - shows when offline or syncing */}
+      <OfflineIndicator uid={user.uid} />
+      
       {/* ThemeLoader runs on every mount and restores the saved theme from
           localStorage — fixes theme resetting on session end */}
       <ThemeLoader />

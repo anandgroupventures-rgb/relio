@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
 import { AuthProvider } from "@/lib/hooks/useAuth";
+import { ServiceWorkerProvider } from "@/lib/hooks/ServiceWorkerProvider";
 import { ToastProvider } from "@/components/shared/Toast";
+import { OfflineInit } from "@/components/shared/OfflineInit";
 
 export const metadata = {
   title:       "Relio",
@@ -24,13 +26,17 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="Relio" />
       </head>
       <body>
-        <AuthProvider>
-          <ToastProvider>
-            <div className="page-container">
-              {children}
-            </div>
-          </ToastProvider>
-        </AuthProvider>
+        <ServiceWorkerProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <OfflineInit>
+                <div className="page-container">
+                  {children}
+                </div>
+              </OfflineInit>
+            </ToastProvider>
+          </AuthProvider>
+        </ServiceWorkerProvider>
       </body>
     </html>
   );

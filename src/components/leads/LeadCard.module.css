@@ -213,3 +213,104 @@
   overflow:      hidden;
   text-overflow: ellipsis;
 }
+
+/* ── Score Badge ─────────────────────────────────────────────────────────── */
+.scoreBadge {
+  position:        absolute;
+  top:             10px;
+  right:           10px;
+  display:         flex;
+  align-items:     center;
+  gap:             4px;
+  padding:         4px 8px;
+  border-radius:   20px;
+  border:          1.5px solid;
+  font-size:       11px;
+  font-weight:       800;
+  background:      var(--relio-bg-card);
+}
+
+.scoreBadge span {
+  font-size: 12px;
+}
+
+/* ── Closed/Archived Card ───────────────────────────────────────────────── */
+.closed {
+  opacity: 0.75;
+  background: var(--relio-bg-subtle);
+}
+
+.closed .name {
+  text-decoration: line-through;
+  color: var(--relio-text-muted);
+}
+
+/* ── Category Chip ──────────────────────────────────────────────────────── */
+.categoryChip {
+  font-size:     11px;
+  font-weight:   700;
+  padding:       2px 8px;
+  border-radius:   20px;
+  border:        1.5px solid;
+  white-space:   nowrap;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           3px;
+}
+
+/* ── Stage Chip ─────────────────────────────────────────────────────────── */
+.stageChip {
+  font-size:     11px;
+  font-weight:   600;
+  padding:       2px 8px;
+  border-radius:   20px;
+  border:        1.5px solid transparent;
+  white-space:   nowrap;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           3px;
+}
+
+/* ── Suggested Action ─────────────────────────────────────────────────── */
+.suggestedAction {
+  padding:       4px 0;
+  margin-top:    2px;
+}
+
+.actionHint {
+  font-size:     12px;
+  color:         var(--relio-gold);
+  font-weight:   600;
+  background:    var(--relio-gold-light);
+  padding:       4px 10px;
+  border-radius: 20px;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           4px;
+}
+
+/* ── Archive Button ───────────────────────────────────────────────────────── */
+.archiveBtn {
+  margin-left:   auto;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           4px;
+  padding:       4px 10px;
+  border-radius: 20px;
+  border:        1.5px solid var(--relio-danger);
+  background:    var(--relio-danger-bg);
+  color:         var(--relio-danger);
+  font-size:     11px;
+  font-weight:   600;
+  cursor:        pointer;
+  transition:    all 0.15s;
+}
+
+.archiveBtn:hover {
+  background:    var(--relio-danger);
+  color:         #fff;
+}
+
+.archiveBtn:active {
+  transform:     scale(0.95);
+}

@@ -1,0 +1,238 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  background: var(--relio-bg-card);
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--relio-border);
+  background: var(--relio-danger-bg);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--relio-danger);
+  margin: 0;
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--relio-bg-subtle);
+  border: none;
+  color: var(--relio-text-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.closeBtn:hover {
+  background: var(--relio-border);
+}
+
+.body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.leadInfo {
+  background: var(--relio-bg-subtle);
+  padding: 12px 16px;
+  border-radius: var(--relio-radius);
+}
+
+.leadName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--relio-text);
+  margin: 0 0 4px 0;
+}
+
+.leadMobile {
+  font-size: 14px;
+  color: var(--relio-text-mid);
+  margin: 0;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--relio-warning-bg);
+  border-radius: var(--relio-radius-sm);
+  font-size: 13px;
+  color: var(--relio-warning);
+}
+
+.warning svg {
+  flex-shrink: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--relio-text);
+}
+
+.reasonsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.reasonBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: var(--relio-radius-sm);
+  border: 1.5px solid var(--relio-border);
+  background: var(--relio-bg-card);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.reasonBtn:hover {
+  border-color: var(--relio-gold-border);
+  background: var(--relio-gold-light);
+}
+
+.reasonActive {
+  border-color: var(--relio-gold) !important;
+  background: var(--relio-gold-light) !important;
+}
+
+.reasonLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--relio-text);
+}
+
+.reasonDesc {
+  font-size: 11px;
+  color: var(--relio-text-muted);
+  line-height: 1.3;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--relio-border);
+  border-radius: var(--relio-radius-sm);
+  font-size: 14px;
+  background: var(--relio-bg-card);
+  resize: none;
+  min-height: 80px;
+}
+
+.textarea:focus {
+  border-color: var(--relio-gold);
+  outline: none;
+}
+
+.summary {
+  padding: 12px;
+  background: var(--relio-bg-subtle);
+  border-radius: var(--relio-radius-sm);
+  font-size: 13px;
+  color: var(--relio-text-mid);
+}
+
+.summary strong {
+  color: var(--relio-text);
+}
+
+.footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--relio-border);
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: var(--relio-radius-sm);
+  border: 1.5px solid var(--relio-border);
+  background: var(--relio-bg-card);
+  color: var(--relio-text-mid);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cancelBtn:hover {
+  background: var(--relio-bg-subtle);
+}
+
+.archiveBtn {
+  flex: 2;
+  padding: 12px 20px;
+  border-radius: var(--relio-radius-sm);
+  border: none;
+  background: var(--relio-danger);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.archiveBtn:hover {
+  background: #b91c1c;
+}
+
+.archiveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
