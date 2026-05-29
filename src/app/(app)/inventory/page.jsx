@@ -214,7 +214,7 @@ export default function InventoryPage() {
               body="Add your first property or import a spreadsheet."
               action={
                 <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-                  <button className="r-btn r-btn-primary" onClick={() => setShowAdd(true)}>+ Add Property</button>
+                  <button className="r-btn r-btn-primary" onClick={() => router.push("/inventory/new")}>+ Add Property</button>
                   <button className="r-btn r-btn-ghost" onClick={() => setShowBulk(true)}>Bulk Import</button>
                 </div>
               } />
@@ -230,13 +230,9 @@ export default function InventoryPage() {
       </main>
 
       {/* FAB */}
-      <button className="r-fab" onClick={() => setShowAdd(true)}>
+      <button className="r-fab" onClick={() => router.push("/inventory/new")}>
         <Plus size={28} />
       </button>
-
-      <BottomSheet open={showAdd} onClose={() => setShowAdd(false)} title="Add Property" tall>
-        <InvForm onDone={() => setShowAdd(false)} onCancel={() => setShowAdd(false)} />
-      </BottomSheet>
 
       <BottomSheet open={!!editItem} onClose={() => setEditItem(null)} title="Edit Property" tall>
         <InvForm item={editItem} onDone={() => setEditItem(null)} onCancel={() => setEditItem(null)} />

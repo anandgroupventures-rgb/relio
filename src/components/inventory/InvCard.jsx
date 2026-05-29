@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { markOwnerContacted } from "@/lib/firebase/inventory";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { stalenessLevel } from "@/lib/utils/dateHelpers";
@@ -6,6 +7,7 @@ import { AVAILABILITY } from "@/lib/utils/constants";
 import styles from "./InvCard.module.css";
 
 export default function InvCard({ item, onEdit, onCall, onWhatsApp, onShare }) {
+  const router = useRouter();
   const { user } = useAuth();
   const stale    = stalenessLevel(item.lastOwnerContacted);
   const avail    = AVAILABILITY.find(a => a.value === item.availability) || AVAILABILITY[0];
@@ -15,8 +17,12 @@ export default function InvCard({ item, onEdit, onCall, onWhatsApp, onShare }) {
     await markOwnerContacted(user.uid, item.id);
   }
 
+  function handleTap() {
+    router.push(`/inventory/${item.id}`);
+  }
+
   return (
-    <div className={styles.card} style={{ borderLeftColor: stale.color }} onClick={() => onEdit?.(item)}>
+    <div className={styles.card} style={{ borderLeftColor: stale.color }} onClick={handleTap}>
 
       {/* Top row */}
       <div className={styles.top}>
@@ -32,9 +38,13 @@ export default function InvCard({ item, onEdit, onCall, onWhatsApp, onShare }) {
             {item.size    && <><span className={styles.dot}>·</span><span>{item.size} sqft</span></>}
             {item.price   && <><span className={styles.dot}>·</span><span className={styles.price}>{item.price}</span></>}
           </div>
+          <div className={styles.meta}>
+            {item.area && <span>📍 {item.area}</span>}
+            {item.furnishing && <><span className={styles.dot}>·</span><span>{item.furnishing}</span></>}
+            {item.facing && <><span className={styles.dot}>·</span><span>{item.facing}</span></>}
+          </div>
           <div className={styles.owner}>
             <span>👤 {item.ownerName}</span>
-            {item.area && <><span className={styles.dot}>·</span><span>📍 {item.area}</span></>}
           </div>
         </div>
       </div>

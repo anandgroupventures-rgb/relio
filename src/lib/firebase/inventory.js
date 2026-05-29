@@ -65,6 +65,12 @@ export async function deleteInventory(uid, id) {
   await deleteDoc(invDoc(uid, id));
 }
 
+// ─── Get Single Inventory Item ──────────────────────────────────────────────
+export async function getInventoryItem(uid, id) {
+  const snap = await getDoc(invDoc(uid, id));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+
 // ─── Get All Inventory ────────────────────────────────────────────────────────
 export async function getInventory(uid) {
   const snap = await getDocs(
