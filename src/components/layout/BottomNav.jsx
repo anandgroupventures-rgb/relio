@@ -1,15 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, CalendarDays, BarChart3, MoreHorizontal } from "lucide-react";
+import { LayoutDashboard, Users, Building2, CalendarDays } from "lucide-react";
 import styles from "./BottomNav.module.css";
 
 const NAV = [
   { href: "/today",     icon: LayoutDashboard,  label: "Dashboard" },
   { href: "/leads",     icon: Users,            label: "Leads"     },
+  { href: "/inventory", icon: Building2,        label: "Inventory" },
   { href: "/calendar",  icon: CalendarDays,     label: "Calendar"  },
-  { href: "/stats",     icon: BarChart3,        label: "Reports"   },
-  { href: "/settings",  icon: MoreHorizontal,   label: "More"      },
 ];
 
 export default function BottomNav() {

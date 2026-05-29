@@ -30,6 +30,12 @@
   gap: 12px;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .avatar {
   width: 40px;
   height: 40px;

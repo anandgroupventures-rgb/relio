@@ -14,7 +14,8 @@ import BottomSheet from "@/components/shared/BottomSheet";
 
 const LeadForm = dynamic(() => import("@/components/leads/LeadForm"), { ssr: false });
 const PostCallSheet = dynamic(() => import("@/components/leads/PostCallSheet"), { ssr: false });
-import { Bell, TrendingUp, Zap, MapPin, Handshake, Wallet, Plus, Phone, MessageCircle, ChevronRight, Home, Sparkles, AlertTriangle, CloudOff, RefreshCw } from "lucide-react";
+import { TrendingUp, Zap, MapPin, Handshake, Wallet, Plus, Phone, MessageCircle, ChevronRight, Home, Sparkles, AlertTriangle, CloudOff, RefreshCw } from "lucide-react";
+import NavMenu from "@/components/layout/NavMenu";
 import styles from "./today.module.css";
 
 export default function TodayDashboard() {
@@ -98,25 +99,22 @@ export default function TodayDashboard() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
-            <div className={styles.avatar}>
-              {firstName[0]?.toUpperCase() || "U"}
-            </div>
             <h1 className="text-headline-lg-mobile" style={{ color: "var(--r-primary)" }}>Relio</h1>
           </div>
-          {isOffline && (
-            <span className={styles.offlineBadge} title="Offline mode — changes queued">
-              <CloudOff size={14} />
-            </span>
-          )}
-          {syncStatus.pendingChanges > 0 && (
-            <span className={styles.syncBadge} title={`${syncStatus.pendingChanges} changes syncing…`}>
-              <RefreshCw size={14} />
-              {syncStatus.pendingChanges}
-            </span>
-          )}
-          <button className={styles.notifBtn}>
-            <Bell size={22} color="var(--r-primary)" />
-          </button>
+          <div className={styles.headerRight}>
+            {isOffline && (
+              <span className={styles.offlineBadge} title="Offline mode — changes queued">
+                <CloudOff size={14} />
+              </span>
+            )}
+            {syncStatus.pendingChanges > 0 && (
+              <span className={styles.syncBadge} title={`${syncStatus.pendingChanges} changes syncing…`}>
+                <RefreshCw size={14} />
+                {syncStatus.pendingChanges}
+              </span>
+            )}
+            <NavMenu />
+          </div>
         </div>
       </header>
 
