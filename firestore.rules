@@ -11,7 +11,7 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    function isValidLeadData() {
+    function isValidLeadCreate() {
       return request.resource.data.keys().hasAll(['name', 'mobile']) &&
              request.resource.data.name is string &&
              request.resource.data.name.size() > 0 &&
@@ -19,30 +19,25 @@ service cloud.firestore {
              request.resource.data.mobile is string &&
              request.resource.data.mobile.size() <= 20;
     }
-    
-    function isValidUserProfile() {
-      return request.resource.data.keys().hasAll(['displayName', 'email']) &&
-             request.resource.data.displayName is string &&
-             request.resource.data.displayName.size() > 0 &&
-             request.resource.data.displayName.size() <= 50 &&
-             request.resource.data.email is string &&
-             request.resource.data.email.size() <= 100;
+
+    function isValidLeadUpdate() {
+      // Partial updates allowed; validate only fields present in request
+      return (!('name' in request.resource.data) ||
+              (request.resource.data.name is string &&
+               request.resource.data.name.size() > 0 &&
+               request.resource.data.name.size() <= 100)) &&
+             (!('mobile' in request.resource.data) ||
+              (request.resource.data.mobile is string &&
+               request.resource.data.mobile.size() <= 20));
     }
 
-    // User profiles - users can only access their own profile
+    // User data root - users can only access their own subcollections
     match /users/{userId} {
-      match /profile/{profileId} {
-        allow read: if isOwner(userId);
-        allow create: if isOwner(userId) && isValidUserProfile();
-        allow update: if isOwner(userId) && isValidUserProfile();
-        allow delete: if isOwner(userId);
-      }
-      
       // Leads collection - users can only access their own leads
       match /leads/{leadId} {
         allow read: if isOwner(userId);
-        allow create: if isOwner(userId) && isValidLeadData();
-        allow update: if isOwner(userId) && isValidLeadData();
+        allow create: if isOwner(userId) && isValidLeadCreate();
+        allow update: if isOwner(userId) && isValidLeadUpdate();
         allow delete: if isOwner(userId);
       }
       

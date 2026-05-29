@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lead Profile | Relio CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#c6c5d4",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#1b1c1c",
+                      "on-secondary": "#ffffff",
+                      "inverse-surface": "#303030",
+                      "inverse-on-surface": "#f3f0ef",
+                      "secondary-fixed": "#ffddba",
+                      "background": "#fcf9f8",
+                      "surface-container-high": "#eae7e7",
+                      "tertiary-fixed": "#e2e2e2",
+                      "inverse-primary": "#bdc2ff",
+                      "on-background": "#1b1c1c",
+                      "on-error-container": "#93000a",
+                      "tertiary-container": "#2e3030",
+                      "on-primary-fixed-variant": "#343d96",
+                      "tertiary": "#191b1c",
+                      "primary": "#000666",
+                      "surface-dim": "#dcd9d9",
+                      "surface-container": "#f0eded",
+                      "on-error": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-variant": "#e5e2e1",
+                      "secondary-container": "#f89c00",
+                      "on-tertiary-container": "#969798",
+                      "secondary": "#875200",
+                      "surface-container-highest": "#e5e2e1",
+                      "outline": "#767683",
+                      "on-surface-variant": "#454652",
+                      "error-container": "#ffdad6",
+                      "surface-tint": "#4c56af",
+                      "primary-container": "#1a237e",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "on-secondary-fixed-variant": "#663d00",
+                      "tertiary-fixed-dim": "#c6c6c7",
+                      "surface-container-low": "#f6f3f2",
+                      "secondary-fixed-dim": "#ffb865",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "surface": "#fcf9f8",
+                      "primary-fixed-dim": "#bdc2ff",
+                      "on-secondary-fixed": "#2b1700",
+                      "on-primary-container": "#8690ee",
+                      "on-secondary-container": "#623a00",
+                      "on-primary-fixed": "#000767",
+                      "surface-bright": "#fcf9f8",
+                      "on-primary": "#ffffff",
+                      "primary-fixed": "#e0e0ff",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "container-margin": "24px",
+                      "section-gap": "32px",
+                      "baseline": "4px",
+                      "card-padding": "20px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "data-mono": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-mesh {
+            background-color: #fcf9f8;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(224, 224, 255, 0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(255, 221, 186, 0.2) 0px, transparent 50%);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-mesh min-h-screen text-on-surface font-body-md">
+<!-- Top AppBar (Mobile/Desktop Shell) -->
+<header class="flex items-center justify-between px-container-margin py-4 w-full h-16 fixed top-0 z-50 shadow-[0px_4px_20px_rgba(26,35,126,0.05)] bg-surface dark:bg-surface-dim">
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-bold text-primary text-headline-lg-mobile md:text-headline-md">Relio</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-high rounded-full cursor-pointer transition-colors">notifications</span>
+<div class="w-10 h-10 rounded-full bg-primary-container overflow-hidden border-2 border-primary/10">
+<img alt="Agent Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a real estate agent in his early 40s, wearing a crisp navy suit and a friendly smile. The background is a blurred high-end office interior with warm wooden textures and soft morning light. The overall mood is approachable, successful, and trustworthy, aligning with the Relio corporate identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMvfItrTTTMiZ9tl3SBejtiAVIw2ivCs7ElxkCvi1b2G--viWAG5Em2093qee3VUiDj_-tAUQXRYUg2-md3Cb4dGgzMDHfPa0ijcAYf9_NqSPPK8d9GOZ6HPyxzY5Gu7NQD8g-PmzN0xVYNgSwzj58ASe0weEyFC1gALfy6dPyGAHAJmwOXgR6ZcvADRsvelgmfstOtWLDTLz0BDwOq9GwqtoFCa1YchDzA-kye71IabinpJbloF8rRAddlESU8I3RHSmno9iwC6E"/>
+</div>
+</div>
+</header>
+<main class="pt-20 pb-24 px-4 md:px-container-margin max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-gutter md:gap-section-gap">
+<!-- Left Column: Lead Info & Pipeline -->
+<div class="md:col-span-8 space-y-6">
+<!-- Lead Profile Header Card -->
+<section class="bg-surface-container-lowest rounded-xl p-card-padding shadow-[0px_4px_20px_rgba(26,35,126,0.05)] border border-outline-variant/30">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold text-headline-md">
+                            VK
+                        </div>
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Vikram Khanna</h2>
+<p class="text-on-surface-variant font-body-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">call</span>
+                                +91 98765 43210
+                            </p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-green-100 text-green-800 text-label-md font-label-md rounded-full border border-green-200">Won</span>
+<span class="px-3 py-1 bg-orange-100 text-orange-800 text-label-md font-label-md rounded-full border border-orange-200">Hot</span>
+<span class="px-3 py-1 bg-primary-fixed text-primary text-label-md font-label-md rounded-full border border-primary/20">Referral</span>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="mt-6 flex items-center gap-3 overflow-x-auto hide-scrollbar pb-2">
+<button class="flex-1 min-w-max py-2 px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">call</span>
+                        Call Now
+                    </button>
+<button class="flex-1 min-w-max py-2 px-4 border border-[#25D366] text-[#25D366] rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-[#25D366]/5 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+                        WhatsApp
+                    </button>
+<button class="p-3 border border-outline-variant rounded-lg text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">mail</span>
+</button>
+<button class="p-3 border border-outline-variant rounded-lg text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">event_available</span>
+</button>
+</div>
+</section>
+<!-- Pipeline Stage Timeline -->
+<section class="bg-surface-container-lowest rounded-xl p-card-padding shadow-[0px_4px_20px_rgba(26,35,126,0.05)] border border-outline-variant/30 overflow-hidden">
+<h3 class="font-headline-md text-primary mb-6">Pipeline Status</h3>
+<div class="relative flex justify-between items-start">
+<!-- Progress Line -->
+<div class="absolute top-4 left-0 w-full h-[2px] bg-surface-container-high z-0"></div>
+<div class="absolute top-4 left-0 w-full h-[2px] bg-secondary-container z-0" style="width: 100%;"></div>
+<!-- Steps -->
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface text-center">New</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface text-center">Contacted</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface text-center">Visit Scheduled</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface text-center">Negotiation</span>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-10 h-10 -mt-1 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-lg ring-4 ring-secondary-container/20 border-2 border-white animate-pulse">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1">emoji_events</span>
+</div>
+<span class="text-label-md font-bold text-on-surface text-center">Won</span>
+</div>
+</div>
+</section>
+<!-- Tabs Section -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)] border border-outline-variant/30">
+<div class="flex border-b border-outline-variant/30 overflow-x-auto hide-scrollbar">
+<button class="px-6 py-4 font-label-md text-label-md text-primary border-b-2 border-primary">Activity</button>
+<button class="px-6 py-4 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container transition-colors">Documents</button>
+<button class="px-6 py-4 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container transition-colors">Visits</button>
+<button class="px-6 py-4 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container transition-colors">Payments</button>
+</div>
+<div class="p-card-padding">
+<!-- Activity Feed -->
+<div class="space-y-8 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-[1px] before:bg-outline-variant/50">
+<!-- Activity Item 1 -->
+<div class="relative flex gap-6 group">
+<div class="z-10 w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px]">call</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="font-body-lg text-on-surface font-semibold">Call with Vikram</p>
+<span class="text-label-md text-on-surface-variant">2 hours ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant mt-1">Interested in 3BHK, wants a weekend visit. Mentioned preference for higher floor and pool view.</p>
+<div class="mt-2 flex gap-2">
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant text-[10px] rounded uppercase tracking-wider font-bold">Follow-up</span>
+</div>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="relative flex gap-6">
+<div class="z-10 w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px]">description</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="font-body-lg text-on-surface font-semibold">WhatsApp Message Sent</p>
+<span class="text-label-md text-on-surface-variant">Yesterday</span>
+</div>
+<p class="text-body-md text-on-surface-variant mt-1">Sent price list for Godrej Woods via WhatsApp. Document: <i>Godrej_Woods_Brochure.pdf</i></p>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="relative flex gap-6">
+<div class="z-10 w-8 h-8 rounded-full bg-secondary-container/10 text-secondary flex items-center justify-center border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px]">person_add</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="font-body-lg text-on-surface font-semibold">Lead Created</p>
+<span class="text-label-md text-on-surface-variant">2 days ago</span>
+</div>
+<p class="text-body-md text-on-surface-variant mt-1">Lead imported from Referral. Assigned to <b>Rohan Mehra</b>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar -->
+<div class="md:col-span-4 space-y-gutter">
+<!-- Requirement Summary Card -->
+<section class="bg-surface-container-lowest rounded-xl p-card-padding shadow-[0px_4px_20px_rgba(26,35,126,0.05)] border border-outline-variant/30">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-md text-primary">Requirement</h3>
+<button class="text-primary hover:underline font-label-md text-label-md">Edit</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container">apartment</span>
+<div>
+<p class="text-label-md text-on-surface-variant uppercase">Property Type</p>
+<p class="font-body-lg font-semibold">3 BHK Apartment</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container">location_on</span>
+<div>
+<p class="text-label-md text-on-surface-variant uppercase">Location</p>
+<p class="font-body-lg font-semibold">Indiranagar, Bangalore</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container">payments</span>
+<div>
+<p class="text-label-md text-on-surface-variant uppercase">Budget Range</p>
+<p class="font-body-lg font-semibold">₹2.0 - 5.0 Cr</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container">schedule</span>
+<div>
+<p class="text-label-md text-on-surface-variant uppercase">Timeline</p>
+<p class="font-body-lg font-semibold">Immediate Possession</p>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/20">
+<p class="text-label-md text-on-surface-variant uppercase mb-3">Suggested Projects</p>
+<div class="rounded-lg overflow-hidden relative h-40 group cursor-pointer shadow-sm">
+<img alt="Godrej Woods Project" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4RN03c-2TqEZBR6CYm9u23Q3C67-792lmZsMD-hP03pIW6C9qcjXP_q5XyMO3w2AvEgkiiCswNjsC3hBLXKiYY2Pshv9GMKqArQVyYNuiqTG9BBfQQWDx2TjtQS8YYADK6yr3f7_vCxuRHXmkUEsLdHjTjz8XxTC5CGkrZ_5kCssqY1u63Cxsk6cak7ckuI4hZyYWRL1fLWSKULc11VL9vlsyeTnUiW5sRe-NFwE0op5v1Ya9Ekq2Jixcfqn4vv8VZKysGOKiDuk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
+<p class="text-white font-bold">Godrej Woods</p>
+<p class="text-white/80 text-[10px]">Indiranagar • From ₹2.4 Cr</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Stats -->
+<section class="grid grid-cols-2 gap-3">
+<div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/10 text-center">
+<p class="text-label-md text-on-surface-variant uppercase mb-1">Total Visits</p>
+<p class="text-headline-md font-bold text-primary">02</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/10 text-center">
+<p class="text-label-md text-on-surface-variant uppercase mb-1">Response Time</p>
+<p class="text-headline-md font-bold text-primary">12m</p>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Action Button Cluster -->
+<div class="fixed bottom-24 right-6 flex flex-col items-end gap-4">
+<!-- Expanded Menu (Hidden by default) -->
+<div class="hidden flex-col items-end gap-3 mb-2 transition-all duration-300 transform translate-y-4 opacity-0" id="fab-menu">
+<button class="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-lg border border-outline-variant/20 hover:bg-surface-container transition-all">
+<span class="text-label-md font-bold">Add Note</span>
+<div class="w-10 h-10 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+</button>
+<button class="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-lg border border-outline-variant/20 hover:bg-surface-container transition-all">
+<span class="text-label-md font-bold">Log Call</span>
+<div class="w-10 h-10 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">call_log</span>
+</div>
+</button>
+<button class="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-lg border border-outline-variant/20 hover:bg-surface-container transition-all">
+<span class="text-label-md font-bold">Schedule Visit</span>
+<div class="w-10 h-10 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+</button>
+</div>
+<!-- Main FAB -->
+<button class="w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full shadow-[0px_8px_30px_rgba(255,160,0,0.4)] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 z-50" onclick="toggleFab()">
+<span class="material-symbols-outlined text-[32px] transition-transform duration-300" id="fab-icon">add</span>
+</button>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container-lowest dark:bg-surface-container shadow-[0px_-4px_16px_rgba(0,0,0,0.04)] border-t border-outline-variant/30">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">group</span>
+<span class="font-label-md text-label-md">Leads</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md mt-1">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md mt-1">Reports</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-label-md text-label-md mt-1">More</span>
+</a>
+</nav>
+<script>
+        function toggleFab() {
+            const menu = document.getElementById('fab-menu');
+            const icon = document.getElementById('fab-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                setTimeout(() => {
+                    menu.classList.remove('opacity-0', 'translate-y-4');
+                    icon.style.transform = 'rotate(45deg)';
+                }, 10);
+            } else {
+                menu.classList.add('opacity-0', 'translate-y-4');
+                icon.style.transform = 'rotate(0deg)';
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 300);
+            }
+        }
+    </script>
+</body></html>

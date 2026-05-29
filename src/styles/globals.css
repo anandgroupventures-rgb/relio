@@ -1,75 +1,114 @@
-/* ─── Relio Brand Tokens ─────────────────────────────────────────────────── */
+/* ─── Relio Design System ─────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
-  /* Sage Green Primary Palette (Professional Property Management Dashboard) */
-  --relio-sage:         #7A9E7E;  /* Primary brand color */
-  --relio-sage-light:   #E8F0E8;  /* Light backgrounds */
-  --relio-sage-border:  #C5D9C7;  /* Subtle borders */
-  --relio-sage-dark:    #5A7D5E;  /* Darker accent */
-  
-  /* Forest Accents */
-  --relio-forest:       #4A6B4E;  /* Secondary green */
-  --relio-forest-light: #D4E4D5;  /* Light forest bg */
-  --relio-forest-dark:  #2D4A30;  /* Dark forest for text */
+  /* ── Primary (Deep Blue) ── */
+  --r-primary:               #000666;
+  --r-on-primary:            #ffffff;
+  --r-primary-container:     #1a237e;
+  --r-on-primary-container:  #8690ee;
+  --r-primary-fixed:         #e0e0ff;
+  --r-on-primary-fixed:      #000767;
+  --r-primary-fixed-dim:     #bdc2ff;
+  --r-on-primary-fixed-variant: #343d96;
+  --r-inverse-primary:       #bdc2ff;
 
-  /* Cream & Neutral Backgrounds */
-  --relio-cream:        #F5F5F0;  /* Page background */
-  --relio-cream-light:  #FAFAF7;  /* Card backgrounds */
-  --relio-cream-warm:   #EFECE5;  /* Warm cream accents */
-  
-  /* Text Colors */
-  --relio-text:         #1C2416;  /* Primary text - dark forest */
-  --relio-text-mid:     #4A5D45;  /* Secondary text */
-  --relio-text-muted:   #7A8B70;  /* Muted text */
-  --relio-text-light:   #FFFFFF;  /* White text for dark bg */
+  /* ── Secondary (Gold/Amber) ── */
+  --r-secondary:             #875200;
+  --r-on-secondary:          #ffffff;
+  --r-secondary-container:   #f89c00;
+  --r-on-secondary-container:#623a00;
+  --r-secondary-fixed:       #ffddba;
+  --r-on-secondary-fixed:      #2b1700;
+  --r-secondary-fixed-dim:   #ffb865;
+  --r-on-secondary-fixed-variant: #663d00;
 
-  /* Status Colors (Sage-themed) */
-  --relio-hot:          #D46464;  /* Soft red for hot */
-  --relio-hot-bg:       #FCE8E8;  
-  --relio-warm:         #C9A458;  /* Muted gold for warm */
-  --relio-warm-bg:      #F8F2E3;
-  --relio-cold:         #5A8CA8;  /* Soft blue for cold */
-  --relio-cold-bg:      #E8F2F7;
-  --relio-dormant:      #8B9A80;  /* Sage for dormant */
-  --relio-dormant-bg:   #EDF1EA;
+  /* ── Tertiary (Dark Grey) ── */
+  --r-tertiary:              #191b1c;
+  --r-on-tertiary:           #ffffff;
+  --r-tertiary-container:    #2e3030;
+  --r-on-tertiary-container: #969798;
+  --r-tertiary-fixed:        #e2e2e2;
+  --r-tertiary-fixed-dim:    #c6c6c7;
+  --r-on-tertiary-fixed:     #1a1c1c;
+  --r-on-tertiary-fixed-variant: #454747;
 
-  /* Semantic Colors */
-  --relio-success:      #5A9A6E;  /* Sage success */
-  --relio-success-bg:   #E8F5EC;
-  --relio-warning:      #C9A458;  /* Muted gold warning */
-  --relio-warning-bg:   #F8F2E3;
-  --relio-danger:       #C45A50;  /* Soft red danger */
-  --relio-danger-bg:    #FCE8E5;
+  /* ── Surface ── */
+  --r-surface:               #fcf9f8;
+  --r-surface-dim:           #dcd9d9;
+  --r-surface-bright:        #fcf9f8;
+  --r-surface-variant:       #e5e2e1;
+  --r-on-surface:            #1b1c1c;
+  --r-on-surface-variant:    #454652;
+  --r-inverse-surface:       #303030;
+  --r-inverse-on-surface:    #f3f0ef;
+  --r-surface-tint:          #4c56af;
 
-  /* UI Elements */
-  --relio-border:       #D8DDD3;  /* Subtle borders */
-  --relio-border-light: #E8EBE5;
-  --relio-shadow:       0 2px 12px rgba(74, 107, 78, 0.08);
-  --relio-shadow-lg:    0 8px 32px rgba(74, 107, 78, 0.12);
-  
-  /* Border Radius (Professional Dashboard Style) */
-  --relio-radius:       16px;     /* Standard cards */
-  --relio-radius-sm:    8px;      /* Buttons, inputs */
-  --relio-radius-lg:    24px;     /* Large cards, modals */
-  --relio-radius-xl:    32px;     /* Feature cards */
-  
-  /* Legacy aliases for backwards compatibility */
-  --relio-gold:         var(--relio-sage);
-  --relio-gold-light:   var(--relio-sage-light);
-  --relio-gold-border:  var(--relio-sage-border);
-  --relio-bg:           var(--relio-cream);
-  --relio-bg-card:      var(--relio-cream-light);
-  --relio-bg-subtle:    var(--relio-cream-warm);
+  /* ── Surface Containers ── */
+  --r-surface-container-lowest:  #ffffff;
+  --r-surface-container-low:     #f6f3f2;
+  --r-surface-container:         #f0eded;
+  --r-surface-container-high:    #eae7e7;
+  --r-surface-container-highest: #e5e2e1;
 
-  /* Nav & Layout */
-  --nav-height:         72px;
-  --header-height:      64px;
-  
-  /* Dashboard specific */
-  --dash-card-bg:       rgba(250, 250, 247, 0.9);
-  --dash-card-border:   rgba(216, 221, 211, 0.6);
+  /* ── Background ── */
+  --r-background:            #fcf9f8;
+  --r-on-background:         #1b1c1c;
+
+  /* ── Error ── */
+  --r-error:                 #ba1a1a;
+  --r-on-error:              #ffffff;
+  --r-error-container:       #ffdad6;
+  --r-on-error-container:    #93000a;
+
+  /* ── Outline ── */
+  --r-outline:               #767683;
+  --r-outline-variant:       #c6c5d4;
+
+  /* ── Elevation / Shadows ── */
+  --r-shadow-card:           0px 4px 20px rgba(26, 35, 126, 0.05);
+  --r-shadow-card-hover:      0px 8px 30px rgba(26, 35, 126, 0.12);
+  --r-shadow-nav:            0px -4px 16px rgba(0, 0, 0, 0.04);
+  --r-shadow-header:         0px 4px 20px rgba(26, 35, 126, 0.05);
+  --r-shadow-fab:            0px 8px 30px rgba(255, 160, 0, 0.4);
+
+  /* ── Spacing ── */
+  --r-baseline:              4px;
+  --r-gutter:                16px;
+  --r-card-padding:          20px;
+  --r-section-gap:           32px;
+  --r-container-margin:      24px;
+
+  /* ── Radius ── */
+  --r-radius-sm:             0.25rem;
+  --r-radius:                0.5rem;
+  --r-radius-md:             0.75rem;
+  --r-radius-lg:             1rem;
+  --r-radius-xl:             1.5rem;
+  --r-radius-full:           9999px;
+
+  /* ── Layout ── */
+  --nav-height:              72px;
+  --header-height:           64px;
+  --max-width:               480px;
+
+  /* ── Temperature ── */
+  --r-hot:                   #ba1a1a;
+  --r-hot-bg:                #ffdad6;
+  --r-warm:                  #875200;
+  --r-warm-bg:               #ffddba;
+  --r-cold:                  #1a237e;
+  --r-cold-bg:               #e0e0ff;
+  --r-dormant:               #767683;
+  --r-dormant-bg:            #f0eded;
+
+  /* ── Status ── */
+  --r-success:               #16a34a;
+  --r-success-bg:            #dcfce7;
+  --r-warning:               #f89c00;
+  --r-warning-bg:            #ffedd5;
 }
 
-/* ─── Reset & Base ───────────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -79,326 +118,430 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
-  background: var(--relio-cream);
+  background: var(--r-background);
 }
 
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, sans-serif;
-  background: var(--relio-cream);
-  color: var(--relio-text);
+  background: var(--r-background);
+  color: var(--r-on-surface);
   line-height: 1.5;
   min-height: 100dvh;
   overflow-x: hidden;
   overscroll-behavior: none;
 }
 
-/* ─── Typography ─────────────────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--relio-text);
+  color: var(--r-primary);
 }
 
-h1 { font-size: 28px; }
-h2 { font-size: 24px; }
-h3 { font-size: 20px; }
-h4 { font-size: 16px; }
-
-a {
-  color: var(--relio-sage);
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-a:hover {
-  color: var(--relio-sage-dark);
-}
+a { color: var(--r-primary); text-decoration: none; }
 
 button {
   cursor: pointer;
   border: none;
   background: none;
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
-input, textarea, select {
-  font-family: inherit;
-  font-size: inherit;
-}
+input, textarea, select { font-family: inherit; font-size: inherit; }
 
-/* ─── Dashboard Card System ──────────────────────────────────────────────── */
-.dash-card {
-  background: var(--dash-card-bg);
-  border-radius: var(--relio-radius);
-  border: 1px solid var(--dash-card-border);
-  box-shadow: var(--relio-shadow);
-  backdrop-filter: blur(8px);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.dash-card:hover {
-  box-shadow: var(--relio-shadow-lg);
-}
-
-.dash-card-large {
-  border-radius: var(--relio-radius-lg);
-  padding: 24px;
-}
-
-/* ─── Button System ─────────────────────────────────────────────────────── */
-.btn-primary,
-.relio-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px 28px;
-  border-radius: var(--relio-radius-lg);
-  background: var(--relio-sage);
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  min-height: 52px;
-  box-shadow: 0 2px 8px rgba(122, 158, 126, 0.3);
-  border: none;
-  cursor: pointer;
-}
-
-.btn-primary:hover,
-.relio-btn-primary:hover {
-  background: var(--relio-sage-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(122, 158, 126, 0.4);
-}
-
-.btn-primary:active,
-.relio-btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-ghost,
-.relio-btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 24px;
-  border-radius: var(--relio-radius-lg);
-  background: white;
-  color: var(--relio-text-mid);
-  font-size: 15px;
-  font-weight: 600;
-  border: 2px solid var(--relio-border);
-  transition: all 0.15s ease;
-  min-height: 48px;
-  cursor: pointer;
-}
-
-.btn-ghost:hover,
-.relio-btn-ghost:hover {
-  background: var(--relio-sage-light);
-  border-color: var(--relio-sage);
-  color: var(--relio-sage);
-}
-
-.btn-danger,
-.relio-btn-danger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 24px;
-  border-radius: var(--relio-radius-lg);
-  background: var(--relio-danger);
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  border: none;
-  transition: all 0.15s ease;
-  min-height: 48px;
-  cursor: pointer;
-}
-
-.btn-danger:hover,
-.relio-btn-danger:hover {
-  background: #b04840;
-  transform: translateY(-1px);
-}
-
-.btn-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--relio-cream-light);
-  border: 1px solid var(--relio-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  transition: all 0.15s ease;
-  color: var(--relio-text-mid);
-}
-
-.btn-icon:hover {
-  background: var(--relio-sage-light);
-  border-color: var(--relio-sage);
-  color: var(--relio-sage);
-}
-
-/* ─── Form Elements ──────────────────────────────────────────────────────── */
-.input-primary,
-.relio-input {
-  width: 100%;
-  padding: 16px 20px;
-  border: 2px solid var(--relio-border);
-  border-radius: var(--relio-radius-lg);
-  font-size: 16px;
-  background: white;
-  color: var(--relio-text);
-  transition: all 0.2s ease;
-  min-height: 56px;
-  outline: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-}
-
-.input-primary:hover,
-.relio-input:hover {
-  border-color: var(--relio-sage-border);
-}
-
-.input-primary:focus,
-.relio-input:focus {
-  border-color: var(--relio-sage);
-  box-shadow: 0 0 0 4px rgba(122, 158, 126, 0.15);
-  background: white;
-}
-
-.input-primary::placeholder,
-.relio-input::placeholder {
-  color: var(--relio-text-muted);
-  font-weight: 400;
-}
-
-/* Modern select styling */
-select.relio-input,
-select.input-primary {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237A8B70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 20px;
-  padding-right: 48px;
-}
-
-/* Modern textarea styling */
-textarea.relio-input,
-textarea.input-primary {
-  min-height: 120px;
-  resize: vertical;
-  line-height: 1.6;
-}
-
-/* ─── Page Layout ────────────────────────────────────────────────────────── */
 .page-container {
-  max-width: 480px;
+  width: 100%;
+  max-width: var(--max-width);
   margin: 0 auto;
   min-height: 100dvh;
   position: relative;
-  background: var(--relio-cream);
+  background: var(--r-background);
+  padding-bottom: calc(var(--nav-height) + 16px);
+  overflow-x: hidden;
 }
 
-.page-content {
-  padding-bottom: calc(var(--nav-height) + 24px);
-  padding-top: var(--header-height);
+/* ─── Card System ────────────────────────────────────────────────────────── */
+.r-card {
+  background: var(--r-surface-container-lowest);
+  border-radius: var(--r-radius-lg);
+  border: 1px solid var(--r-outline-variant);
+  box-shadow: var(--r-shadow-card);
+  padding: var(--r-card-padding);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+.r-card:hover { box-shadow: var(--r-shadow-card-hover); }
+
+.r-card-glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(224, 224, 224, 1);
+  border-radius: var(--r-radius-lg);
+  box-shadow: var(--r-shadow-card);
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.r-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: var(--r-radius);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.r-btn-primary {
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+  box-shadow: 0 2px 8px rgba(0, 6, 102, 0.25);
+}
+.r-btn-primary:hover { background: var(--r-primary-container); transform: translateY(-1px); }
+.r-btn-primary:active { transform: scale(0.98); }
+
+.r-btn-secondary {
+  background: var(--r-secondary-container);
+  color: var(--r-on-secondary-container);
+}
+.r-btn-secondary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.r-btn-secondary:active { transform: scale(0.98); }
+
+.r-btn-ghost {
+  background: transparent;
+  color: var(--r-primary);
+  border: 1px solid var(--r-outline-variant);
+}
+.r-btn-ghost:hover { background: var(--r-primary-fixed); }
+
+.r-btn-sm {
+  padding: 8px 16px;
+  min-height: 36px;
+  font-size: 13px;
+}
+
+/* ─── Inputs ─────────────────────────────────────────────────────────────── */
+.r-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--r-outline-variant);
+  border-radius: var(--r-radius);
+  font-size: 15px;
+  background: var(--r-surface-container-lowest);
+  color: var(--r-on-surface);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.r-input:hover { border-color: var(--r-outline); }
+.r-input:focus {
+  border-color: var(--r-primary);
+  box-shadow: 0 0 0 4px rgba(0, 6, 102, 0.08);
+}
+.r-input::placeholder { color: var(--r-outline); }
+
+select.r-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23767683' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
+  padding-right: 44px;
+}
+
+textarea.r-input {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* ─── Badges ───────────────────────────────────────────────────────────────── */
+.r-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.r-badge-hot   { background: var(--r-hot-bg);   color: var(--r-hot);   }
+.r-badge-warm  { background: var(--r-warm-bg);  color: var(--r-warm);  }
+.r-badge-cold  { background: var(--r-cold-bg);  color: var(--r-cold);  }
+.r-badge-dormant { background: var(--r-dormant-bg); color: var(--r-dormant); }
+.r-badge-success { background: var(--r-success-bg); color: var(--r-success); }
+.r-badge-warning { background: var(--r-warning-bg); color: var(--r-warning); }
+
+/* ─── Chips ────────────────────────────────────────────────────────────────── */
+.r-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: var(--r-radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--r-outline-variant);
+  background: var(--r-surface-container-highest);
+  color: var(--r-on-surface-variant);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.r-chip:hover { background: var(--r-surface-container-high); }
+.r-chip-active {
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+  border-color: var(--r-primary);
+}
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--relio-border); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--relio-sage-border); }
+::-webkit-scrollbar-thumb { background: var(--r-outline-variant); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--r-outline); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ─── Loading Spinner ────────────────────────────────────────────────────── */
-@keyframes spin { 
-  to { transform: rotate(360deg); } 
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .spinner {
-  width: 24px;
-  height: 24px;
-  border: 2.5px solid var(--relio-border);
-  border-top-color: var(--relio-sage);
+  width: 24px; height: 24px;
+  border: 2.5px solid var(--r-outline-variant);
+  border-top-color: var(--r-primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
 .spinner-large {
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
   border-width: 3px;
 }
 
 /* ─── Animations ─────────────────────────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-.fade-in { animation: fadeIn 0.3s ease forwards; }
+.fade-in  { animation: fadeIn  0.3s ease forwards; }
 .slide-up { animation: slideUp 0.4s ease forwards; }
 .scale-in { animation: scaleIn 0.25s ease forwards; }
 
-/* Stagger animation delays */
 .stagger-1 { animation-delay: 0.05s; }
 .stagger-2 { animation-delay: 0.1s; }
 .stagger-3 { animation-delay: 0.15s; }
 .stagger-4 { animation-delay: 0.2s; }
 
-/* ─── Status Badges ──────────────────────────────────────────────────────── */
-.badge {
+/* ─── Utility Typography ──────────────────────────────────────────────────── */
+.text-headline-lg {
+  font-size: 32px; font-weight: 700; line-height: 40px; letter-spacing: -0.02em;
+}
+.text-headline-lg-mobile {
+  font-size: 24px; font-weight: 700; line-height: 32px;
+}
+.text-headline-md {
+  font-size: 20px; font-weight: 600; line-height: 28px;
+}
+.text-body-lg {
+  font-size: 16px; font-weight: 400; line-height: 24px;
+}
+.text-body-md {
+  font-size: 14px; font-weight: 400; line-height: 20px;
+}
+.text-label-md {
+  font-size: 12px; font-weight: 600; line-height: 16px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.text-data-mono {
+  font-size: 14px; font-weight: 500; line-height: 20px; letter-spacing: -0.01em;
+}
+
+/* ─── FAB ──────────────────────────────────────────────────────────────────── */
+.r-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 96px;
+  width: 56px; height: 56px;
+  border-radius: var(--r-radius-full);
+  background: var(--r-secondary-container);
+  color: var(--r-on-secondary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--r-shadow-fab);
+  z-index: 50;
+  transition: all 0.2s ease;
+}
+.r-fab:hover { transform: scale(1.05); }
+.r-fab:active { transform: scale(0.95); }
+
+/* ─── Backdrop blur overlay ────────────────────────────────────────────────── */
+.r-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 35, 126, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 90;
+}
+
+/* ─── Legacy aliases for backwards compatibility ───────────────────────────── */
+:root {
+  --relio-sage:         var(--r-primary);
+  --relio-sage-light:   var(--r-primary-fixed);
+  --relio-sage-border:  var(--r-outline-variant);
+  --relio-sage-dark:    var(--r-primary-container);
+  --relio-forest:       var(--r-secondary);
+  --relio-forest-light: var(--r-secondary-fixed);
+  --relio-forest-dark:  var(--r-on-secondary-container);
+  --relio-cream:        var(--r-background);
+  --relio-cream-light:  var(--r-surface-container-lowest);
+  --relio-cream-warm:   var(--r-surface-container-low);
+  --relio-text:         var(--r-on-surface);
+  --relio-text-mid:     var(--r-on-surface-variant);
+  --relio-text-muted:   var(--r-outline);
+  --relio-text-light:   var(--r-on-primary);
+  --relio-hot:          var(--r-hot);
+  --relio-hot-bg:       var(--r-hot-bg);
+  --relio-warm:         var(--r-warm);
+  --relio-warm-bg:      var(--r-warm-bg);
+  --relio-cold:         var(--r-cold);
+  --relio-cold-bg:      var(--r-cold-bg);
+  --relio-dormant:      var(--r-dormant);
+  --relio-dormant-bg:   var(--r-dormant-bg);
+  --relio-success:      var(--r-success);
+  --relio-success-bg:   var(--r-success-bg);
+  --relio-warning:      var(--r-warning);
+  --relio-warning-bg:   var(--r-warning-bg);
+  --relio-danger:       var(--r-error);
+  --relio-danger-bg:    var(--r-error-container);
+  --relio-border:       var(--r-outline-variant);
+  --relio-border-light: var(--r-surface-container-high);
+  --relio-shadow:       var(--r-shadow-card);
+  --relio-shadow-lg:    var(--r-shadow-card-hover);
+  --relio-radius:       var(--r-radius-lg);
+  --relio-radius-sm:    var(--r-radius);
+  --relio-radius-lg:    var(--r-radius-xl);
+  --relio-radius-xl:    32px;
+  --relio-gold:         var(--r-primary);
+  --relio-gold-light:   var(--r-primary-fixed);
+  --relio-bg:           var(--r-background);
+  --relio-bg-card:      var(--r-surface-container-lowest);
+  --relio-bg-subtle:    var(--r-surface-container-low);
+  --dash-card-bg:       rgba(255,255,255,0.9);
+  --dash-card-border:   var(--r-outline-variant);
+}
+
+/* ─── Legacy class aliases for backwards compatibility ─────────────────────── */
+.relio-input,
+.input-primary {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--r-outline-variant);
+  border-radius: var(--r-radius);
+  font-size: 15px;
+  background: var(--r-surface-container-lowest);
+  color: var(--r-on-surface);
+  transition: all 0.2s ease;
+  outline: none;
+}
+.relio-input:hover, .input-primary:hover { border-color: var(--r-outline); }
+.relio-input:focus, .input-primary:focus {
+  border-color: var(--r-primary);
+  box-shadow: 0 0 0 4px rgba(0, 6, 102, 0.08);
+}
+.relio-input::placeholder, .input-primary::placeholder { color: var(--r-outline); }
+
+.relio-btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--relio-radius-lg);
-  font-size: 13px;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: var(--r-radius);
+  font-size: 14px;
   font-weight: 600;
+  transition: all 0.15s ease;
+  min-height: 48px;
+  cursor: pointer;
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+  box-shadow: 0 2px 8px rgba(0, 6, 102, 0.25);
 }
+.relio-btn-primary:hover { background: var(--r-primary-container); transform: translateY(-1px); }
+.relio-btn-primary:active { transform: scale(0.98); }
 
-.badge-hot { 
-  background: var(--relio-hot-bg); 
-  color: var(--relio-hot); 
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: var(--r-radius);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  min-height: 48px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--r-primary);
+  border: 1px solid var(--r-outline-variant);
 }
+.btn-ghost:hover { background: var(--r-primary-fixed); }
 
-.badge-warm { 
-  background: var(--relio-warm-bg); 
-  color: var(--relio-warm); 
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: var(--r-radius);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  min-height: 48px;
+  cursor: pointer;
+  background: var(--r-error);
+  color: var(--r-on-error);
 }
+.btn-danger:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-danger:active { transform: scale(0.98); }
 
-.badge-cold { 
-  background: var(--relio-cold-bg); 
-  color: var(--relio-cold); 
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  min-height: 36px;
+  width: 36px;
+  border-radius: var(--r-radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  background: transparent;
+  color: var(--r-primary);
+  border: 1px solid var(--r-outline-variant);
 }
-
-.badge-dormant { 
-  background: var(--relio-dormant-bg); 
-  color: var(--relio-dormant); 
-}
-
-.badge-sage { 
-  background: var(--relio-sage-light); 
-  color: var(--relio-sage); 
-}
+.btn-icon:hover { background: var(--r-primary-fixed); }

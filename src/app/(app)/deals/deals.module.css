@@ -1,0 +1,293 @@
+.page {
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9ff 100%);
+  min-height: 100dvh;
+  padding-bottom: calc(var(--nav-height) + 24px);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--r-surface);
+  box-shadow: var(--r-shadow-header);
+}
+
+.headerContent {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--r-container-margin);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.backBtn:hover {
+  background: var(--r-surface-container);
+}
+
+.notifBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.notifBtn:hover {
+  background: var(--r-surface-container-high);
+}
+
+.main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 16px var(--r-container-margin);
+  display: flex;
+  flex-direction: column;
+  gap: var(--r-section-gap);
+}
+
+/* Metrics */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--r-gutter);
+}
+
+.metricCard {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Deals Card */
+.dealsCard {
+  padding: var(--r-card-padding);
+}
+
+.dealsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 0;
+}
+
+.dealsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dealItem {
+  padding: 16px;
+  background: var(--r-surface-container-low);
+  border: 1px solid var(--r-outline-variant);
+  border-radius: var(--r-radius-lg);
+  transition: all 0.15s ease;
+}
+
+.dealItem:hover {
+  box-shadow: var(--r-shadow-card);
+}
+
+.dealTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.dealValue {
+  text-align: right;
+}
+
+.dealActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.statusSelect {
+  flex: 1;
+  padding: 8px 12px;
+  min-height: 36px;
+  font-size: 13px;
+}
+
+.deleteBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-error-container);
+  color: var(--r-error);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.deleteBtn:hover {
+  background: var(--r-error);
+  color: #fff;
+}
+
+/* Add Sheet */
+.addSheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  border-radius: var(--r-radius-xl) var(--r-radius-xl) 0 0;
+  padding: var(--r-card-padding);
+  z-index: 100;
+  animation: slideUp 0.3s ease;
+}
+
+.sheetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.closeBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-surface-container);
+  color: var(--r-on-surface-variant);
+  border: none;
+  cursor: pointer;
+}
+
+.sheetBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--r-gutter);
+}
+
+/* Tab Bar */
+.tabBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--r-radius);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--r-surface-container-highest);
+  color: var(--r-on-surface-variant);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabBtnActive {
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+}
+
+/* Milestones */
+.milestoneList {
+  margin: 8px 0;
+  padding: 8px;
+  background: var(--r-surface-container-lowest);
+  border-radius: var(--r-radius);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.milestoneRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.milestoneBadge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: var(--r-radius-full);
+  background: var(--r-surface-container-high);
+  color: var(--r-on-surface-variant);
+}
+
+.milestoneReceived {
+  background: var(--r-success-bg);
+  color: var(--r-success);
+}
+
+.milestonePartial {
+  background: var(--r-warning-bg);
+  color: var(--r-warning);
+}
+
+/* Month Row */
+.monthRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--r-outline-variant);
+}
+
+.monthRow:last-child {
+  border-bottom: none;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

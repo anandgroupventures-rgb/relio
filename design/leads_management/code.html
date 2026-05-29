@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relio - Lead Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface-bright": "#fcf9f8",
+                        "inverse-surface": "#303030",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-primary": "#bdc2ff",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-fixed-dim": "#ffb865",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-container": "#f89c00",
+                        "primary-container": "#1a237e",
+                        "on-tertiary-container": "#969798",
+                        "primary": "#000666",
+                        "outline-variant": "#c6c5d4",
+                        "primary-fixed": "#e0e0ff",
+                        "secondary-fixed": "#ffddba",
+                        "on-secondary-container": "#623a00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#000767",
+                        "surface-tint": "#4c56af",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#2b1700",
+                        "surface-container-high": "#eae7e7",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#343d96",
+                        "surface-container": "#f0eded",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-container": "#8690ee",
+                        "outline": "#767683",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fcf9f8",
+                        "on-secondary-fixed-variant": "#663d00",
+                        "tertiary-fixed": "#e2e2e2",
+                        "tertiary-container": "#2e3030",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-background": "#1b1c1c",
+                        "secondary": "#875200",
+                        "on-surface": "#1b1c1c",
+                        "tertiary": "#191b1c",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#454652"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-padding": "20px",
+                        "container-margin": "24px",
+                        "baseline": "4px",
+                        "section-gap": "32px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FF 100%);
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .lead-card-shadow {
+            box-shadow: 0px 4px 20px rgba(26, 35, 126, 0.05);
+        }
+        .glass-header {
+            backdrop-filter: blur(8px);
+            background: rgba(252, 249, 248, 0.8);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface pb-32">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 glass-header shadow-[0px_4px_20px_rgba(26,35,126,0.05)] w-full h-16 flex items-center justify-between px-container-margin py-4">
+<div class="flex items-center gap-3">
+<img alt="User Profile Photo" class="w-8 h-8 rounded-full bg-primary-fixed" data-alt="A professional headshot of a smiling real estate agent in high-end corporate attire, set against a softly blurred modern office interior. The lighting is warm and professional, emphasizing trust and stability, following a light-mode aesthetic with subtle deep blue and gold tones in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoipkBdytXa3rDxnqOygNXxjEAqAuyeobM07bj3XjMEjvWj5Ef76EIRGVQVuowpjXheXhAyFajX-kIGsWfDzHk7J10xyJS0IdVt5eoit1xGFAP6IJ0KPatOx8avmQtAokZp7QlUBNUWQGwTsR4pZkbLTl8xkM6qAsIt7EAAn80n3PZVWsK9WcOfHet7qDznK2xVOYBQYiCK_QubPpZ0su8jesda2y38DYrUWFl51PUcRpU4igal0DGiKN4qVXDhtUldy17jvMThNk"/>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Relio</h1>
+</div>
+<button class="text-primary hover:bg-surface-container transition-colors p-2 rounded-full active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<main class="max-w-[1440px] mx-auto px-container-margin mt-6">
+<!-- Search and Global KPI Section -->
+<div class="mb-section-gap">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary-container focus:border-primary transition-all shadow-sm font-body-lg text-body-lg" placeholder="Search by name, phone or locality..." type="text"/>
+</div>
+</div>
+<!-- Filter Chips Section -->
+<section class="mb-8">
+<div class="flex flex-col gap-4">
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-5 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md whitespace-nowrap shadow-md">All Statuses</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-outline-variant transition-colors">New</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-outline-variant transition-colors">Contacted</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-outline-variant transition-colors">Negotiating</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-outline-variant transition-colors">Won</button>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-4 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="home">home</span>
+                        Residential
+                    </button>
+<button class="px-4 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="apartment">apartment</span>
+                        Commercial
+                    </button>
+<button class="px-4 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="landscape">landscape</span>
+                        Plots
+                    </button>
+</div>
+</div>
+</section>
+<!-- Lead Cards Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Lead Card 1: Hot Lead -->
+<div class="lead-card-shadow bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding relative overflow-hidden transition-all hover:translate-y-[-4px] hover:shadow-[0px_8px_30px_rgba(26,35,126,0.12)]">
+<div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+<div class="absolute top-0 right-0 bg-[#ba1a1a] text-white text-[10px] font-bold px-8 py-1 rotate-45 translate-x-4 translate-y-1 text-center uppercase tracking-tighter">Hot</div>
+</div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex gap-3 items-center">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">AK</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Ananya Kulkarni</h3>
+<p class="font-data-mono text-data-mono text-on-surface-variant">+91 98765 43210</p>
+</div>
+</div>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="location_on">location_on</span>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant">3 BHK in Whitefield, Prestige Shantiniketan</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">Facebook Ad</span>
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md">Ready to Move</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant">
+<span class="px-3 py-1 rounded-md bg-error-container text-on-error-container font-label-md text-label-md uppercase tracking-wider">New Lead</span>
+<button class="flex items-center gap-1 text-primary font-label-md text-label-md group">
+                        VIEW DETAILS
+                        <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Lead Card 2: Warm Lead -->
+<div class="lead-card-shadow bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding relative overflow-hidden transition-all hover:translate-y-[-4px] hover:shadow-[0px_8px_30px_rgba(26,35,126,0.12)]">
+<div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+<div class="absolute top-0 right-0 bg-secondary text-white text-[10px] font-bold px-8 py-1 rotate-45 translate-x-4 translate-y-1 text-center uppercase tracking-tighter">Warm</div>
+</div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex gap-3 items-center">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary font-bold">RM</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Rahul Mehta</h3>
+<p class="font-data-mono text-data-mono text-on-surface-variant">+91 99001 22334</p>
+</div>
+</div>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="location_on">location_on</span>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant">Commercial Plot, Hosur Road (2 Acres)</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">Direct Call</span>
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md">Under Construction</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant">
+<span class="px-3 py-1 rounded-md bg-secondary-container/20 text-on-secondary-container font-label-md text-label-md uppercase tracking-wider">Contacted</span>
+<button class="flex items-center gap-1 text-primary font-label-md text-label-md group">
+                        VIEW DETAILS
+                        <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Lead Card 3: Cold Lead -->
+<div class="lead-card-shadow bg-surface-container-lowest border border-outline-variant rounded-xl p-card-padding relative overflow-hidden transition-all hover:translate-y-[-4px] hover:shadow-[0px_8px_30px_rgba(26,35,126,0.12)]">
+<div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+<div class="absolute top-0 right-0 bg-outline text-white text-[10px] font-bold px-8 py-1 rotate-45 translate-x-4 translate-y-1 text-center uppercase tracking-tighter">Cold</div>
+</div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex gap-3 items-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-outline font-bold">SP</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Suresh Prasad</h3>
+<p class="font-data-mono text-data-mono text-on-surface-variant">+91 88776 65544</p>
+</div>
+</div>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="location_on">location_on</span>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant">1 BHK Studio, Sarjapur Road</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">MagicBricks</span>
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md">Follow-up Pending</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant">
+<span class="px-3 py-1 rounded-md bg-surface-container-highest text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Negotiating</span>
+<button class="flex items-center gap-1 text-primary font-label-md text-label-md group">
+                        VIEW DETAILS
+                        <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Lead Card 4: High Value Lead -->
+<div class="lead-card-shadow bg-surface-container-lowest border-2 border-secondary-container rounded-xl p-card-padding relative overflow-hidden transition-all hover:translate-y-[-4px] hover:shadow-[0px_8px_30px_rgba(26,35,126,0.12)]">
+<div class="absolute top-0 left-0 bg-secondary-container text-on-secondary-container px-3 py-1 text-[10px] font-bold rounded-br-lg uppercase">High Potential</div>
+<div class="flex items-start justify-between mb-4 mt-4">
+<div class="flex gap-3 items-center">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary font-bold">VK</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Vikram Khanna</h3>
+<p class="font-data-mono text-data-mono text-on-surface-variant">+91 91234 56789</p>
+</div>
+</div>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="location_on">location_on</span>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant">Penthouse in Indiranagar, Total Environment</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md">Referral</span>
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md">Immediate Purchase</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant">
+<span class="px-3 py-1 rounded-md bg-on-secondary-container/10 text-on-secondary-container font-label-md text-label-md uppercase tracking-wider font-bold">Won</span>
+<button class="flex items-center gap-1 text-primary font-label-md text-label-md group">
+                        VIEW DETAILS
+                        <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-[32px]" data-icon="person_add">person_add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container-lowest border-t border-outline-variant rounded-t-xl shadow-[0px_-4px_16px_rgba(0,0,0,0.04)]">
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-label-md text-label-md">Leads</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Calendar</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-label-md text-label-md">More</span>
+</div>
+</nav>
+<script>
+        // Simple micro-interaction for active states
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 150);
+            });
+        });
+
+        // Add lead modal trigger logic (simulated)
+        const fab = document.querySelector('button[data-icon="person_add"]');
+        if(fab) {
+            fab.addEventListener('click', () => {
+                console.log('Open Add Lead Modal');
+            });
+        }
+    </script>
+</body></html>

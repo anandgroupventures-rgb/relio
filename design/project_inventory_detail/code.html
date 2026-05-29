@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relio - Project Inventory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e5e2e1",
+                    "surface-container-high": "#eae7e7",
+                    "surface-bright": "#fcf9f8",
+                    "on-tertiary-container": "#969798",
+                    "inverse-on-surface": "#f3f0ef",
+                    "surface-container-low": "#f6f3f2",
+                    "outline": "#767683",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#2e3030",
+                    "surface-tint": "#4c56af",
+                    "inverse-surface": "#303030",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#bdc2ff",
+                    "secondary-container": "#f89c00",
+                    "on-secondary-container": "#623a00",
+                    "primary-container": "#1a237e",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#fcf9f8",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#875200",
+                    "outline-variant": "#c6c5d4",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#8690ee",
+                    "background": "#fcf9f8",
+                    "surface-dim": "#dcd9d9",
+                    "on-surface-variant": "#454652",
+                    "on-surface": "#1b1c1c",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "tertiary": "#191b1c",
+                    "primary-fixed": "#e0e0ff",
+                    "on-primary-fixed-variant": "#343d96",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "surface-container": "#f0eded",
+                    "primary": "#000666",
+                    "secondary-fixed-dim": "#ffb865",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#663d00",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-secondary-fixed": "#2b1700",
+                    "on-primary-fixed": "#000767",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-background": "#1b1c1c",
+                    "secondary-fixed": "#ffddba"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "section-gap": "32px",
+                    "baseline": "4px",
+                    "container-margin": "24px",
+                    "card-padding": "20px"
+            },
+            "fontFamily": {
+                    "data-mono": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .unit-cell-active {
+            box-shadow: 0 0 0 2px #1a237e, 0 4px 12px rgba(26, 35, 126, 0.2);
+            transform: translateY(-2px);
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c6c5d4; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1a237e; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- Top AppBar Component -->
+<header class="flex items-center justify-between px-container-margin py-4 w-full h-16 fixed top-0 z-50 shadow-[0px_4px_20px_rgba(26,35,126,0.05)] bg-surface dark:bg-surface-dim">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Godrej Woods</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">share</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a real estate agent with a friendly smile, clean-shaven, wearing a crisp navy blue suit. The lighting is soft and even, typical of high-end corporate photography, set against a blurred light-mode office background that emphasizes professional trust and reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuohr19uuFV2MHFGBGV07V-sDzQRY0k8rQfHTjQwqTyjtR6_01mOcscfBC21KzvB6rukMEt2E_eELD1n1hAeHO0cP46zFVwTxUaNh5gEfhfnCVOEZb8gaiYcXzJINVyrElvp1FuU17MD55Kc7nQSUFuZomoeEF8qBTGPTSqwODGLzfhhz9OdJY0Qd1gu8ZV57lKNAHJpw2ueUgL31-phmwTCJsEv5MZAUkVX1m8IBxxWjsNmSV9Y7p92mT5aRMV-OLfHeg1gzgEJI"/>
+</div>
+</div>
+</header>
+<main class="mt-16 pb-24 max-w-[1440px] mx-auto">
+<!-- Summary Section -->
+<section class="p-container-margin bg-gradient-to-b from-white to-surface">
+<div class="flex flex-col md:flex-row gap-6 bg-white rounded-xl p-card-padding border border-outline-variant shadow-[0px_4px_20px_rgba(26,35,126,0.05)] overflow-hidden">
+<div class="w-full md:w-1/3 aspect-[4/3] rounded-lg overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="A luxurious modern residential building complex at sunset, showcasing sleek glass balconies and warm interior lighting. The architecture is contemporary with lush green landscaping in the foreground. The image has a premium, high-trust feel with soft golden hour lighting reflecting off the facade." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsWqme5ILYhwWAT8F_zPTv-7QTlDYeI2Ri_AwAWEMHb5iaaUPU5NbKs0ypfBRb9TNA9REhmMz6QyX_IAfL0WmlQgHVBp87ompq-8abCaGX5D153wlQ6MD8X4Lz7VwpYPP5ZmkvE8KWIharBXRU4_NgN3_wtW43aciJ81BS5mZmnTyZd9I48uE7rBeyzkHrCF4QRJlUi_KY-jdpN7wBUfzB6mZLtrmvTIVS7YPm6yQkgxtSAyB4iOLZPTzmEkACi-qnxFlmlQGeTCg"/>
+<div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-outline-variant">
+<p class="font-label-md text-label-md text-primary">RERA: PRM/KA/RERA/1251/446</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-center gap-4">
+<div>
+<p class="font-label-md text-label-md text-secondary uppercase tracking-wider mb-1">Premier Township</p>
+<h2 class="font-headline-lg text-headline-lg text-primary">Godrej Woods - Sector 43</h2>
+<div class="flex items-center gap-2 mt-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<p class="font-body-md text-body-md">Noida Expressway, Sector 43, Noida, Uttar Pradesh</p>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Total Area</p>
+<p class="font-body-lg text-body-lg font-semibold text-primary">11 Acres</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Posession</p>
+<p class="font-body-lg text-body-lg font-semibold text-primary">Dec 2025</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Towers</p>
+<p class="font-body-lg text-body-lg font-semibold text-primary">12 Blocks</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Configuration</p>
+<p class="font-body-lg text-body-lg font-semibold text-primary">2, 3 &amp; 4 BHK</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Tab Navigation -->
+<nav class="sticky top-16 z-40 bg-surface/95 backdrop-blur-md px-container-margin border-b border-outline-variant">
+<div class="flex gap-8 overflow-x-auto no-scrollbar py-2">
+<a class="px-2 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap hover:text-primary transition-colors" href="#">Overview</a>
+<a class="px-2 py-3 font-label-md text-label-md text-primary border-b-2 border-primary whitespace-nowrap" href="#">Inventory</a>
+<a class="px-2 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap hover:text-primary transition-colors" href="#">Leads</a>
+<a class="px-2 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap hover:text-primary transition-colors" href="#">Analytics</a>
+</div>
+</nav>
+<!-- Inventory Filters -->
+<section class="p-container-margin">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+<div class="flex gap-2 p-1 bg-surface-container rounded-lg border border-outline-variant">
+<button class="px-6 py-2 rounded-md font-label-md text-label-md bg-white shadow-sm text-primary">Tower A</button>
+<button class="px-6 py-2 rounded-md font-label-md text-label-md text-on-surface-variant hover:bg-white/50 transition-all">Tower B</button>
+<button class="px-6 py-2 rounded-md font-label-md text-label-md text-on-surface-variant hover:bg-white/50 transition-all">Tower C</button>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto">
+<div class="relative flex-1 md:w-48">
+<select class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-secondary-container">
+<option>4th Floor</option>
+<option>5th Floor</option>
+<option>6th Floor</option>
+<option>7th Floor</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+<button class="flex items-center gap-2 bg-white border border-outline-variant rounded-lg px-4 py-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+<span class="font-body-md text-body-md font-medium">More Filters</span>
+</button>
+</div>
+</div>
+<!-- Status Legend -->
+<div class="flex flex-wrap gap-6 mb-8 bg-surface-container-low p-4 rounded-xl border border-outline-variant/30">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-[#4CAF50]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Available (12)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-[#F44336]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Booked (45)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-[#FFC107]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Blocked (8)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-[#9E9E9E]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Hold (5)</span>
+</div>
+</div>
+<!-- Unit Grid Layout -->
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+<!-- Row 1 -->
+<button class="group relative bg-white border border-outline-variant rounded-xl p-4 text-left transition-all hover:border-primary active:scale-95" onclick="openUnitDetails('A-401', '3BHK', '1850 sq.ft.', 'East', '₹2.85 Cr', 'Available')">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+<p class="font-data-mono text-data-mono text-primary">A-401</p>
+<p class="font-label-md text-label-md text-on-surface-variant">3BHK + Servant</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-primary">₹2.85 Cr</p>
+</button>
+<div class="relative bg-[#F44336]/5 border border-[#F44336]/20 rounded-xl p-4 text-left opacity-70">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#F44336]"></div>
+<p class="font-data-mono text-data-mono text-on-surface">A-402</p>
+<p class="font-label-md text-label-md text-on-surface-variant">2BHK</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-on-surface">Booked</p>
+</div>
+<button class="group relative bg-white border border-outline-variant rounded-xl p-4 text-left transition-all hover:border-primary active:scale-95" onclick="openUnitDetails('A-403', '4BHK', '2450 sq.ft.', 'North-East', '₹3.95 Cr', 'Available')">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+<p class="font-data-mono text-data-mono text-primary">A-403</p>
+<p class="font-label-md text-label-md text-on-surface-variant">4BHK Luxury</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-primary">₹3.95 Cr</p>
+</button>
+<div class="relative bg-[#FFC107]/5 border border-[#FFC107]/20 rounded-xl p-4 text-left">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FFC107]"></div>
+<p class="font-data-mono text-data-mono text-on-surface">A-404</p>
+<p class="font-label-md text-label-md text-on-surface-variant">3BHK</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-on-surface">Blocked</p>
+</div>
+<button class="group relative bg-white border border-outline-variant rounded-xl p-4 text-left transition-all hover:border-primary active:scale-95" onclick="openUnitDetails('A-405', '3BHK', '1850 sq.ft.', 'East', '₹2.82 Cr', 'Available')">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+<p class="font-data-mono text-data-mono text-primary">A-405</p>
+<p class="font-label-md text-label-md text-on-surface-variant">3BHK</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-primary">₹2.82 Cr</p>
+</button>
+<div class="relative bg-[#9E9E9E]/5 border border-[#9E9E9E]/20 rounded-xl p-4 text-left opacity-60">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#9E9E9E]"></div>
+<p class="font-data-mono text-data-mono text-on-surface">A-406</p>
+<p class="font-label-md text-label-md text-on-surface-variant">2BHK</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-on-surface">Hold</p>
+</div>
+<!-- Row 2 Mock data continued -->
+<button class="group relative bg-white border border-outline-variant rounded-xl p-4 text-left transition-all hover:border-primary active:scale-95" onclick="openUnitDetails('A-407', '3BHK', '1950 sq.ft.', 'West', '₹2.90 Cr', 'Available')">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+<p class="font-data-mono text-data-mono text-primary">A-407</p>
+<p class="font-label-md text-label-md text-on-surface-variant">3BHK + Garden</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-primary">₹2.90 Cr</p>
+</button>
+<div class="relative bg-[#F44336]/5 border border-[#F44336]/20 rounded-xl p-4 text-left opacity-70">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#F44336]"></div>
+<p class="font-data-mono text-data-mono text-on-surface">A-408</p>
+<p class="font-label-md text-label-md text-on-surface-variant">2BHK</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-on-surface">Booked</p>
+</div>
+<button class="group relative bg-white border border-outline-variant rounded-xl p-4 text-left transition-all hover:border-primary active:scale-95" onclick="openUnitDetails('A-409', '3BHK', '1850 sq.ft.', 'South', '₹2.75 Cr', 'Available')">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+<p class="font-data-mono text-data-mono text-primary">A-409</p>
+<p class="font-label-md text-label-md text-on-surface-variant">3BHK Standard</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-primary">₹2.75 Cr</p>
+</button>
+<button class="group relative bg-white border border-outline-variant rounded-xl p-4 text-left transition-all hover:border-primary active:scale-95" onclick="openUnitDetails('A-410', '4BHK', '2600 sq.ft.', 'East', '₹4.20 Cr', 'Available')">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4CAF50]"></div>
+<p class="font-data-mono text-data-mono text-primary">A-410</p>
+<p class="font-label-md text-label-md text-on-surface-variant">4BHK Penthouse</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-primary">₹4.20 Cr</p>
+</button>
+<div class="relative bg-[#F44336]/5 border border-[#F44336]/20 rounded-xl p-4 text-left opacity-70">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#F44336]"></div>
+<p class="font-data-mono text-data-mono text-on-surface">A-411</p>
+<p class="font-label-md text-label-md text-on-surface-variant">3BHK</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-on-surface">Booked</p>
+</div>
+<div class="relative bg-[#F44336]/5 border border-[#F44336]/20 rounded-xl p-4 text-left opacity-70">
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#F44336]"></div>
+<p class="font-data-mono text-data-mono text-on-surface">A-412</p>
+<p class="font-label-md text-label-md text-on-surface-variant">3BHK</p>
+<p class="font-body-md text-body-md font-bold mt-2 text-on-surface">Booked</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Unit Details Panel (Hidden by default, slides up) -->
+<div class="fixed inset-0 bg-primary/40 backdrop-blur-sm z-[60] opacity-0 pointer-events-none transition-opacity duration-300" id="unit-panel-backdrop" onclick="closeUnitDetails()"></div>
+<div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-[70] transform translate-y-full transition-transform duration-300 ease-out shadow-[0px_-8px_30px_rgba(26,35,126,0.15)]" id="unit-panel">
+<div class="w-12 h-1 bg-outline-variant rounded-full mx-auto mt-3 mb-6"></div>
+<div class="px-container-margin pb-10">
+<div class="flex justify-between items-start mb-6">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h3 class="font-headline-lg text-headline-lg text-primary" id="panel-unit-id">A-401</h3>
+<span class="px-3 py-1 rounded-full font-label-md text-label-md bg-[#4CAF50]/10 text-[#4CAF50]" id="panel-status-badge">Available</span>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant" id="panel-unit-type">3BHK + Servant Room</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full" onclick="closeUnitDetails()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-8">
+<div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant">
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Super Area</p>
+<p class="font-body-lg text-body-lg font-bold text-primary" id="panel-area">1850 sq.ft.</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant">
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Facing</p>
+<p class="font-body-lg text-body-lg font-bold text-primary" id="panel-facing">East</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant">
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Floor</p>
+<p class="font-body-lg text-body-lg font-bold text-primary">4th</p>
+</div>
+</div>
+<div class="flex flex-col gap-6 p-4 bg-primary-container/5 rounded-xl border border-primary-container/20 mb-8">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Estimated All-inclusive Price</span>
+<span class="font-headline-md text-headline-md text-primary" id="panel-price">₹2.85 Cr</span>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 border-2 border-primary text-primary py-3 rounded-lg font-label-md text-label-md hover:bg-primary-container/10 transition-colors uppercase tracking-wider">Download Brochure</button>
+<button class="flex-1 bg-secondary-container text-on-secondary-container py-3 rounded-lg font-label-md text-label-md hover:opacity-90 shadow-lg shadow-secondary-container/20 transition-all active:scale-95 uppercase tracking-wider" id="main-action-btn">Start Booking</button>
+</div>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">info</span>
+<p class="text-xs">Prices are indicative and subject to change based on PLC and floor rise charges.</p>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container-lowest dark:bg-surface-container shadow-[0px_-4px_16px_rgba(0,0,0,0.04)] border-t border-outline-variant rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md mt-1">Leads</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed text-on-secondary-container dark:text-on-secondary-fixed rounded-full px-4 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md mt-1">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-label-md text-label-md mt-1">More</span>
+</a>
+</nav>
+<script>
+        function openUnitDetails(id, type, area, facing, price, status) {
+            document.getElementById('panel-unit-id').textContent = id;
+            document.getElementById('panel-unit-type').textContent = type + (type.includes('4') ? ' Luxury Penthouse' : ' + Servant Room');
+            document.getElementById('panel-area').textContent = area;
+            document.getElementById('panel-facing').textContent = facing;
+            document.getElementById('panel-price').textContent = price;
+            
+            const badge = document.getElementById('panel-status-badge');
+            const actionBtn = document.getElementById('main-action-btn');
+            
+            badge.textContent = status;
+            if (status === 'Available') {
+                badge.className = 'px-3 py-1 rounded-full font-label-md text-label-md bg-[#4CAF50]/10 text-[#4CAF50]';
+                actionBtn.textContent = 'Start Booking';
+                actionBtn.className = 'flex-1 bg-secondary-container text-on-secondary-container py-3 rounded-lg font-label-md text-label-md hover:opacity-90 shadow-lg shadow-secondary-container/20 transition-all active:scale-95 uppercase tracking-wider';
+                actionBtn.disabled = false;
+            } else if (status === 'Blocked') {
+                badge.className = 'px-3 py-1 rounded-full font-label-md text-label-md bg-[#FFC107]/10 text-[#FFC107]';
+                actionBtn.textContent = 'Notify When Free';
+                actionBtn.className = 'flex-1 bg-on-surface-variant/20 text-on-surface-variant py-3 rounded-lg font-label-md text-label-md cursor-not-allowed uppercase tracking-wider';
+                actionBtn.disabled = true;
+            }
+
+            const panel = document.getElementById('unit-panel');
+            const backdrop = document.getElementById('unit-panel-backdrop');
+            
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            panel.classList.remove('translate-y-full');
+        }
+
+        function closeUnitDetails() {
+            const panel = document.getElementById('unit-panel');
+            const backdrop = document.getElementById('unit-panel-backdrop');
+            
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            panel.classList.add('translate-y-full');
+        }
+
+        // Simple animation on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav.sticky');
+            if (window.scrollY > 100) {
+                nav.classList.add('shadow-md');
+            } else {
+                nav.classList.remove('shadow-md');
+            }
+        });
+    </script>
+</body></html>

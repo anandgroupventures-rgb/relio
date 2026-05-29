@@ -4,21 +4,20 @@ import { useRouter } from "next/navigation";
 import { useLeads } from "@/lib/hooks/useLeads";
 import { todayStr, formatFollowUp, isOverdue } from "@/lib/utils/dateHelpers";
 import { getTempStyle } from "@/lib/utils/leadHelpers";
+import { ArrowLeft, ChevronLeft, ChevronRight, CalendarDays, Bell } from "lucide-react";
 import styles from "./calendar.module.css";
 
-const MONTHS = ["January","February","March","April","May","June",
-                "July","August","September","October","November","December"];
-const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 export default function CalendarPage() {
-  const router  = useRouter();
+  const router = useRouter();
   const { leads, loading } = useLeads();
-  const today   = new Date();
-  const [viewYear,  setViewYear]  = useState(today.getFullYear());
+  const today = new Date();
+  const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
-  const [selected,  setSelected]  = useState(null); // "YYYY-MM-DD"
+  const [selected, setSelected] = useState(null);
 
-  // Build a map: "YYYY-MM-DD" -> [leads]
   const followUpMap = useMemo(() => {
     const map = {};
     leads.forEach(l => {
@@ -30,15 +29,14 @@ export default function CalendarPage() {
     return map;
   }, [leads]);
 
-  // Calendar grid — always computed regardless of loading state
   const calendarDays = useMemo(() => {
-    const firstDay    = new Date(viewYear, viewMonth, 1).getDay();
+    const firstDay = new Date(viewYear, viewMonth, 1).getDay();
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
     const cells = [];
     for (let i = 0; i < firstDay; i++) cells.push(null);
     for (let d = 1; d <= daysInMonth; d++) {
-      const mm  = String(viewMonth + 1).padStart(2, "0");
-      const dd  = String(d).padStart(2, "0");
+      const mm = String(viewMonth + 1).padStart(2, "0");
+      const dd = String(d).padStart(2, "0");
       cells.push(`${viewYear}-${mm}-${dd}`);
     }
     return cells;
@@ -55,133 +53,124 @@ export default function CalendarPage() {
     setSelected(null);
   }
 
-  const todayDateStr   = todayStr();
-  const selectedLeads  = selected ? (followUpMap[selected] || []) : [];
+  const todayDateStr = todayStr();
+  const selectedLeads = selected ? (followUpMap[selected] || []) : [];
 
-  // Upcoming list — overdue + today + future
   const listLeads = useMemo(() => {
-    const active = leads.filter(l =>
-      l.followUpDate && !["converted","lost"].includes(l.status));
+    const active = leads.filter(l => l.followUpDate && !["converted","lost"].includes(l.status));
     return active.sort((a,b) => a.followUpDate.localeCompare(b.followUpDate));
   }, [leads]);
 
-  const overdueSplit  = listLeads.filter(l => l.followUpDate < todayDateStr);
-  const todaySplit    = listLeads.filter(l => l.followUpDate === todayDateStr);
+  const overdueSplit = listLeads.filter(l => l.followUpDate < todayDateStr);
+  const todaySplit = listLeads.filter(l => l.followUpDate === todayDateStr);
   const upcomingSplit = listLeads.filter(l => l.followUpDate > todayDateStr);
 
   return (
     <div className={styles.page}>
+      {/* Header */}
       <header className={styles.header}>
-        <h1 className={styles.title}>Calendar</h1>
+        <div className={styles.headerContent}>
+          <div className={styles.headerLeft}>
+            <button className={styles.backBtn} onClick={() => router.push("/today")}>
+              <ArrowLeft size={22} color="var(--r-primary)" />
+            </button>
+            <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Calendar</h1>
+          </div>
+          <button className={styles.notifBtn}>
+            <Bell size={20} color="var(--r-on-surface-variant)" />
+          </button>
+        </div>
       </header>
 
-      {/* Month nav — always visible */}
-      <div className={styles.monthNav}>
-        <button className={styles.navBtn} onClick={prevMonth}>‹</button>
-        <span className={styles.monthLabel}>{MONTHS[viewMonth]} {viewYear}</span>
-        <button className={styles.navBtn} onClick={nextMonth}>›</button>
-      </div>
-
-      {/* Day headers — always visible */}
-      <div className={styles.dayHeaders}>
-        {DAYS.map(d => <span key={d} className={styles.dayHeader}>{d}</span>)}
-      </div>
-
-      {/* FIX #4: Calendar grid always renders — even during loading, even when
-          there are no follow-ups. Previously a loading or empty state could
-          visually obscure the calendar. The grid is the primary UI of this tab. */}
-      <div className={styles.grid}>
-        {calendarDays.map((dateStr, i) => {
-          if (!dateStr) return <div key={`empty-${i}`} className={styles.emptyCell} />;
-
-          const hasLeads  = followUpMap[dateStr]?.length > 0;
-          const isOv      = dateStr < todayDateStr && hasLeads;
-          const isTd      = dateStr === todayDateStr;
-          const isSel     = dateStr === selected;
-          const dayNum    = parseInt(dateStr.split("-")[2]);
-          const dotColors = hasLeads
-            ? [...new Set(followUpMap[dateStr].map(l =>
-                getTempStyle(l.temperature || "cold").border
-              ))].slice(0, 3)
-            : [];
-
-          return (
-            <button
-              key={dateStr}
-              className={`${styles.cell}
-                ${isTd  ? styles.cellToday   : ""}
-                ${isSel ? styles.cellSelected : ""}
-                ${isOv  ? styles.cellOverdue  : ""}
-              `}
-              onClick={() => setSelected(isSel ? null : dateStr)}
-            >
-              <span className={styles.dayNum}>{dayNum}</span>
-              {dotColors.length > 0 && (
-                <div className={styles.dots}>
-                  {dotColors.map((c, di) => (
-                    <span key={di} className={styles.dot} style={{ background: c }} />
-                  ))}
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Show a subtle skeleton/shimmer on the grid while loading */}
-      {loading && (
-        <p style={{ textAlign:"center", fontSize:13, color:"var(--relio-text-muted)", padding:"8px 0" }}>
-          Loading follow-ups…
-        </p>
-      )}
-
-      {/* Selected day panel */}
-      {selected && (
-        <div className={styles.selectedPanel}>
-          <div className={styles.selectedHeader}>
-            <span className={styles.selectedDate}>
-              {new Date(selected + "T00:00:00").toLocaleDateString("en-IN",
-                { weekday:"long", day:"numeric", month:"long" })}
-            </span>
-            <button className={styles.clearSel} onClick={() => setSelected(null)}>✕</button>
-          </div>
-          {selectedLeads.length === 0
-            ? <p className={styles.noLeads}>No follow-ups scheduled for this day.</p>
-            : selectedLeads.map(l => (
-              <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />
-            ))
-          }
+      <main className={styles.main}>
+        {/* Month Nav */}
+        <div className={styles.monthNav}>
+          <button className={styles.navBtn} onClick={prevMonth}>
+            <ChevronLeft size={20} />
+          </button>
+          <span className="text-headline-md">{MONTHS[viewMonth]} {viewYear}</span>
+          <button className={styles.navBtn} onClick={nextMonth}>
+            <ChevronRight size={20} />
+          </button>
         </div>
-      )}
 
-      {/* Follow-up list below calendar */}
-      <div className={styles.listSection}>
-        <p className={styles.listTitle}>All Follow-ups</p>
+        {/* Day Headers */}
+        <div className={styles.dayHeaders}>
+          {DAYS.map(d => <span key={d} className="text-label-md" style={{ color: "var(--r-outline)" }}>{d}</span>)}
+        </div>
 
-        {overdueSplit.length > 0 && (
-          <Section title="⚠ Overdue" color="var(--relio-danger)">
-            {overdueSplit.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)}
-          </Section>
-        )}
-        {todaySplit.length > 0 && (
-          <Section title="📅 Today" color="var(--relio-gold)">
-            {todaySplit.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)}
-          </Section>
-        )}
-        {upcomingSplit.length > 0 && (
-          <Section title="📆 Upcoming" color="var(--relio-cold)">
-            {upcomingSplit.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)}
-          </Section>
-        )}
+        {/* Calendar Grid */}
+        <div className={styles.grid}>
+          {calendarDays.map((dateStr, i) => {
+            if (!dateStr) return <div key={`empty-${i}`} className={styles.emptyCell} />;
+            const hasLeads = followUpMap[dateStr]?.length > 0;
+            const isOv = dateStr < todayDateStr && hasLeads;
+            const isTd = dateStr === todayDateStr;
+            const isSel = dateStr === selected;
+            const dayNum = parseInt(dateStr.split("-")[2]);
+            const dotColors = hasLeads
+              ? [...new Set(followUpMap[dateStr].map(l => getTempStyle(l.temperature || "cold").text))].slice(0, 3)
+              : [];
 
-        {/* Empty state only in the LIST section — the calendar grid above is unaffected */}
-        {!loading && listLeads.length === 0 && (
-          <div className={styles.empty}>
-            <span style={{ fontSize: 36 }}>✅</span>
-            <p>No pending follow-ups. Enjoy the clear day!</p>
+            return (
+              <button key={dateStr} className={`${styles.cell} ${isTd ? styles.cellToday : ""} ${isSel ? styles.cellSelected : ""} ${isOv ? styles.cellOverdue : ""}`} onClick={() => setSelected(isSel ? null : dateStr)}>
+                <span className={styles.dayNum}>{dayNum}</span>
+                {dotColors.length > 0 && (
+                  <div className={styles.dots}>
+                    {dotColors.map((c, di) => <span key={di} className={styles.dot} style={{ background: c }} />)}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {loading && <p className="text-body-md" style={{ color: "var(--r-outline)", textAlign: "center", padding: 8 }}>Loading follow-ups…</p>}
+
+        {/* Selected day panel */}
+        {selected && (
+          <div className={`r-card ${styles.selectedPanel}`}>
+            <div className={styles.selectedHeader}>
+              <span className="text-headline-md">
+                {new Date(selected + "T00:00:00").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
+              </span>
+              <button className={styles.clearSel} onClick={() => setSelected(null)}>×</button>
+            </div>
+            {selectedLeads.length === 0
+              ? <p className="text-body-md" style={{ color: "var(--r-outline)", padding: "16px 0" }}>No follow-ups scheduled for this day.</p>
+              : selectedLeads.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)
+            }
           </div>
         )}
-      </div>
+
+        {/* Follow-up list */}
+        <div className={styles.listSection}>
+          <h2 className="text-headline-md" style={{ marginBottom: 16 }}>All Follow-ups</h2>
+
+          {overdueSplit.length > 0 && (
+            <Section title="Overdue" color="var(--r-error)">
+              {overdueSplit.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)}
+            </Section>
+          )}
+          {todaySplit.length > 0 && (
+            <Section title="Today" color="var(--r-secondary)">
+              {todaySplit.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)}
+            </Section>
+          )}
+          {upcomingSplit.length > 0 && (
+            <Section title="Upcoming" color="var(--r-primary)">
+              {upcomingSplit.map(l => <LeadRow key={l.id} lead={l} onClick={() => router.push(`/leads/${l.id}`)} />)}
+            </Section>
+          )}
+
+          {!loading && listLeads.length === 0 && (
+            <div className={styles.empty}>
+              <CalendarDays size={48} color="var(--r-outline)" />
+              <p className="text-body-md" style={{ color: "var(--r-outline)" }}>No pending follow-ups. Enjoy the clear day!</p>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
@@ -189,7 +178,7 @@ export default function CalendarPage() {
 function Section({ title, color, children }) {
   return (
     <div className={styles.section}>
-      <p className={styles.sectionTitle} style={{ color }}>{title}</p>
+      <p className="text-label-md" style={{ color, marginBottom: 8 }}>{title}</p>
       {children}
     </div>
   );
@@ -197,15 +186,14 @@ function Section({ title, color, children }) {
 
 function LeadRow({ lead, onClick }) {
   const temp = getTempStyle(lead.temperature || "cold");
-  const fu   = formatFollowUp(lead.followUpDate);
+  const fu = formatFollowUp(lead.followUpDate);
   return (
-    <div className={styles.leadRow} style={{ borderLeftColor: temp.border }} onClick={onClick}>
+    <div className={styles.leadRow} style={{ borderLeftColor: temp.text }} onClick={onClick}>
       <div className={styles.leadInfo}>
-        <span className={styles.leadName}>{lead.name}</span>
-        <span className={styles.leadSub}>{lead.projectInterest || lead.mobile}</span>
+        <span className="text-body-md" style={{ fontWeight: 600 }}>{lead.name}</span>
+        <span className="text-body-md" style={{ color: "var(--r-on-surface-variant)" }}>{lead.projectInterest || lead.mobile}</span>
       </div>
-      <span className={styles.leadDate}
-        style={{ color: isOverdue(lead.followUpDate) ? "var(--relio-danger)" : "var(--relio-gold)" }}>
+      <span className="text-data-mono" style={{ color: isOverdue(lead.followUpDate) ? "var(--r-error)" : "var(--r-secondary)", fontWeight: 600 }}>
         {fu}
       </span>
     </div>

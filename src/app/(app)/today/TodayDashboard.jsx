@@ -1,29 +1,33 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useLeads } from "@/lib/hooks/useLeads";
 import { useInventory } from "@/lib/hooks/useInventory";
-import { logOut } from "@/lib/firebase/auth";
-import { isOverdue, isToday, stalenessLevel, formatFollowUp } from "@/lib/utils/dateHelpers";
-import { getTempStyle, getStatusLabel } from "@/lib/utils/leadHelpers";
+import { useSyncStatus } from "@/lib/hooks/useSyncStatus";
+import { isOverdue, isToday, formatFollowUp, stalenessLevel } from "@/lib/utils/dateHelpers";
+import { getTempStyle, getStatusLabel, getStatusColor } from "@/lib/utils/leadHelpers";
+import { LEAD_STATUSES } from "@/lib/utils/constants";
+import { getFollowupSuggestions, findMatchingProperties } from "@/lib/utils/smartSuggestions";
 import BottomSheet from "@/components/shared/BottomSheet";
-import LeadForm from "@/components/leads/LeadForm";
-import PostCallSheet from "@/components/leads/PostCallSheet";
+
+const LeadForm = dynamic(() => import("@/components/leads/LeadForm"), { ssr: false });
+const PostCallSheet = dynamic(() => import("@/components/leads/PostCallSheet"), { ssr: false });
+import { Bell, TrendingUp, Zap, MapPin, Handshake, Wallet, Plus, Phone, MessageCircle, ChevronRight, Home, Sparkles, AlertTriangle, CloudOff, RefreshCw } from "lucide-react";
 import styles from "./today.module.css";
 
 export default function TodayDashboard() {
   const router = useRouter();
   const { user } = useAuth();
-  const { leads, loading: leadsLoading } = useLeads();
+  const { leads, loading: leadsLoading, isOffline } = useLeads();
   const { inventory } = useInventory();
+  const syncStatus = useSyncStatus();
 
   const [showAddLead, setShowAddLead] = useState(false);
   const [postCallLead, setPostCallLead] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
@@ -31,289 +35,274 @@ export default function TodayDashboard() {
 
   const firstName = user?.displayName?.split(" ")[0] || "";
 
-  // Calculate stats
-  const activeLeads = leads.filter(l => !["converted", "lost", "disqualified"].includes(l.status));
+  // Stats
+  const activeLeads = leads.filter(l => !["converted", "lost", "disqualified", "invalid_number"].includes(l.status));
   const hotLeads = leads.filter(l => l.temperature === "hot" && !["converted", "lost"].includes(l.status));
-  const warmLeads = leads.filter(l => l.temperature === "warm" && !["converted", "lost"].includes(l.status));
-  const overdue = leads.filter(l => l.followUpDate && isOverdue(l.followUpDate) && !["converted", "lost", "disqualified"].includes(l.status));
+  const overdue = leads.filter(l => l.followUpDate && isOverdue(l.followUpDate) && !["converted", "lost", "disqualified", "invalid_number"].includes(l.status));
   const dueToday = leads.filter(l => l.followUpDate && isToday(l.followUpDate));
-  
+  const siteVisits = leads.filter(l => l.status === "visit_scheduled" && l.followUpDate && isToday(l.followUpDate));
+  const converted = leads.filter(l => l.status === "converted");
+  const bookings = leads.filter(l => l.status === "negotiating" || l.status === "converted");
+
   const availableProperties = inventory.filter(i => i.availability === "available");
   const staleInv = inventory.filter(i => {
     const s = stalenessLevel(i.lastOwnerContacted);
     return s.level === "stale" && i.availability === "available";
   });
 
+  // Smart suggestions
+  const followupSuggestions = getFollowupSuggestions(leads);
+  const matchAlerts = [];
+  for (const lead of activeLeads) {
+    const matches = findMatchingProperties(lead, inventory, 50);
+    if (matches.length > 0) {
+      matchAlerts.push({ lead, topMatch: matches[0], count: matches.length });
+    }
+  }
+  matchAlerts.sort((a, b) => b.topMatch.match.score - a.topMatch.match.score);
+  const topMatchAlerts = matchAlerts.slice(0, 3);
+
+  // Funnel counts
+  const funnel = {
+    new: leads.filter(l => l.status === "new").length,
+    contacted: leads.filter(l => l.status === "contacted").length,
+    visited: leads.filter(l => l.status === "visit_done").length,
+    negotiating: leads.filter(l => l.status === "negotiating").length,
+    closed: converted.length,
+  };
+  const funnelMax = Math.max(funnel.new, 1);
+
   function handleCall(lead) {
     window.open(`tel:${lead.mobile}`, "_self");
     setPostCallLead(lead);
   }
-
   function handleWA(lead) {
     window.open(`https://wa.me/91${lead.mobile?.replace(/\D/g, "")}`, "_blank");
   }
 
-  async function handleLogout() {
-    await logOut();
-    router.replace("/login");
-  }
+  // Recent activity (mocked from lead interactions / status changes)
+  const recentActivities = leads
+    .filter(l => l.updatedAt)
+    .sort((a, b) => (b.updatedAt?.seconds || 0) - (a.updatedAt?.seconds || 0))
+    .slice(0, 5)
+    .map(l => ({
+      type: l.status === "new" ? "add" : l.status === "converted" ? "deal" : "call",
+      title: l.status === "new" ? `Added new lead ${l.name}` : l.status === "converted" ? `${l.name} converted` : `Updated ${l.name}`,
+      subtitle: getStatusLabel(l.status),
+      time: l.updatedAt,
+    }));
 
   return (
-    <div className={styles.dashboard}>
-      {/* Header Section - Shows Relio logo and user avatar */}
+    <div className={styles.page}>
+      {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <div className={styles.logoBlock}>
-            <span className={styles.logoIcon}>🌿</span>
-            <h1 className={styles.logoText}>Relio</h1>
+          <div className={styles.headerLeft}>
+            <div className={styles.avatar}>
+              {firstName[0]?.toUpperCase() || "U"}
+            </div>
+            <h1 className="text-headline-lg-mobile" style={{ color: "var(--r-primary)" }}>Relio</h1>
           </div>
-          <button className={styles.avatar} onClick={handleLogout} title="Sign out">
-            {firstName[0]?.toUpperCase() || "U"}
+          {isOffline && (
+            <span className={styles.offlineBadge} title="Offline mode — changes queued">
+              <CloudOff size={14} />
+            </span>
+          )}
+          {syncStatus.pendingChanges > 0 && (
+            <span className={styles.syncBadge} title={`${syncStatus.pendingChanges} changes syncing…`}>
+              <RefreshCw size={14} />
+              {syncStatus.pendingChanges}
+            </span>
+          )}
+          <button className={styles.notifBtn}>
+            <Bell size={22} color="var(--r-primary)" />
           </button>
         </div>
       </header>
 
-      {/* Quick Stats Cards */}
-      <section className={styles.statsSection}>
-        <div className={styles.statsGrid}>
-          <StatCard 
-            label="Active Leads" 
-            value={activeLeads.length} 
-            trend={hotLeads.length > 0 ? `${hotLeads.length} hot` : null}
-            icon="👥"
-            color="sage"
-          />
-          <StatCard 
-            label="Follow-ups" 
-            value={dueToday.length} 
-            trend={overdue.length > 0 ? `${overdue.length} overdue` : "On track"}
-            icon="📅"
-            color={overdue.length > 0 ? "danger" : "sage"}
-          />
-          <StatCard 
-            label="Properties" 
-            value={availableProperties.length} 
-            trend={staleInv.length > 0 ? `${staleInv.length} need attention` : "All good"}
-            icon="🏠"
-            color={staleInv.length > 0 ? "warning" : "sage"}
-          />
-          <StatCard 
-            label="Hot Leads" 
-            value={hotLeads.length} 
-            trend={warmLeads.length > 0 ? `${warmLeads.length} warm` : null}
-            icon="🔥"
-            color="hot"
-          />
-        </div>
-      </section>
-
-      {/* Today's Agenda */}
-      <section className={styles.agendaSection}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Today's Agenda</h2>
-          <span className={styles.dateLabel}>{currentTime.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
-        </div>
-
-        {/* Overdue Follow-ups */}
-        {overdue.length > 0 && (
-          <div className={`${styles.agendaCard} ${styles.agendaCardUrgent}`}>
-            <div className={styles.agendaCardHeader}>
-              <span className={styles.agendaIcon}>⚠️</span>
-              <span className={styles.agendaCount}>{overdue.length}</span>
-            </div>
-            <h3 className={styles.agendaTitle}>Overdue Follow-ups</h3>
-            <p className={styles.agendaSubtitle}>Needs immediate attention</p>
-            <div className={styles.agendaList}>
-              {overdue.slice(0, 3).map(lead => (
-                <LeadRow 
-                  key={lead.id} 
-                  lead={lead} 
-                  overdue 
-                  onTap={() => router.push(`/leads/${lead.id}`)}
-                  onCall={() => handleCall(lead)}
-                  onWA={() => handleWA(lead)}
-                />
-              ))}
-              {overdue.length > 3 && (
-                <button className={styles.viewMoreBtn} onClick={() => router.push('/leads?filter=overdue')}>
-                  +{overdue.length - 3} more overdue leads
-                </button>
-              )}
-            </div>
+      <main className={styles.main}>
+        {/* KPI Cards - Horizontal Scroll */}
+        <section className={styles.kpiSection}>
+          <div className={styles.kpiScroll}>
+            <KpiCard label="Total Leads" value={leads.length} trend={activeLeads.length > 0 ? `${activeLeads.length} active` : null} icon={<TrendingUp size={16} />} accent="primary" />
+            <KpiCard label="Active" value={activeLeads.length} trend={`${hotLeads.length} hot`} icon={<Zap size={16} />} accent="primary" />
+            <KpiCard label="Site Visits" value={siteVisits.length} trend={siteVisits.length > 0 ? "Today" : "None"} icon={<MapPin size={16} />} accent="secondary" />
+            <KpiCard label="Bookings" value={bookings.length} trend={`${converted.length} closed`} icon={<Handshake size={16} />} accent="secondary" />
+            <KpiCard label="Revenue" value="₹0" trend="Track deals" icon={<Wallet size={16} />} accent="secondary" />
           </div>
-        )}
+        </section>
 
-        {/* Today's Follow-ups */}
-        <div className={styles.agendaCard}>
-          <div className={styles.agendaCardHeader}>
-            <span className={styles.agendaIcon}>📅</span>
-            <span className={styles.agendaCount}>{dueToday.length}</span>
-          </div>
-          <h3 className={styles.agendaTitle}>Scheduled for Today</h3>
-          <p className={styles.agendaSubtitle}>{dueToday.length === 0 ? "No follow-ups scheduled" : "Your planned activities"}</p>
-          {dueToday.length > 0 ? (
-            <div className={styles.agendaList}>
-              {dueToday.slice(0, 3).map(lead => (
-                <LeadRow 
-                  key={lead.id} 
-                  lead={lead}
-                  onTap={() => router.push(`/leads/${lead.id}`)}
-                  onCall={() => handleCall(lead)}
-                  onWA={() => handleWA(lead)}
-                />
-              ))}
-              {dueToday.length > 3 && (
-                <button className={styles.viewMoreBtn} onClick={() => router.push('/leads?filter=today')}>
-                  +{dueToday.length - 3} more for today
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className={styles.emptyState}>
-              <span className={styles.emptyIcon}>✓</span>
-              <p className={styles.emptyText}>You're all caught up!</p>
-              <button className={styles.emptyAction} onClick={() => router.push('/leads')}>
-                View all leads
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Quick Actions */}
-      <section className={styles.actionsSection}>
-        <h2 className={styles.sectionTitle}>Quick Actions</h2>
-        <div className={styles.actionsGrid}>
-          <QuickAction 
-            icon="➕"
-            label="Add Lead"
-            onClick={() => setShowAddLead(true)}
-            primary
-          />
-          <QuickAction 
-            icon="📋"
-            label="View Leads"
-            onClick={() => router.push('/leads')}
-          />
-          <QuickAction 
-            icon="🏠"
-            label="Inventory"
-            onClick={() => router.push('/inventory')}
-          />
-          <QuickAction 
-            icon="📊"
-            label="Reports"
-            onClick={() => router.push('/reports')}
-          />
-        </div>
-      </section>
-
-      {/* Property Alerts */}
-      {staleInv.length > 0 && (
-        <section className={styles.alertsSection}>
+        {/* Sales Funnel */}
+        <section className={`r-card ${styles.funnelCard}`}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Property Alerts</h2>
-            <button className={styles.viewAllBtn} onClick={() => router.push('/inventory')}>
-              View all
-            </button>
+            <h2 className="text-headline-md">Sales Funnel</h2>
+            <span className="text-label-md" style={{ color: "var(--r-outline)" }}>Last 30 Days</span>
           </div>
-          <div className={styles.alertsCard}>
-            <div className={styles.alertHeader}>
-              <span className={styles.alertIcon}>🏠</span>
-              <span className={styles.alertBadge}>{staleInv.length} need attention</span>
+          <div className={styles.funnelBars}>
+            <FunnelBar label="New" count={funnel.new} pct={funnel.new / funnelMax} color="bg-primary" />
+            <FunnelBar label="Contacted" count={funnel.contacted} pct={funnel.contacted / funnelMax} color="bg-primary-container" />
+            <FunnelBar label="Visited" count={funnel.visited} pct={funnel.visited / funnelMax} color="bg-secondary" />
+            <FunnelBar label="Negotiation" count={funnel.negotiating} pct={funnel.negotiating / funnelMax} color="bg-on-primary-container" />
+            <FunnelBar label="Closed" count={funnel.closed} pct={funnel.closed / funnelMax} color="bg-secondary-container" />
+          </div>
+        </section>
+
+        {/* Smart Suggestions */}
+        {(followupSuggestions.length > 0 || topMatchAlerts.length > 0) && (
+          <section className={`r-card ${styles.suggestionsCard}`}>
+            <div className={styles.sectionHeader}>
+              <h2 className="text-headline-md" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Sparkles size={18} color="var(--r-secondary)" /> Smart Suggestions
+              </h2>
+              <span className="text-label-md" style={{ color: "var(--r-outline)" }}>
+                {followupSuggestions.length + topMatchAlerts.length}
+              </span>
             </div>
-            <p className={styles.alertText}>
-              {staleInv.length} properties haven't been contacted in 30+ days
-            </p>
-            <div className={styles.alertProperties}>
-              {staleInv.slice(0, 2).map(i => (
-                <div key={i.id} className={styles.alertProperty}>
-                  <span className={styles.propertyName}>{i.projectName}</span>
-                  <div className={styles.propertyActions}>
-                    <button className={styles.propertyActionBtn} onClick={() => window.open(`tel:${i.ownerMobile}`, "_self")}>
-                      📞
-                    </button>
-                    <button className={styles.propertyActionBtn} onClick={() => window.open(`https://wa.me/91${i.ownerMobile?.replace(/\D/g, "")}`, "_blank")}>
-                      💬
-                    </button>
+            <div className={styles.suggestionList}>
+              {followupSuggestions.map(s => (
+                <div key={s.leadId} className={styles.suggestionItem} onClick={() => router.push(`/leads/${s.leadId}`)}>
+                  <div className={styles.suggestionIcon} style={{
+                    background: s.type === "followup_urgent" ? "var(--r-error-bg)" : "var(--r-warning-bg)",
+                    color: s.type === "followup_urgent" ? "var(--r-error)" : "var(--r-warning)"
+                  }}>
+                    {s.type === "followup_urgent" ? <AlertTriangle size={14} /> : <Phone size={14} />}
                   </div>
+                  <div className={styles.suggestionBody}>
+                    <p className="text-body-md" style={{ fontWeight: 600 }}>{s.message}</p>
+                    <p className="text-label-md" style={{ color: "var(--r-outline)" }}>{s.subtext}</p>
+                  </div>
+                  <ChevronRight size={16} color="var(--r-outline)" />
+                </div>
+              ))}
+              {topMatchAlerts.map(m => (
+                <div key={m.lead.id} className={styles.suggestionItem} onClick={() => router.push(`/leads/${m.lead.id}`)}>
+                  <div className={styles.suggestionIcon} style={{ background: "var(--r-primary-fixed)", color: "var(--r-primary)" }}>
+                    <Home size={14} />
+                  </div>
+                  <div className={styles.suggestionBody}>
+                    <p className="text-body-md" style={{ fontWeight: 600 }}>
+                      {m.lead.name} — {m.topMatch.projectName || m.topMatch.area}
+                    </p>
+                    <p className="text-label-md" style={{ color: "var(--r-outline)" }}>
+                      {m.topMatch.match.score}% match · {m.count} propert{m.count > 1 ? "ies" : "y"} available
+                    </p>
+                  </div>
+                  <ChevronRight size={16} color="var(--r-outline)" />
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Today's Schedule */}
+        <section className={`r-card ${styles.scheduleCard}`}>
+          <h2 className="text-headline-md" style={{ marginBottom: 16 }}>Today&apos;s Schedule</h2>
+          {siteVisits.length > 0 || dueToday.length > 0 ? (
+            <div className={styles.scheduleList}>
+              {siteVisits.slice(0, 3).map(lead => (
+                <ScheduleItem key={lead.id} lead={lead} time={lead.visitTime || "10:00 AM"} label={`Site visit${lead.visitLocation ? ` — ${lead.visitLocation}` : ""}`} onTap={() => router.push(`/leads/${lead.id}`)} onCall={() => handleCall(lead)} onWA={() => handleWA(lead)} />
+              ))}
+              {dueToday.filter(l => !siteVisits.find(s => s.id === l.id)).slice(0, 3).map(lead => (
+                <ScheduleItem key={lead.id} lead={lead} time="2:00 PM" label="Follow-up" onTap={() => router.push(`/leads/${lead.id}`)} onCall={() => handleCall(lead)} onWA={() => handleWA(lead)} />
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptySchedule}>
+              <p className="text-body-md" style={{ color: "var(--r-outline)" }}>No schedule for today</p>
+              <button className={styles.viewCalBtn} onClick={() => router.push("/calendar")}>View Calendar</button>
+            </div>
+          )}
+        </section>
+
+        {/* Recent Activities */}
+        <section className={`r-card ${styles.activityCard}`}>
+          <div className={styles.sectionHeader}>
+            <h2 className="text-headline-md">Recent Activities</h2>
+            <button className="text-label-md" style={{ color: "var(--r-secondary)" }} onClick={() => router.push("/leads")}>See All</button>
+          </div>
+          <div className={styles.activityList}>
+            {recentActivities.length > 0 ? recentActivities.map((act, i) => (
+              <div key={i} className={styles.activityItem}>
+                <div className={styles.activityIcon} style={{
+                  background: act.type === "deal" ? "var(--r-secondary-fixed)" : act.type === "add" ? "var(--r-primary-fixed)" : "var(--r-surface-container-high)"
+                }}>
+                  {act.type === "deal" ? <Handshake size={16} color="var(--r-on-secondary-fixed)" /> : act.type === "add" ? <Home size={16} color="var(--r-on-primary-fixed)" /> : <Phone size={16} color="var(--r-on-surface-variant)" />}
+                </div>
+                <div className={styles.activityBody}>
+                  <p className="text-body-md" style={{ fontWeight: 600 }}>{act.title}</p>
+                  <p className="text-label-md" style={{ color: "var(--r-outline)" }}>{act.subtitle}</p>
+                </div>
+              </div>
+            )) : (
+              <p className="text-body-md" style={{ color: "var(--r-outline)", textAlign: "center", padding: "24px 0" }}>No recent activity</p>
+            )}
           </div>
         </section>
-      )}
+      </main>
 
-      {/* Bottom Spacing */}
-      <div className={styles.bottomSpacer} />
+      {/* FAB */}
+      <button className="r-fab" onClick={() => router.push("/leads/new")}>
+        <Plus size={28} />
+      </button>
 
-      {/* Add Lead Sheet */}
+      {/* Bottom Sheet: Add Lead */}
       <BottomSheet open={showAddLead} onClose={() => setShowAddLead(false)} title="Add Lead" tall>
         <LeadForm leads={leads} quickMode onDone={() => setShowAddLead(false)} onCancel={() => setShowAddLead(false)} />
       </BottomSheet>
 
-      {/* Post-call sheet */}
-      <PostCallSheet
-        lead={postCallLead}
-        open={!!postCallLead}
-        onClose={() => setPostCallLead(null)}
-        onDone={() => setPostCallLead(null)}
-      />
+      {/* Post Call Sheet */}
+      <PostCallSheet lead={postCallLead} open={!!postCallLead} onClose={() => setPostCallLead(null)} onDone={() => setPostCallLead(null)} />
     </div>
   );
 }
 
-function StatCard({ label, value, trend, icon, color }) {
-  const colorClass = {
-    sage: styles.statCardSage,
-    hot: styles.statCardHot,
-    danger: styles.statCardDanger,
-    warning: styles.statCardWarning,
-  }[color] || styles.statCardSage;
-
+function KpiCard({ label, value, trend, icon, accent }) {
+  const trendColor = accent === "secondary" ? "var(--r-secondary)" : "var(--r-primary)";
   return (
-    <div className={`${styles.statCard} ${colorClass}`}>
-      <div className={styles.statHeader}>
-        <span className={styles.statIcon}>{icon}</span>
+    <div className={styles.kpiCard}>
+      <div className={styles.kpiHeader}>
+        <span className="text-label-md" style={{ color: "var(--r-outline)" }}>{label}</span>
+        <span style={{ color: trendColor }}>{icon}</span>
       </div>
-      <span className={styles.statValue}>{value}</span>
-      <span className={styles.statLabel}>{label}</span>
-      {trend && <span className={styles.statTrend}>{trend}</span>}
+      <div className="text-headline-md" style={{ color: "var(--r-primary)", marginTop: 4 }}>{value}</div>
+      {trend && <div className="text-label-md" style={{ color: trendColor, marginTop: 4 }}>{trend}</div>}
     </div>
   );
 }
 
-function LeadRow({ lead, overdue, onTap, onCall, onWA }) {
-  const temp = getTempStyle(lead.temperature || "cold");
-  const fu = formatFollowUp(lead.followUpDate);
-  
+function FunnelBar({ label, count, pct, color }) {
+  const height = Math.max(pct * 100, 4);
   return (
-    <div className={`${styles.leadRow} ${overdue ? styles.leadRowOverdue : ''}`} onClick={onTap}>
-      <div className={styles.leadRowLeft}>
-        <div className={styles.leadAvatar} style={{ backgroundColor: temp.bg, color: temp.text }}>
-          {lead.name?.[0]?.toUpperCase() || "?"}
-        </div>
-        <div className={styles.leadInfo}>
-          <span className={styles.leadName}>{lead.name}</span>
-          <span className={styles.leadSub}>
-            {lead.projectInterest || lead.mobile}
-            {fu && <span className={styles.leadFu}> · {fu}</span>}
-          </span>
+    <div className={styles.funnelItem}>
+      <div className={styles.funnelBarTrack}>
+        <div className={styles.funnelBarFill} style={{ height: `${height}%`, background: `var(--${color.replace("bg-", "r-").replace("-container", "-container")})` }}>
+          {color === "bg-primary" && <div style={{ width: "100%", height: "100%", background: "var(--r-primary-container)", borderRadius: "inherit" }} />}
+          {color === "bg-primary-container" && <div style={{ width: "100%", height: "100%", background: "var(--r-primary)", borderRadius: "inherit" }} />}
+          {color === "bg-secondary" && <div style={{ width: "100%", height: "100%", background: "var(--r-secondary)", borderRadius: "inherit" }} />}
+          {color === "bg-on-primary-container" && <div style={{ width: "100%", height: "100%", background: "var(--r-on-primary-container)", borderRadius: "inherit" }} />}
+          {color === "bg-secondary-container" && <div style={{ width: "100%", height: "100%", background: "var(--r-secondary-container)", borderRadius: "inherit" }} />}
         </div>
       </div>
-      <div className={styles.leadActions} onClick={e => e.stopPropagation()}>
-        <button className={styles.actionBtn} onClick={onCall}>📞</button>
-        <button className={styles.actionBtn} onClick={onWA}>💬</button>
-      </div>
+      <span className="text-label-md" style={{ color: "var(--r-outline)", textAlign: "center", marginTop: 6 }}>{label}</span>
     </div>
   );
 }
 
-function QuickAction({ icon, label, onClick, primary }) {
+function ScheduleItem({ lead, time, label, onTap, onCall, onWA }) {
   return (
-    <button className={`${styles.quickAction} ${primary ? styles.quickActionPrimary : ''}`} onClick={onClick}>
-      <span className={styles.quickActionIcon}>{icon}</span>
-      <span className={styles.quickActionLabel}>{label}</span>
-    </button>
+    <div className={styles.scheduleItem}>
+      <div className={styles.scheduleTime}>
+        <div className="text-body-md" style={{ fontWeight: 700, color: "var(--r-primary)" }}>{time}</div>
+        <div className="text-label-md" style={{ color: "var(--r-outline)" }}>AM</div>
+      </div>
+      <div className={styles.scheduleBody} onClick={onTap}>
+        <div className="text-body-md" style={{ fontWeight: 600 }}>{lead.name}</div>
+        <div className="text-body-md" style={{ color: "var(--r-on-surface-variant)" }}>{lead.projectInterest || label}</div>
+        <div className={styles.scheduleActions} onClick={e => e.stopPropagation()}>
+          <button className={styles.scheduleAction} onClick={onCall}><Phone size={14} /></button>
+          <button className={styles.scheduleAction} onClick={onWA}><MessageCircle size={14} /></button>
+        </div>
+      </div>
+    </div>
   );
 }

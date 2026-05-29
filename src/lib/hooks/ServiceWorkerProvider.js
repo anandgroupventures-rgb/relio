@@ -33,6 +33,7 @@ export function ServiceWorkerProvider({ children }) {
         
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing;
+          if (!newWorker) return;
           
           newWorker.addEventListener("statechange", () => {
             if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
@@ -51,7 +52,7 @@ export function ServiceWorkerProvider({ children }) {
             // Dynamic import to avoid issues
             import("@/lib/firebase/offlineDB").then(({ syncPendingChanges }) => {
               syncPendingChanges();
-            });
+            }).catch(err => console.error("[SW] Failed to import offlineDB:", err));
           }
         });
 

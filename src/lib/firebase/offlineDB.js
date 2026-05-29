@@ -337,7 +337,7 @@ export const localInteractions = {
 export async function syncFromFirebase(uid, firebaseLeads) {
   for (const lead of firebaseLeads) {
     const localLead = await db.leads.get(lead.id);
-    
+
     if (!localLead) {
       // Lead exists on server but not locally - add it
       await db.leads.add({
@@ -349,13 +349,63 @@ export async function syncFromFirebase(uid, firebaseLeads) {
         version: 1
       });
     } else if (localLead.syncStatus === 'synced') {
-      // Both synced - use server version
-      await db.leads.update(lead.id, {
-        ...lead,
-        serverUpdatedAt: new Date()
-      });
+      // Both synced - check if server has newer data (potential conflict)
+      const serverUpdated = lead.updatedAt?.toDate ? lead.updatedAt.toDate() : new Date(lead.updatedAt || 0);
+      const localUpdated = localLead.serverUpdatedAt ? new Date(localLead.serverUpdatedAt) : new Date(0);
+
+      if (serverUpdated > localUpdated) {
+        // Server is newer — check for actual field divergence
+        const changed = hasFieldDivergence(localLead, lead);
+        if (changed) {
+          // Mark as conflict for manual resolution
+          await db.leads.update(lead.id, {
+            ...lead,
+            syncStatus: 'conflict',
+            conflictDetectedAt: new Date(),
+            _localVersion: { ...localLead },
+            serverUpdatedAt: new Date()
+          });
+        } else {
+          // No real divergence, just accept server
+          await db.leads.update(lead.id, {
+            ...lead,
+            serverUpdatedAt: new Date()
+          });
+        }
+      }
     }
     // If local is pending, don't overwrite - let it sync up
+  }
+}
+
+function hasFieldDivergence(local, server) {
+  const fields = ['name', 'mobile', 'email', 'status', 'followUpDate', 'budget', 'projectInterest', 'bhk', 'type', 'source', 'remarks'];
+  for (const f of fields) {
+    if ((local[f] || '') !== (server[f] || '')) return true;
+  }
+  return false;
+}
+
+// Resolve a conflict: accept either local or server version
+export async function resolveConflict(uid, leadId, acceptServer = true) {
+  const localLead = await db.leads.get(leadId);
+  if (!localLead || localLead.syncStatus !== 'conflict') return;
+
+  if (acceptServer) {
+    // Overwrite with server version, mark as synced
+    const { _localVersion, conflictDetectedAt, ...serverLead } = localLead;
+    await db.leads.update(leadId, {
+      ...serverLead,
+      syncStatus: 'synced',
+      localUpdatedAt: new Date()
+    });
+  } else {
+    // Keep local changes, mark as pending to sync up
+    await db.leads.update(leadId, {
+      syncStatus: 'pending',
+      localUpdatedAt: new Date()
+    });
+    await queueForSync(uid, 'update', 'leads', leadId, localLead);
   }
 }
 

@@ -7,17 +7,26 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user,    setUser]    = useState(undefined); // undefined = loading
   const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(null);
 
   useEffect(() => {
-    const unsub = onAuth((u) => {
-      setUser(u);
+    try {
+      const unsub = onAuth((u) => {
+        setUser(u);
+        setLoading(false);
+      });
+      return unsub;
+    } catch (err) {
+      console.error("[AuthProvider] Failed to initialize auth:", err);
+      setUser(null);
       setLoading(false);
-    });
-    return unsub;
+      setError(err);
+      return () => {};
+    }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, error }}>
       {children}
     </AuthContext.Provider>
   );

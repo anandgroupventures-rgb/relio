@@ -1,4 +1,5 @@
 import { todayStr, addDays, daysSince } from "./dateHelpers";
+
 import { TEMP_COLORS, STATUS_COLOR } from "./constants";
 
 // Auto-calculate temperature from lead data
@@ -54,6 +55,100 @@ export function getStatusLabel(status) {
   return status?.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "";
 }
 
+// ─── 4.6: AI Lead Scoring v2 ────────────────────────────────────────────────
+// Learns from actual conversion outcomes across the broker's lead base.
+// Returns a score 0-100 and a breakdown of factors.
+export function calcLeadScore(lead, allLeads = []) {
+  if (!lead) return { score: 0, breakdown: {} };
+
+  // Build historical stats from all leads
+  const stats = buildConversionStats(allLeads);
+  const breakdown = {};
+
+  // 1. Source quality (0-25 pts) — based on actual conversion rate of that source
+  let sourceScore = 12; // neutral default
+  if (lead.source && stats.sourceConversion[lead.source]) {
+    const rate = stats.sourceConversion[lead.source];
+    sourceScore = Math.round(rate * 25); // 100% conversion = 25 pts
+  }
+  breakdown.source = sourceScore;
+
+  // 2. Status progression (0-25 pts)
+  const statusWeights = {
+    new: 5, contacted: 10, interested: 15, details_shared: 18,
+    visit_scheduled: 20, visit_done: 22, negotiating: 24, converted: 25,
+  };
+  const statusScore = statusWeights[lead.status] || 5;
+  breakdown.status = statusScore;
+
+  // 3. Interaction recency & frequency (0-25 pts)
+  const days = daysSince(lead.lastContactedAt);
+  let recencyScore = 0;
+  if (days <= 1) recencyScore = 25;
+  else if (days <= 3) recencyScore = 20;
+  else if (days <= 7) recencyScore = 15;
+  else if (days <= 14) recencyScore = 10;
+  else if (days <= 30) recencyScore = 5;
+  else recencyScore = 2;
+  // Interaction count bonus
+  const interactionCount = lead.interactionCount || 0;
+  if (interactionCount >= 5) recencyScore += 0; // capped
+  else if (interactionCount >= 3) recencyScore = Math.min(recencyScore + 3, 25);
+  else if (interactionCount >= 1) recencyScore = Math.min(recencyScore + 1, 25);
+  breakdown.recency = recencyScore;
+
+  // 4. Requirement clarity (0-15 pts)
+  let clarityScore = 0;
+  if (lead.bhk) clarityScore += 4;
+  if (lead.budget) clarityScore += 4;
+  if (lead.projectInterest) clarityScore += 4;
+  if (lead.type) clarityScore += 3;
+  breakdown.clarity = clarityScore;
+
+  // 5. Follow-up discipline (0-10 pts)
+  let followupScore = 0;
+  if (lead.followUpDate) {
+    const fu = lead.followUpDate;
+    const today = todayStr();
+    const in3 = addDays(3);
+    if (fu === today) followupScore = 10;
+    else if (fu <= in3) followupScore = 8;
+    else followupScore = 5;
+  } else {
+    followupScore = 2; // no follow-up set = low discipline
+  }
+  breakdown.followup = followupScore;
+
+  const total = sourceScore + statusScore + recencyScore + clarityScore + followupScore;
+  const score = Math.min(total, 100);
+
+  // Derive temperature from score
+  let temp = "cold";
+  if (score >= 75) temp = "hot";
+  else if (score >= 50) temp = "warm";
+  else if (score >= 25) temp = "cold";
+  else temp = "dormant";
+
+  return { score, temp, breakdown, stats };
+}
+
+function buildConversionStats(leads) {
+  const sourceStats = {};
+  for (const l of leads) {
+    const src = l.source || "Unknown";
+    if (!sourceStats[src]) sourceStats[src] = { total: 0, converted: 0 };
+    sourceStats[src].total += 1;
+    if (l.status === "converted") sourceStats[src].converted += 1;
+  }
+
+  const sourceConversion = {};
+  for (const [src, data] of Object.entries(sourceStats)) {
+    sourceConversion[src] = data.total > 0 ? data.converted / data.total : 0;
+  }
+
+  return { sourceConversion };
+}
+
 // Check if mobile number already exists in leads array
 export function findDuplicate(leads, mobile, excludeId = null) {
   const clean = mobile.replace(/\D/g, "");
@@ -84,8 +179,14 @@ export function sortLeads(leads, sortBy, sortDir) {
 }
 
 // Filter leads
-export function filterLeads(leads, { search, status, source, type, priority }) {
+export function filterLeads(leads, { search, status, source, type, priority, archived }) {
   return leads.filter(l => {
+    // By default, hide archived leads unless explicitly viewing archived
+    if (archived) {
+      if (!l.isArchived) return false;
+    } else {
+      if (l.isArchived) return false;
+    }
     if (search) {
       const q = search.toLowerCase();
       const match = [l.name, l.mobile, l.projectInterest, l.remarks, l.source]

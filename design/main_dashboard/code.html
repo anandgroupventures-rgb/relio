@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relio - Real Estate Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface-bright": "#fcf9f8",
+                        "inverse-surface": "#303030",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-primary": "#bdc2ff",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-fixed-dim": "#ffb865",
+                        "surface": "#fcf9f8",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-container": "#f89c00",
+                        "primary-container": "#1a237e",
+                        "on-tertiary-container": "#969798",
+                        "primary": "#000666",
+                        "outline-variant": "#c6c5d4",
+                        "primary-fixed": "#e0e0ff",
+                        "secondary-fixed": "#ffddba",
+                        "on-secondary-container": "#623a00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#000767",
+                        "surface-tint": "#4c56af",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#2b1700",
+                        "surface-container-high": "#eae7e7",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#343d96",
+                        "surface-container": "#f0eded",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-container": "#8690ee",
+                        "outline": "#767683",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fcf9f8",
+                        "on-secondary-fixed-variant": "#663d00",
+                        "tertiary-fixed": "#e2e2e2",
+                        "tertiary-container": "#2e3030",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-background": "#1b1c1c",
+                        "secondary": "#875200",
+                        "on-surface": "#1b1c1c",
+                        "tertiary": "#191b1c",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#454652"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-padding": "20px",
+                        "container-margin": "24px",
+                        "baseline": "4px",
+                        "section-gap": "32px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FF 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(224, 224, 224, 1); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface font-body-md min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full h-16 z-50 flex items-center justify-between px-container-margin py-4 bg-surface dark:bg-surface-dim shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex items-center gap-3">
+<img alt="User Profile Photo" class="w-10 h-10 rounded-full border-2 border-primary-fixed" data-alt="A professional close-up portrait of a real estate agent in a modern corporate setting. The lighting is bright and warm, reflecting a high-trust atmosphere with soft blue and gold accents in the background. The individual wears a sharp blazer, projecting confidence and approachability suitable for a high-end property management app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQOhyt8TLfl3-dTmyqK4by98gY7H2zhL2IV9jp8Id-9KHZtUtSXrcwMumTKcIHlnZpQ9Qgmr5aezb7N3zoB0HlYX5B8ASZ9j1R3QHUqpA8zk04MUhR2aksNDgmgz7KAIo3M4_7GeRUD7ZQvnqoMjmGtHYWBc_OfefZnDOFBGdFf6A0gAAPnUPJ6AsvPr2QaKNzLXfy6Oaqi4G8hx0BIzhZ6BeZ0Y-pB9FPN0LsSWACsBxhlQqj7XPp7CWC2AElEa5BK1Trc9O4cec"/>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Relio</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">notifications</span>
+</button>
+</header>
+<main class="pt-20 px-container-margin">
+<!-- Horizontally Scrollable KPI Cards -->
+<section class="mt-4">
+<div class="flex overflow-x-auto no-scrollbar gap-gutter pb-4 -mx-container-margin px-container-margin">
+<!-- Total Leads -->
+<div class="min-w-[160px] glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider">Total Leads</span>
+<span class="material-symbols-outlined text-secondary text-sm">trending_up</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">120</div>
+<div class="text-label-md font-label-md text-secondary mt-1">+5% vs last week</div>
+</div>
+<!-- Active Leads -->
+<div class="min-w-[160px] glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider">Active</span>
+<span class="material-symbols-outlined text-primary text-sm">bolt</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">45</div>
+<div class="text-label-md font-label-md text-outline mt-1">Currently engaged</div>
+</div>
+<!-- Site Visits -->
+<div class="min-w-[160px] glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider">Site Visits</span>
+<span class="material-symbols-outlined text-primary text-sm">location_on</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">8</div>
+<div class="text-label-md font-label-md text-outline mt-1">Scheduled today</div>
+</div>
+<!-- Bookings -->
+<div class="min-w-[160px] glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider">Bookings</span>
+<span class="material-symbols-outlined text-secondary text-sm">handshake</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">3</div>
+<div class="text-label-md font-label-md text-secondary mt-1">₹2.5 Cr value</div>
+</div>
+<!-- Revenue -->
+<div class="min-w-[160px] glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider">Revenue</span>
+<span class="material-symbols-outlined text-secondary text-sm">payments</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">₹15L</div>
+<div class="text-label-md font-label-md text-outline mt-1">Invoiced this month</div>
+</div>
+</div>
+</section>
+<!-- Bento Layout for Content -->
+<div class="mt-section-gap grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Sales Funnel Chart -->
+<section class="md:col-span-8 glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-primary">Sales Funnel</h2>
+<span class="text-label-md font-label-md text-outline">Last 30 Days</span>
+</div>
+<div class="flex items-end justify-between h-48 gap-4 px-2">
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-primary-container rounded-t-lg transition-all duration-700 h-[100%] hover:brightness-110"></div>
+<span class="text-[10px] font-label-md text-outline text-center">New</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-primary rounded-t-lg transition-all duration-700 h-[75%] hover:brightness-110"></div>
+<span class="text-[10px] font-label-md text-outline text-center">Contacted</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-secondary rounded-t-lg transition-all duration-700 h-[50%] hover:brightness-110"></div>
+<span class="text-[10px] font-label-md text-outline text-center">Visited</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-on-primary-container rounded-t-lg transition-all duration-700 h-[30%] hover:brightness-110"></div>
+<span class="text-[10px] font-label-md text-outline text-center">Negotiation</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2">
+<div class="w-full bg-secondary-container rounded-t-lg transition-all duration-700 h-[15%] hover:brightness-110"></div>
+<span class="text-[10px] font-label-md text-outline text-center">Closed</span>
+</div>
+</div>
+</section>
+<!-- Today's Schedule -->
+<section class="md:col-span-4 glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Today's Schedule</h2>
+<div class="space-y-4">
+<div class="flex gap-4 p-3 rounded-lg bg-surface-container-low border border-outline-variant">
+<div class="text-center min-w-[48px]">
+<div class="font-bold text-primary">10:30</div>
+<div class="text-[10px] text-outline">AM</div>
+</div>
+<div class="border-l-2 border-secondary pl-4">
+<div class="font-body-lg font-semibold text-on-surface">Amit Sharma</div>
+<div class="text-body-md text-on-surface-variant">Godrej Woods, Sec 43</div>
+</div>
+</div>
+<div class="flex gap-4 p-3 rounded-lg bg-surface-container-low border border-outline-variant">
+<div class="text-center min-w-[48px]">
+<div class="font-bold text-primary">02:00</div>
+<div class="text-[10px] text-outline">PM</div>
+</div>
+<div class="border-l-2 border-primary pl-4">
+<div class="font-body-lg font-semibold text-on-surface">Sneha Kapoor</div>
+<div class="text-body-md text-on-surface-variant">DLF Crest, Phase 5</div>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full py-2 text-label-md font-label-md text-primary border border-primary rounded-lg hover:bg-primary-fixed transition-colors">
+                    View Full Calendar
+                </button>
+</section>
+<!-- Recent Activities -->
+<section class="md:col-span-12 glass-card p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-primary">Recent Activities</h2>
+<button class="text-label-md font-label-md text-secondary">See All</button>
+</div>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">person_add</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-on-surface"><strong>Rahul</strong> added a new lead <span class="text-secondary font-semibold">Vikram Malhotra</span> for Prestige Palms.</p>
+<p class="text-label-md font-label-md text-outline">2 minutes ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-fixed">call</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-on-surface"><strong>Priya</strong> completed a call with <span class="text-secondary font-semibold">Amit Verma</span> regarding site visit feedback.</p>
+<p class="text-label-md font-label-md text-outline">45 minutes ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">edit_note</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-on-surface">System updated status of <strong>Kunal Jain</strong> to <span class="px-2 py-0.5 bg-secondary/10 text-secondary rounded text-[12px] font-bold">Follow-up</span>.</p>
+<p class="text-label-md font-label-md text-outline">1 hour ago</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed right-6 bottom-28 w-14 h-14 rounded-full bg-secondary text-on-secondary shadow-lg flex items-center justify-center active:scale-90 transition-all duration-200 z-50">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container-lowest dark:bg-surface-container shadow-[0px_-4px_16px_rgba(0,0,0,0.04)] rounded-t-xl border-t border-outline-variant">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed text-on-secondary-container dark:text-on-secondary-fixed rounded-full px-4 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Leads -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Leads</span>
+</a>
+<!-- Calendar -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">Calendar</span>
+</a>
+<!-- Reports -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-label-md text-label-md">More</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for KPI cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add a subtle entrance animation for the bars
+        window.addEventListener('load', () => {
+            const bars = document.querySelectorAll('.bg-primary-container, .bg-primary, .bg-secondary, .bg-on-primary-container, .bg-secondary-container');
+            bars.forEach((bar, index) => {
+                const height = bar.classList.contains('h-[100%]') ? '100%' : 
+                             bar.classList.contains('h-[75%]') ? '75%' : 
+                             bar.classList.contains('h-[50%]') ? '50%' : 
+                             bar.classList.contains('h-[30%]') ? '30%' : '15%';
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.height = height;
+                }, 100 * index);
+            });
+        });
+    </script>
+</body></html>

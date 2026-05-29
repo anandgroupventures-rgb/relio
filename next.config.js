@@ -18,6 +18,46 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+
+  // Experimental performance optimizations
+  experimental: {
+    // Optimize package imports for common libraries
+    optimizePackageImports: ["lucide-react", "firebase/app", "firebase/firestore"],
+  },
+
+  turbopack: {
+    rules: {
+      "*.svg": {
+        loaders: ["@svgr/webpack"],
+        as: "*.js",
+      },
+    },
+  },
+
+  // Webpack optimizations
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Split chunks more aggressively for better caching
+      config.optimization.splitChunks = {
+        chunks: "all",
+        cacheGroups: {
+          firebase: {
+            name: "firebase",
+            test: /[\\/]node_modules[\\/](firebase|@firebase)[\\/]/,
+            priority: 20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            name: "vendor",
+            test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
+            priority: 10,
+            reuseExistingChunk: true,
+          },
+        },
+      };
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig;

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relio CRM - Projects List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e5e2e1",
+                    "surface-container-high": "#eae7e7",
+                    "surface-bright": "#fcf9f8",
+                    "on-tertiary-container": "#969798",
+                    "inverse-on-surface": "#f3f0ef",
+                    "surface-container-low": "#f6f3f2",
+                    "outline": "#767683",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#2e3030",
+                    "surface-tint": "#4c56af",
+                    "inverse-surface": "#303030",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#bdc2ff",
+                    "secondary-container": "#f89c00",
+                    "on-secondary-container": "#623a00",
+                    "primary-container": "#1a237e",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#fcf9f8",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#875200",
+                    "outline-variant": "#c6c5d4",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#8690ee",
+                    "background": "#fcf9f8",
+                    "surface-dim": "#dcd9d9",
+                    "on-surface-variant": "#454652",
+                    "on-surface": "#1b1c1c",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "tertiary": "#191b1c",
+                    "primary-fixed": "#e0e0ff",
+                    "on-primary-fixed-variant": "#343d96",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "surface-container": "#f0eded",
+                    "primary": "#000666",
+                    "secondary-fixed-dim": "#ffb865",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-secondary-fixed-variant": "#663d00",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "on-secondary-fixed": "#2b1700",
+                    "on-primary-fixed": "#000767",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-background": "#1b1c1c",
+                    "secondary-fixed": "#ffddba"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "section-gap": "32px",
+                    "baseline": "4px",
+                    "container-margin": "24px",
+                    "card-padding": "20px"
+            },
+            "fontFamily": {
+                    "data-mono": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface min-h-screen pb-32">
+<!-- Top AppBar (from JSON schema) -->
+<header class="flex items-center justify-between px-container-margin py-4 w-full h-16 fixed top-0 z-50 bg-surface dark:bg-surface-dim shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden">
+<img alt="User Profile Photo" class="w-full h-full object-cover" data-alt="A professional headshot of a real estate executive with a friendly expression, captured in high-key natural lighting against a minimalist corporate background. The image has a clean, professional aesthetic that conveys trust and accessibility, utilizing a soft depth of field and high-resolution clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu5oqk3wzlE_VRrJRqvxSXZbRZjWa35ER8fmebO6ftrjacttl6th071TtDFfBWVantotTAzvmvIUpOaKtw57M70iF2d0ey_QBbd1Gho1W6rT4BKeI3GWhC09M9vYJOQ3SDfz1OjC-6iiCZplvTpw7NkO1qGUIN2zNL6Mg--8FASfntlM_ZyVua4kzuSH5S4trLp-18vCJd1VVb0a-3pBzw0k8Kirr44ZWVHHFTJdc184CrkutQNAA8TZaHgLxoUwOiIK1TgRkDUZ0"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Relio</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-20 px-container-margin">
+<!-- Title & Search Section -->
+<section class="mb-6">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Projects</h2>
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-secondary-container focus:border-primary outline-none transition-all text-body-md placeholder:text-outline-variant" placeholder="Search by builder or project..." type="text"/>
+</div>
+</section>
+<!-- Filter Chips (City & Status) -->
+<section class="mb-8 -mx-container-margin px-container-margin overflow-x-auto hide-scrollbar flex gap-2">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-full flex items-center gap-2 whitespace-nowrap active:scale-95 transition-transform">
+<span class="font-label-md text-label-md">Mumbai</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant border border-outline-variant px-4 py-2 rounded-full whitespace-nowrap hover:bg-surface-container-high transition-colors">
+<span class="font-label-md text-label-md">Bangalore</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant border border-outline-variant px-4 py-2 rounded-full whitespace-nowrap hover:bg-surface-container-high transition-colors">
+<span class="font-label-md text-label-md">New Delhi</span>
+</button>
+<div class="w-px h-6 bg-outline-variant mx-1 self-center"></div>
+<button class="bg-surface-container-low text-on-surface-variant border border-outline-variant px-4 py-2 rounded-full whitespace-nowrap hover:bg-surface-container-high transition-colors">
+<span class="font-label-md text-label-md">Under Construction</span>
+</button>
+<button class="bg-surface-container-low text-on-surface-variant border border-outline-variant px-4 py-2 rounded-full whitespace-nowrap hover:bg-surface-container-high transition-colors">
+<span class="font-label-md text-label-md">Ready to Move</span>
+</button>
+</section>
+<!-- Projects List -->
+<div class="space-y-6">
+<!-- Project Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(26,35,126,0.05)] border border-outline-variant group">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Godrej Woods Cover" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A luxury modern residential tower with floor-to-ceiling glass windows reflecting a warm orange sunset. The architectural design is contemporary and sleek, surrounded by manicured green landscapes and soft ambient outdoor lighting. The overall mood is sophisticated, upscale, and serene, captured with professional architectural photography techniques." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN0RE9M7EJGcS8XF7hjVLLa4LpqB2LQGCSIUUs1v7TmwZDTAPVYJVhDwV-suJlT7_rcpmOBJYT3UWNeAKrIeSemy5_TSxm9FHSHmtQVa5KHh6peNujsZeNe_CmSzW7rszw5zcvJ0cuRzIIwB2u-OFx0XtguIiJ7uT3jFhk_Wq2OliFplwNGJ1t3MBYOxk6y1Wt0QdId5rliOf1JtfevwIKnz1Y8us6Roed9dSWcvY2aH1YcuzxWhzxKVSEXXiteplBo7ZS4Z9Y7N0"/>
+<div class="absolute top-4 right-4">
+<span class="bg-secondary-container/90 text-on-secondary-container px-3 py-1 rounded-full font-label-md text-label-md backdrop-blur-sm">Under Construction</span>
+</div>
+</div>
+<div class="p-card-padding">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Godrej Woods</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Godrej Properties</p>
+</div>
+<p class="text-secondary font-bold font-body-lg">From ₹2.4 Cr</p>
+</div>
+<div class="flex items-center gap-1 text-outline mb-4">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="font-body-md text-body-md">Indiranagar, Bangalore</span>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-outline-variant uppercase">Total Units</span>
+<span class="font-headline-md text-headline-md text-primary">450</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-4">
+<span class="font-label-md text-label-md text-outline-variant uppercase">Available</span>
+<span class="font-headline-md text-headline-md text-secondary">112</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Project Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(26,35,126,0.05)] border border-outline-variant group">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Lodha Blue Diamond" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A premium residential complex featuring Mediterranean-style architecture with white facades and terracotta roofs, situated overlooking a calm blue ocean. The scene is bathed in bright, mid-day coastal sunlight, creating sharp, clean shadows. The atmosphere is holiday-like and exclusive, utilizing a high-contrast, professional color grade with deep blues and crisp whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZiV7Q2yhOYT43wznvJ3olyL0rQT7Q90z1pZuseOTKW_XdIktBF97sxuVWN3JUmXs7Ef-0Agtxoo9dU7wd-iFkjIFbL_67CR2okeY7mafC2BsKU0nE1qBmF8a-enqO0BsLHlCmEylt6v-39jLAIpRVZi6SQsdFlQr6wXMMOP9D9pnf25raIpNYNfTG0jb3oSBJwLO1v13iCfdm_aot_DSM9l_N8o1DOzxktBSPGn7R0jZUg-hH0bSsyPwg8zV6WXfh8ZyA0h7yhwg"/>
+<div class="absolute top-4 right-4">
+<span class="bg-on-tertiary-container/10 text-on-surface px-3 py-1 rounded-full font-label-md text-label-md backdrop-blur-sm">Ready to Move</span>
+</div>
+</div>
+<div class="p-card-padding">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Lodha Blue Diamond</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Lodha Group</p>
+</div>
+<p class="text-secondary font-bold font-body-lg">From ₹5.8 Cr</p>
+</div>
+<div class="flex items-center gap-1 text-outline mb-4">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="font-body-md text-body-md">Worli, Mumbai</span>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-outline-variant uppercase">Total Units</span>
+<span class="font-headline-md text-headline-md text-primary">85</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-4">
+<span class="font-label-md text-label-md text-outline-variant uppercase">Available</span>
+<span class="font-headline-md text-headline-md text-secondary">08</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Project Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(26,35,126,0.05)] border border-outline-variant group">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Prestige Green City" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="An innovative green urban development featuring integrated vertical forests on high-rise balconies. The architecture is a blend of natural wood elements and modern steel, set against a bright, hazy metropolitan sky. The mood is futuristic yet eco-conscious, with vibrant lush greenery contrasting against cool architectural tones, styled with clean, high-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuC0WffavdKrtwz-Ejhljc9PUK5HtPmjb0r3s60mzL2-PJDAkM0chDzgmMDV_jla0B0QE2KrcuCF_LKqpZ9ytJONniUPK0TguYMoGibuajEGVpGNLqU4Guh2f_xvTVaswlqSUZ0BcmeWLQRUTQH1qNYN9y__NPXDjhq-FkunMJUybUBQMKNMVhMeujfxNoKKi9XgR7NV52gfl_d1euN7r123XQHU9NsmZpXJaL0eJ3EWSOayt45ZZKducwuT0h0xqddavuv_FrRHc"/>
+<div class="absolute top-4 right-4">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-md text-label-md backdrop-blur-sm border border-primary/20">New Launch</span>
+</div>
+</div>
+<div class="p-card-padding">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Prestige Green City</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Prestige Estates</p>
+</div>
+<p class="text-secondary font-bold font-body-lg">From ₹1.2 Cr</p>
+</div>
+<div class="flex items-center gap-1 text-outline mb-4">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="font-body-md text-body-md">Whitefield, Bangalore</span>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-outline-variant uppercase">Total Units</span>
+<span class="font-headline-md text-headline-md text-primary">1,200</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-4">
+<span class="font-label-md text-label-md text-outline-variant uppercase">Available</span>
+<span class="font-headline-md text-headline-md text-secondary">542</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB: Add Project -->
+<button class="fixed right-6 bottom-28 bg-secondary-container text-on-secondary-container w-14 h-14 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform duration-200 z-50">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- Bottom Navigation Bar (from JSON schema) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container-lowest dark:bg-surface-container border-t border-outline-variant dark:border-outline shadow-[0px_-4px_16px_rgba(0,0,0,0.04)] rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Leads</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">Calendar</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</div>
+<!-- Active state for 'More' because Projects is a sub-module -->
+<div class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed text-on-secondary-container dark:text-on-secondary-fixed rounded-full px-4 py-1 scale-90 duration-200">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-label-md text-label-md">More</span>
+</div>
+</nav>
+<script>
+        // Simple click interaction for cards
+        document.querySelectorAll('.group').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.add('scale-95');
+                setTimeout(() => card.classList.remove('scale-95'), 150);
+            });
+        });
+
+        // Simple filter chip toggle effect
+        document.querySelectorAll('section button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(!this.classList.contains('bg-primary')) {
+                    // This is a simplified demo toggle
+                    this.parentElement.querySelectorAll('button').forEach(b => {
+                        b.classList.remove('bg-primary', 'text-on-primary');
+                        b.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+                    });
+                    this.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+                    this.classList.add('bg-primary', 'text-on-primary');
+                }
+            });
+        });
+    </script>
+</body></html>

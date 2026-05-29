@@ -1,168 +1,211 @@
 .page {
   min-height: 100dvh;
-  display:    flex;
+  display: flex;
   flex-direction: column;
-  align-items:    center;
-  justify-content: center;
-  padding:    24px 20px 40px;
-  background: var(--relio-cream);
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9ff 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.loading {
-  min-height: 100dvh;
-  display:    flex;
+.bgGlow {
+  position: fixed;
+  top: -96px;
+  right: -96px;
+  width: 384px;
+  height: 384px;
+  background: var(--r-primary-fixed);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bgGlow2 {
+  position: fixed;
+  top: 50%;
+  left: -96px;
+  width: 256px;
+  height: 256px;
+  background: var(--r-secondary-fixed);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ── Logo ── */
-.logoBlock {
+.brand {
   text-align: center;
   margin-bottom: 32px;
 }
 
 .logoIcon {
-  width:           64px;
-  height:          64px;
-  background:      var(--relio-sage);
-  color:           #fff;
-  font-size:       28px;
-  font-weight:     800;
-  border-radius:   var(--relio-radius-lg);
-  display:         flex;
-  align-items:     center;
+  width: 64px;
+  height: 64px;
+  background: var(--r-primary);
+  color: #fff;
+  border-radius: var(--r-radius);
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin:          0 auto 16px;
-  box-shadow:      0 4px 20px rgba(122, 158, 126, 0.35);
-  letter-spacing:  -0.5px;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 24px rgba(0,6,102,0.2);
 }
 
-.logoText {
-  font-size:   30px;
-  font-weight: 800;
-  color:       var(--relio-sage);
-  letter-spacing: -0.5px;
+.subtitle {
+  font-size: 14px;
+  color: var(--r-on-surface-variant);
+  margin-top: 8px;
 }
 
-.logoSub {
-  font-size: 16px;
-  color:     var(--relio-text-muted);
-  margin-top: 6px;
-}
-
-/* ── Card ── */
 .card {
-  width:         100%;
-  max-width:     400px;
-  background:    var(--relio-cream-light);
-  border:        2px solid var(--relio-border);
-  border-radius: var(--relio-radius-xl);
-  box-shadow:    var(--relio-shadow-lg);
-  overflow:      hidden;
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--r-outline-variant);
+  border-radius: var(--r-radius-lg);
+  padding: 24px;
+  box-shadow: var(--r-shadow-card);
 }
 
-/* ── Tabs ── */
-.tabs {
-  display:        flex;
-  border-bottom:  2px solid var(--relio-border);
-}
-
-.tab {
-  flex:        1;
-  padding:     16px;
-  font-size:   15px;
-  font-weight: 600;
-  color:       var(--relio-text-muted);
-  background:  transparent;
-  transition:  all 0.15s;
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
-}
-
-.tab:hover {
-  color: var(--relio-text-mid);
-  background: var(--relio-cream-warm);
-}
-
-.tabActive {
-  color:        var(--relio-sage);
-  font-weight:  700;
-  border-bottom-color: var(--relio-sage);
-}
-
-/* ── Form ── */
 .form {
-  padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 .field {
-  display:        flex;
+  display: flex;
   flex-direction: column;
-  gap:            8px;
+  gap: 6px;
 }
 
 .label {
-  font-size:   14px;
-  font-weight:  700;
-  color:       var(--relio-text-mid);
-  letter-spacing: 0.2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--r-on-surface-variant);
 }
 
-/* Submit button - ensure it looks like a proper button */
 .submit {
-  width:      100%;
-  margin-top: 8px;
-  min-height: 56px;
+  width: 100%;
+  min-height: 52px;
   font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  border-radius: var(--r-radius);
 }
 
-.forgotBtn {
-  font-size:  14px;
-  font-weight: 600;
-  color:      var(--relio-sage);
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--r-outline-variant);
+}
+
+.googleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--r-outline-variant);
+  background: var(--r-surface-container-lowest);
+  border-radius: var(--r-radius);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--r-on-surface);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.googleBtn:hover {
+  background: var(--r-surface-container-low);
+}
+
+.googleBtn:active {
+  transform: scale(0.98);
+}
+
+.linkBtn {
   text-align: center;
-  padding:    10px;
-  width:      100%;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--r-primary);
   background: none;
   border: none;
   cursor: pointer;
-  transition: color 0.15s ease;
+  padding: 4px;
 }
-.forgotBtn:hover {
-  color: var(--relio-sage-dark);
+
+.linkBtn:hover {
   text-decoration: underline;
 }
 
-/* ── Messages ── */
 .error {
-  font-size:     14px;
-  font-weight:   600;
-  color:         var(--relio-danger);
-  background:    var(--relio-danger-bg);
-  padding:       12px 16px;
-  border-radius: var(--relio-radius);
-  border:        1px solid var(--relio-danger);
+  color: var(--r-error);
+  font-size: 13px;
+  text-align: center;
+  padding: 8px;
+  background: var(--r-error-container);
+  border-radius: var(--r-radius);
 }
 
 .success {
-  font-size:     14px;
-  font-weight:   600;
-  color:         var(--relio-success);
-  background:    var(--relio-success-bg);
-  padding:       12px 16px;
-  border-radius: var(--relio-radius);
-  border:        1px solid var(--relio-success);
+  color: var(--r-success);
+  font-size: 13px;
+  text-align: center;
+  padding: 8px;
+  background: var(--r-success-bg);
+  border-radius: var(--r-radius);
 }
 
-/* ── Footer ── */
+.guestLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--r-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.guestLink:hover {
+  text-decoration: underline;
+}
+
+.loading {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .footer {
-  margin-top: 28px;
-  font-size:  13px;
-  color:      var(--relio-text-muted);
+  padding: 16px 24px 32px;
   text-align: center;
 }

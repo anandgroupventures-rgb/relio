@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relio - Agent Productivity Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#623a00",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffddba",
+                        "secondary": "#875200",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1b1c1c",
+                        "primary": "#000666",
+                        "surface-bright": "#fcf9f8",
+                        "surface": "#fcf9f8",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface-dim": "#dcd9d9",
+                        "on-primary-container": "#8690ee",
+                        "on-primary-fixed": "#000767",
+                        "background": "#fcf9f8",
+                        "inverse-on-surface": "#f3f0ef",
+                        "tertiary": "#191b1c",
+                        "secondary-container": "#f89c00",
+                        "on-secondary-fixed": "#2b1700",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#663d00",
+                        "on-surface": "#1b1c1c",
+                        "on-surface-variant": "#454652",
+                        "primary-container": "#1a237e",
+                        "inverse-primary": "#bdc2ff",
+                        "surface-container-highest": "#e5e2e1",
+                        "surface-container": "#f0eded",
+                        "outline": "#767683",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-tertiary-container": "#969798",
+                        "primary-fixed": "#e0e0ff",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb865",
+                        "on-primary-fixed-variant": "#343d96",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f6f3f2",
+                        "outline-variant": "#c6c5d4",
+                        "inverse-surface": "#303030",
+                        "surface-tint": "#4c56af",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "tertiary-container": "#2e3030",
+                        "surface-variant": "#e5e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "32px",
+                        "baseline": "4px",
+                        "gutter": "16px",
+                        "card-padding": "20px",
+                        "container-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-container-margin py-4 w-full h-16 bg-surface dark:bg-surface-dim shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Agent Productivity</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-primary">filter_list</span>
+</button>
+</div>
+</header>
+<main class="px-container-margin pt-6 space-y-section-gap max-w-4xl mx-auto">
+<!-- Filters Row -->
+<section class="flex gap-3 overflow-x-auto hide-scrollbar py-2">
+<div class="flex flex-col gap-1 min-w-[140px]">
+<label class="font-label-md text-label-md text-on-surface-variant ml-1">Team</label>
+<select class="bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-secondary-container focus:border-primary outline-none transition-all">
+<option>All Teams</option>
+<option>West Mumbai</option>
+<option>Pune Central</option>
+<option>Bangalore East</option>
+</select>
+</div>
+<div class="flex flex-col gap-1 min-w-[160px]">
+<label class="font-label-md text-label-md text-on-surface-variant ml-1">Date Range</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-secondary-container outline-none cursor-pointer" readonly="" type="text" value="Last 30 Days"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">calendar_today</span>
+</div>
+</div>
+</section>
+<!-- Top Performer Spotlight -->
+<section>
+<div class="relative overflow-hidden bg-primary-container rounded-3xl p-6 shadow-xl text-on-primary-container flex items-center justify-between">
+<!-- Abstract Background Shapes -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container opacity-20 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+<div class="relative z-10 flex flex-col gap-2">
+<div class="flex items-center gap-2 bg-secondary-container/20 w-fit px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+<span class="font-label-md text-label-md text-secondary-fixed uppercase tracking-wider">Top Performer</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold mt-2">Arjun Malhotra</h2>
+<p class="font-body-md text-body-md opacity-80">14 Bookings this month • 92% Efficiency</p>
+<button class="mt-4 bg-secondary-container text-on-secondary-fixed font-semibold px-6 py-2 rounded-xl w-fit shadow-lg hover:opacity-90 active:scale-95 transition-all">
+                        View Portfolio
+                    </button>
+</div>
+<div class="relative z-10 hidden sm:block">
+<img alt="Arjun Malhotra" class="w-24 h-24 rounded-full border-4 border-secondary-container shadow-2xl object-cover" data-alt="A professional headshot of a smiling male real estate agent in his late 20s, wearing a crisp navy blue blazer. He is set against a brightly lit, modern office background with soft bokeh. The lighting is warm and inviting, emphasizing trust and competence, matching a premium corporate brand identity with clean, professional aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB09FPLL4OUZmp6C8pIbjJ0QVEUXxKarMbUoff43Vkb7pTFuLVRKTTEbbn_34WX6CAO4Hw_R_Q2ceBsA_nVzqfzM0nvEXiR9mrPHnWr7FQIiahAoQKJ2sDHkStq237Iuoopxi03J8njZkgwSegFSI6B_YeTPjp2ubmRFs9ZWoeV_0DLYz6qK2E7zydtMbognN0hBLpOpW_FJQEtqLfGtkln14YItM47a-8Ij41eZSES6QgccMenE52kLK0JmdJjgIobMQf5WYp2lRg"/>
+</div>
+</div>
+</section>
+<!-- Charts Section: Visits vs Bookings -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-primary">Visits vs. Bookings</h3>
+<span class="material-symbols-outlined text-on-surface-variant">bar_chart</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Data Visualizations Mock -->
+<div class="bg-surface-container-lowest p-card-padding rounded-2xl border border-outline-variant shadow-sm space-y-6">
+<div class="flex justify-between items-end h-40 gap-3 px-2">
+<!-- Bar 1 -->
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full flex flex-col justify-end gap-1 h-full">
+<div class="bg-primary/20 w-full rounded-t-md h-[80%]" title="Visits"></div>
+<div class="bg-secondary-container w-full rounded-t-md h-[40%]" title="Bookings"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Arjun</span>
+</div>
+<!-- Bar 2 -->
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full flex flex-col justify-end gap-1 h-full">
+<div class="bg-primary/20 w-full rounded-t-md h-[60%]" title="Visits"></div>
+<div class="bg-secondary-container w-full rounded-t-md h-[25%]" title="Bookings"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Sneha</span>
+</div>
+<!-- Bar 3 -->
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full flex flex-col justify-end gap-1 h-full">
+<div class="bg-primary/20 w-full rounded-t-md h-[95%]" title="Visits"></div>
+<div class="bg-secondary-container w-full rounded-t-md h-[35%]" title="Bookings"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Vikram</span>
+</div>
+<!-- Bar 4 -->
+<div class="flex flex-col items-center flex-1 gap-2">
+<div class="w-full flex flex-col justify-end gap-1 h-full">
+<div class="bg-primary/20 w-full rounded-t-md h-[50%]" title="Visits"></div>
+<div class="bg-secondary-container w-full rounded-t-md h-[20%]" title="Bookings"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Priya</span>
+</div>
+</div>
+<div class="flex justify-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-sm bg-primary/20"></div>
+<span class="font-label-md text-label-md">Visits</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-sm bg-secondary-container"></div>
+<span class="font-label-md text-label-md">Bookings</span>
+</div>
+</div>
+</div>
+<!-- KPI Mini Cards -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-card-padding rounded-2xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary mb-2">trending_up</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Avg. Conversion</p>
+<p class="font-headline-md text-headline-md text-primary">18.4%</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-2xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<span class="material-symbols-outlined text-secondary mb-2">speed</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Turnaround</p>
+<p class="font-headline-md text-headline-md text-primary">2.4 Days</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-2xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<span class="material-symbols-outlined text-on-primary-container mb-2">groups</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Total Leads</p>
+<p class="font-headline-md text-headline-md text-primary">1,284</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-card-padding rounded-2xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<span class="material-symbols-outlined text-error mb-2">assignment_late</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Overdue Tasks</p>
+<p class="font-headline-md text-headline-md text-primary">14</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Performance Comparison Table -->
+<section class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Performance Leaderboard</h3>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Agent Name</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Assigned</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Visits</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Bookings</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[12px]">AM</div>
+<span class="font-body-lg text-body-lg font-semibold">Arjun Malhotra</span>
+</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">156</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">84</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-data-mono font-bold text-primary">14</span>
+<span class="text-[10px] text-green-600 font-bold">+2</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-fixed flex items-center justify-center font-bold text-[12px]">SK</div>
+<span class="font-body-lg text-body-lg font-semibold">Sneha Kapoor</span>
+</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">142</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">65</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-data-mono font-bold text-primary">11</span>
+<span class="text-[10px] text-on-surface-variant font-bold">--</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-tertiary-fixed flex items-center justify-center font-bold text-[12px]">VS</div>
+<span class="font-body-lg text-body-lg font-semibold">Vikram Singh</span>
+</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">198</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">92</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-data-mono font-bold text-primary">9</span>
+<span class="text-[10px] text-red-600 font-bold">-1</span>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-outline-variant text-on-surface flex items-center justify-center font-bold text-[12px]">PR</div>
+<span class="font-body-lg text-body-lg font-semibold">Priya Rao</span>
+</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">94</td>
+<td class="px-6 py-4 font-data-mono text-data-mono">38</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-data-mono font-bold text-primary">6</span>
+<span class="text-[10px] text-green-600 font-bold">+1</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Mandatory Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface-container-lowest dark:bg-surface-container shadow-[0px_-4px_16px_rgba(0,0,0,0.04)] rounded-t-xl border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md mt-1">Leads</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md mt-1">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed text-on-secondary-container dark:text-on-secondary-fixed rounded-full px-4 py-1 scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-md text-label-md mt-1">Reports</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:opacity-80 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="font-label-md text-label-md mt-1">More</span>
+</a>
+</nav>
+<script>
+        // Simple Interaction for Chart Bars
+        document.querySelectorAll('[title]').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                el.style.opacity = '0.7';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.opacity = '1';
+            });
+        });
+
+        // Toggle select interactions
+        const selects = document.querySelectorAll('select');
+        selects.forEach(s => {
+            s.addEventListener('change', () => {
+                console.log('Filter applied:', s.value);
+                // Placeholder for dynamic filtering logic
+            });
+        });
+    </script>
+</body></html>

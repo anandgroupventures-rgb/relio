@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c6c5d4",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1b1c1c",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#303030",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-fixed": "#ffddba",
+                        "background": "#fcf9f8",
+                        "surface-container-high": "#eae7e7",
+                        "tertiary-fixed": "#e2e2e2",
+                        "inverse-primary": "#bdc2ff",
+                        "on-background": "#1b1c1c",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#2e3030",
+                        "on-primary-fixed-variant": "#343d96",
+                        "tertiary": "#191b1c",
+                        "primary": "#000666",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container": "#f0eded",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e5e2e1",
+                        "secondary-container": "#f89c00",
+                        "on-tertiary-container": "#969798",
+                        "secondary": "#875200",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline": "#767683",
+                        "on-surface-variant": "#454652",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#4c56af",
+                        "primary-container": "#1a237e",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-secondary-fixed-variant": "#663d00",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-container-low": "#f6f3f2",
+                        "secondary-fixed-dim": "#ffb865",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface": "#fcf9f8",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-primary-container": "#8690ee",
+                        "on-secondary-container": "#623a00",
+                        "on-primary-fixed": "#000767",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#e0e0ff",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "container-margin": "24px",
+                        "section-gap": "32px",
+                        "baseline": "4px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #000666 !important;
+            box-shadow: 0 0 0 4px rgba(248, 156, 0, 0.15);
+        }
+
+        .segmented-control-active {
+            background-color: #000666;
+            color: #ffffff;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md text-body-md min-h-screen">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full h-16 z-50 bg-surface shadow-[0px_4px_20px_rgba(26,35,126,0.05)] flex items-center px-container-margin">
+<button class="mr-4 p-2 hover:bg-surface-container rounded-full transition-colors active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Add New Lead</h1>
+</header>
+<main class="pt-20 pb-32 max-w-3xl mx-auto px-container-margin">
+<form class="space-y-section-gap" id="add-lead-form">
+<!-- Lead Type Section -->
+<section class="space-y-4">
+<h2 class="font-label-md text-label-md uppercase tracking-wider text-outline">Lead Classification</h2>
+<div class="flex flex-wrap gap-2 p-1 bg-surface-container rounded-xl">
+<label class="flex-1 min-w-[100px] cursor-pointer">
+<input checked="" class="hidden peer" name="lead_type" type="radio" value="Buyer"/>
+<div class="text-center py-2 px-3 rounded-lg text-on-surface-variant peer-checked:bg-primary peer-checked:text-white transition-all font-label-md text-label-md">Buyer</div>
+</label>
+<label class="flex-1 min-w-[100px] cursor-pointer">
+<input class="hidden peer" name="lead_type" type="radio" value="Seller"/>
+<div class="text-center py-2 px-3 rounded-lg text-on-surface-variant peer-checked:bg-primary peer-checked:text-white transition-all font-label-md text-label-md">Seller</div>
+</label>
+<label class="flex-1 min-w-[100px] cursor-pointer">
+<input class="hidden peer" name="lead_type" type="radio" value="Tenant"/>
+<div class="text-center py-2 px-3 rounded-lg text-on-surface-variant peer-checked:bg-primary peer-checked:text-white transition-all font-label-md text-label-md">Tenant</div>
+</label>
+<label class="flex-1 min-w-[100px] cursor-pointer">
+<input class="hidden peer" name="lead_type" type="radio" value="Landlord"/>
+<div class="text-center py-2 px-3 rounded-lg text-on-surface-variant peer-checked:bg-primary peer-checked:text-white transition-all font-label-md text-label-md">Landlord</div>
+</label>
+<label class="flex-1 min-w-[100px] cursor-pointer">
+<input class="hidden peer" name="lead_type" type="radio" value="NRI"/>
+<div class="text-center py-2 px-3 rounded-lg text-on-surface-variant peer-checked:bg-primary peer-checked:text-white transition-all font-label-md text-label-md">NRI</div>
+</label>
+<label class="flex-1 min-w-[100px] cursor-pointer">
+<input class="hidden peer" name="lead_type" type="radio" value="Investor"/>
+<div class="text-center py-2 px-3 rounded-lg text-on-surface-variant peer-checked:bg-primary peer-checked:text-white transition-all font-label-md text-label-md">Investor</div>
+</label>
+</div>
+</section>
+<!-- Personal Details Card -->
+<section class="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary">person</span>
+<h2 class="font-headline-md text-headline-md">Personal Details</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Full Name</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md" placeholder="e.g. Rahul Sharma" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Phone Number</label>
+<div class="flex">
+<span class="inline-flex items-center px-3 bg-surface-container border border-r-0 border-outline-variant rounded-l-lg text-on-surface-variant font-data-mono text-data-mono">+91</span>
+<input class="w-full bg-surface border border-outline-variant rounded-r-lg px-4 py-3 font-body-md text-body-md" placeholder="98765 43210" type="tel"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Email Address</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md" placeholder="rahul.s@example.com" type="email"/>
+</div>
+<div class="flex flex-col gap-2 relative">
+<label class="font-label-md text-label-md text-on-surface-variant">City &amp; Locality</label>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-3 font-body-md text-body-md" placeholder="Search locality..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Requirement Details Card -->
+<section class="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary">home_work</span>
+<h2 class="font-headline-md text-headline-md">Requirement Details</h2>
+</div>
+<div class="space-y-6">
+<!-- Property Type Multi-select -->
+<div class="space-y-3">
+<label class="font-label-md text-label-md text-on-surface-variant">Property Type</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 border border-outline-variant rounded-full text-body-md hover:bg-primary-fixed transition-colors active:bg-primary active:text-white" type="button">1 BHK</button>
+<button class="px-4 py-2 border border-outline-variant rounded-full text-body-md bg-primary text-white" type="button">2 BHK</button>
+<button class="px-4 py-2 border border-outline-variant rounded-full text-body-md hover:bg-primary-fixed transition-colors active:bg-primary active:text-white" type="button">3 BHK</button>
+<button class="px-4 py-2 border border-outline-variant rounded-full text-body-md hover:bg-primary-fixed transition-colors active:bg-primary active:text-white" type="button">4 BHK</button>
+<button class="px-4 py-2 border border-outline-variant rounded-full text-body-md hover:bg-primary-fixed transition-colors active:bg-primary active:text-white" type="button">Plot</button>
+<button class="px-4 py-2 border border-outline-variant rounded-full text-body-md hover:bg-primary-fixed transition-colors active:bg-primary active:text-white" type="button">Villa</button>
+</div>
+</div>
+<!-- Budget Range -->
+<div class="space-y-3">
+<label class="font-label-md text-label-md text-on-surface-variant">Budget Range</label>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+<label class="cursor-pointer">
+<input class="hidden peer" name="budget" type="radio" value="&lt;25L"/>
+<div class="text-center py-3 border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed-dim/10 transition-all text-body-md">&lt; 25L</div>
+</label>
+<label class="cursor-pointer">
+<input class="hidden peer" name="budget" type="radio" value="25-50L"/>
+<div class="text-center py-3 border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed-dim/10 transition-all text-body-md">25 - 50L</div>
+</label>
+<label class="cursor-pointer">
+<input checked="" class="hidden peer" name="budget" type="radio" value="50L-1Cr"/>
+<div class="text-center py-3 border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed-dim/10 transition-all text-body-md font-semibold">50L - 1Cr</div>
+</label>
+<label class="cursor-pointer">
+<input class="hidden peer" name="budget" type="radio" value="1-2Cr"/>
+<div class="text-center py-3 border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed-dim/10 transition-all text-body-md">1 - 2Cr</div>
+</label>
+<label class="cursor-pointer">
+<input class="hidden peer" name="budget" type="radio" value="2-5Cr"/>
+<div class="text-center py-3 border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed-dim/10 transition-all text-body-md">2 - 5Cr</div>
+</label>
+<label class="cursor-pointer">
+<input class="hidden peer" name="budget" type="radio" value="5Cr+"/>
+<div class="text-center py-3 border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed-dim/10 transition-all text-body-md">5Cr +</div>
+</label>
+</div>
+</div>
+<!-- Possession Timeline -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Possession Timeline</label>
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23767683%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat">
+<option>Immediate</option>
+<option>Within 3 months</option>
+<option>3 - 6 months</option>
+<option>6 - 12 months</option>
+<option>Ready to Wait</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Sales Context Card -->
+<section class="bg-surface-container-lowest border border-outline-variant p-card-padding rounded-xl shadow-[0px_4px_20px_rgba(26,35,126,0.05)]">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary">assignment_ind</span>
+<h2 class="font-headline-md text-headline-md">Lead Assignment</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Lead Source</label>
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23767683%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat">
+<option>99acres</option>
+<option>MagicBricks</option>
+<option>Website</option>
+<option>Referral</option>
+<option>Walk-in</option>
+<option>Social Media</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Assign to Agent</label>
+<div class="flex items-center gap-3 w-full bg-surface border border-outline-variant rounded-lg px-4 py-2">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">AS</div>
+<select class="flex-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md py-1 px-0 appearance-none">
+<option>Ananya Singh (Self)</option>
+<option>Vikram Malhotra</option>
+<option>Siddharth Roy</option>
+<option>Priya Verma</option>
+</select>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</div>
+</div>
+<div class="md:col-span-2 space-y-3">
+<label class="font-label-md text-label-md text-on-surface-variant">Priority Status</label>
+<div class="flex gap-2 p-1 bg-surface-container rounded-lg">
+<label class="flex-1 cursor-pointer">
+<input class="hidden peer" name="priority" type="radio" value="Hot"/>
+<div class="text-center py-2 rounded-md peer-checked:bg-error peer-checked:text-white transition-all text-label-md uppercase font-bold flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span> Hot
+                                </div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input checked="" class="hidden peer" name="priority" type="radio" value="Warm"/>
+<div class="text-center py-2 rounded-md peer-checked:bg-secondary-container peer-checked:text-on-secondary-container transition-all text-label-md uppercase font-bold flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">thermostat</span> Warm
+                                </div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="hidden peer" name="priority" type="radio" value="Cold"/>
+<div class="text-center py-2 rounded-md peer-checked:bg-outline peer-checked:text-white transition-all text-label-md uppercase font-bold flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">ac_unit</span> Cold
+                                </div>
+</label>
+</div>
+</div>
+</div>
+</section>
+</form>
+</main>
+<!-- Fixed Footer Action -->
+<footer class="fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant p-4 z-50 flex justify-center">
+<div class="max-w-3xl w-full">
+<button class="w-full bg-primary text-white py-4 rounded-xl font-headline-md text-headline-md flex items-center justify-center gap-2 shadow-lg hover:opacity-90 active:scale-95 transition-all" form="add-lead-form" type="submit">
+<span class="material-symbols-outlined">save</span>
+                Save Lead
+            </button>
+</div>
+</footer>
+<script>
+        // Micro-interaction for property type chips
+        document.querySelectorAll('.property-chip-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.toggle('bg-primary');
+                button.classList.toggle('text-white');
+                button.classList.toggle('border-primary');
+            });
+        });
+
+        // Simple form submission mock
+        document.getElementById('add-lead-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Saving...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Lead Saved!';
+                btn.classList.replace('bg-primary', 'bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.replace('bg-green-600', 'bg-primary');
+                    btn.disabled = false;
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body></html>

@@ -1,11 +1,17 @@
 import {
-  collection, doc, addDoc, updateDoc, deleteDoc,
+  collection, doc, addDoc, updateDoc, deleteDoc, getDoc,
   getDocs, query, orderBy, serverTimestamp, writeBatch,
 } from "firebase/firestore";
-import { db } from "./config";
+import { getDbInstance } from "./config";
 
-const invCol = (uid) => collection(db, "users", uid, "inventory");
-const invDoc = (uid, id) => doc(db, "users", uid, "inventory", id);
+function getDb() {
+  const db = getDbInstance();
+  if (!db) throw new Error("Firebase not configured");
+  return db;
+}
+
+const invCol = (uid) => collection(getDb(), "users", uid, "inventory");
+const invDoc = (uid, id) => doc(getDb(), "users", uid, "inventory", id);
 
 // ─── Add Inventory ────────────────────────────────────────────────────────────
 export async function addInventory(uid, data) {
@@ -21,10 +27,29 @@ export async function addInventory(uid, data) {
 
 // ─── Update Inventory ─────────────────────────────────────────────────────────
 export async function updateInventory(uid, id, data) {
-  await updateDoc(invDoc(uid, id), {
-    ...data,
-    updatedAt: serverTimestamp(),
-  });
+  // Price history tracking: if price changed, append to history
+  const updatePayload = { ...data, updatedAt: serverTimestamp() };
+  if (data.pricePerSqft || data.totalPrice) {
+    const current = await getDoc(invDoc(uid, id));
+    if (current.exists()) {
+      const currentData = current.data();
+      const history = currentData.priceHistory || [];
+      const oldPrice = currentData.pricePerSqft || currentData.totalPrice;
+      const newPrice = data.pricePerSqft || data.totalPrice;
+      if (oldPrice && newPrice && oldPrice !== newPrice) {
+        updatePayload.priceHistory = [
+          ...history,
+          {
+            price: oldPrice,
+            pricePerSqft: currentData.pricePerSqft || null,
+            totalPrice: currentData.totalPrice || null,
+            date: new Date().toISOString().split("T")[0],
+          },
+        ];
+      }
+    }
+  }
+  await updateDoc(invDoc(uid, id), updatePayload);
 }
 
 // ─── Mark Owner Contacted Today ───────────────────────────────────────────────
@@ -50,7 +75,7 @@ export async function getInventory(uid) {
 
 // ─── Bulk Delete ──────────────────────────────────────────────────────────────
 export async function bulkDeleteInventory(uid, ids) {
-  const batch = writeBatch(db);
+  const batch = writeBatch(getDb());
   ids.forEach((id) => batch.delete(invDoc(uid, id)));
   await batch.commit();
 }

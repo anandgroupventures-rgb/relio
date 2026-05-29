@@ -1,9 +1,40 @@
 /**
  * Service Worker for Relio
- * Provides offline caching and background sync
+ * Provides offline caching, background sync, and FCM push notifications
  */
 
-const CACHE_NAME = 'relio-v1';
+// Import Firebase messaging scripts for FCM support
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
+
+// Initialize Firebase in SW (uses same config as app)
+firebase.initializeApp({
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+});
+
+const messaging = firebase.messaging();
+
+// Handle background FCM messages
+messaging.onBackgroundMessage((payload) => {
+  console.log('[SW] Background FCM message:', payload);
+  const { title, body } = payload.notification || {};
+  const options = {
+    body: body || 'You have a new notification',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: payload.data?.tag || 'default',
+    requireInteraction: true,
+    data: payload.data || {},
+  };
+  return self.registration.showNotification(title || 'Relio', options);
+});
+
+const CACHE_NAME = 'relio-v2';
 const STATIC_ASSETS = [
   '/',
   '/login',
@@ -125,25 +156,6 @@ async function syncLeads() {
     });
   });
 }
-
-// Push notification support (for future)
-self.addEventListener('push', (event) => {
-  if (!event.data) return;
-
-  const data = event.data.json();
-  const options = {
-    body: data.body,
-    icon: '/icon-192x192.png',
-    badge: '/badge-72x72.png',
-    tag: data.tag || 'default',
-    requireInteraction: true,
-    data: data.data || {}
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
-});
 
 // Notification click handler
 self.addEventListener('notificationclick', (event) => {

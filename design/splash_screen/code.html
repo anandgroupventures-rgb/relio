@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relio - Real Estate Lead Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#454747",
+                    "surface-bright": "#fcf9f8",
+                    "inverse-surface": "#303030",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f2",
+                    "inverse-primary": "#bdc2ff",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e5e2e1",
+                    "secondary-fixed-dim": "#ffb865",
+                    "surface": "#fcf9f8",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f3f0ef",
+                    "secondary-container": "#f89c00",
+                    "primary-container": "#1a237e",
+                    "on-tertiary-container": "#969798",
+                    "primary": "#000666",
+                    "outline-variant": "#c6c5d4",
+                    "primary-fixed": "#e0e0ff",
+                    "secondary-fixed": "#ffddba",
+                    "on-secondary-container": "#623a00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#000767",
+                    "surface-tint": "#4c56af",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#2b1700",
+                    "surface-container-high": "#eae7e7",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#343d96",
+                    "surface-container": "#f0eded",
+                    "surface-variant": "#e5e2e1",
+                    "on-primary-container": "#8690ee",
+                    "outline": "#767683",
+                    "on-tertiary": "#ffffff",
+                    "background": "#fcf9f8",
+                    "on-secondary-fixed-variant": "#663d00",
+                    "tertiary-fixed": "#e2e2e2",
+                    "tertiary-container": "#2e3030",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "on-background": "#1b1c1c",
+                    "secondary": "#875200",
+                    "on-surface": "#1b1c1c",
+                    "tertiary": "#191b1c",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#454652"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card-padding": "20px",
+                    "container-margin": "24px",
+                    "baseline": "4px",
+                    "section-gap": "32px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-md": ["Inter"],
+                    "data-mono": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .splash-bg {
+            background: radial-gradient(circle at center, #FFFFFF 0%, #F8F9FF 70%, #E0E4FF 100%);
+        }
+
+        @keyframes logo-reveal {
+            0% { transform: scale(0.9); opacity: 0; filter: blur(10px); }
+            100% { transform: scale(1); opacity: 1; filter: blur(0px); }
+        }
+
+        @keyframes tagline-reveal {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-logo {
+            animation: logo-reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .animate-tagline {
+            animation: tagline-reveal 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+            opacity: 0;
+        }
+
+        .loading-dot {
+            animation: dot-pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes dot-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md overflow-hidden splash-bg min-h-screen flex flex-col items-center justify-center">
+<!-- Subtle Background Element -->
+<div class="absolute inset-0 z-0 opacity-20 overflow-hidden pointer-events-none">
+<div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary blur-[120px] rounded-full"></div>
+<div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-secondary-container blur-[120px] rounded-full"></div>
+</div>
+<!-- Main Content Canvas -->
+<main class="relative z-10 flex flex-col items-center text-center px-container-margin">
+<!-- Logo Branding -->
+<div class="animate-logo mb-6">
+<div class="w-24 h-24 mb-6 mx-auto bg-primary rounded-2xl flex items-center justify-center shadow-[0px_8px_32px_rgba(26,35,126,0.15)] overflow-hidden relative group">
+<!-- Abstract Logo Shape -->
+<div class="absolute inset-0 bg-gradient-to-tr from-primary to-on-primary-container opacity-50"></div>
+<span class="material-symbols-outlined text-on-primary text-6xl relative z-10" style="font-variation-settings: 'FILL' 1;">
+                    domain
+                </span>
+<!-- Subtle Shine Effect -->
+<div class="absolute -inset-full h-full w-1/2 z-20 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine"></div>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg tracking-tight text-primary">
+                Relio
+            </h1>
+</div>
+<!-- Tagline -->
+<div class="animate-tagline mb-section-gap">
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xs md:max-w-md mx-auto">
+                Real Estate Lead Management
+            </p>
+</div>
+<!-- Progress/Loading State -->
+<div class="fixed bottom-16 left-0 right-0 flex flex-col items-center gap-4 animate-tagline" style="animation-delay: 1s;">
+<div class="flex items-center gap-2">
+<div class="loading-dot w-2 h-2 rounded-full bg-primary"></div>
+<div class="loading-dot w-2 h-2 rounded-full bg-primary" style="animation-delay: 0.2s;"></div>
+<div class="loading-dot w-2 h-2 rounded-full bg-primary" style="animation-delay: 0.4s;"></div>
+</div>
+<span class="font-label-md text-label-md text-outline tracking-widest uppercase">
+                Initializing System
+            </span>
+</div>
+</main>
+<!-- Visual Polish: Content Cards Preview (Abstracted) -->
+<div class="absolute inset-x-0 bottom-0 z-0 h-1/4 opacity-10 flex justify-center gap-gutter overflow-hidden pointer-events-none">
+<div class="w-64 h-80 bg-surface-container-highest rounded-t-xl border border-outline-variant transform translate-y-12 shadow-sm"></div>
+<div class="w-64 h-80 bg-surface-container-highest rounded-t-xl border border-outline-variant transform translate-y-8 shadow-md"></div>
+<div class="w-64 h-80 bg-surface-container-highest rounded-t-xl border border-outline-variant transform translate-y-16 shadow-sm"></div>
+</div>
+<script>
+        // Simple logic to simulate loading transition or visual interest
+        document.addEventListener('DOMContentLoaded', () => {
+            // Optional: simulate an automatic redirect after few seconds
+            // setTimeout(() => {
+            //    window.location.href = 'dashboard.html';
+            // }, 3500);
+            
+            // Interaction: Mouse movement parallax effect
+            document.addEventListener('mousemove', (e) => {
+                const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+                const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+                const logo = document.querySelector('.animate-logo');
+                if (logo) {
+                    logo.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                }
+            });
+        });
+    </script>
+</body></html>

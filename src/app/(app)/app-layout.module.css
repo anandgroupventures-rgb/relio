@@ -1,35 +1,37 @@
 .loading {
-  min-height:     100dvh;
-  display:        flex;
+  min-height: 100dvh;
+  display: flex;
   flex-direction: column;
-  align-items:    center;
+  align-items: center;
   justify-content: center;
-  background:     var(--relio-bg);
+  background: var(--r-background);
+  gap: 24px;
 }
 
 .loadingLogo {
-  width:           52px;
-  height:          52px;
-  background:      var(--relio-gold);
-  color:           #fff;
-  font-size:       24px;
-  font-weight:     800;
-  border-radius:   14px;
-  display:         flex;
-  align-items:     center;
+  width: 52px;
+  height: 52px;
+  background: var(--r-primary);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  box-shadow:      0 4px 16px rgba(196,154,42,0.35);
+  box-shadow: 0 4px 16px rgba(0,6,102,0.35);
 }
 
 .layout {
-  position:   relative;
+  position: relative;
   min-height: 100dvh;
-  display:    flex;
+  display: flex;
   flex-direction: column;
+  background: var(--r-background);
 }
 
 .main {
-  flex:           1;
+  flex: 1;
   padding-bottom: var(--nav-height);
-  overflow-y:     auto;
+  overflow-y: auto;
 }
