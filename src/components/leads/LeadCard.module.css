@@ -158,8 +158,10 @@
   border: 1.5px solid currentColor;
   white-space: nowrap;
 }
-.typeChip[data-type="Buy"]  { color: #1A7842; background: #E8F5EE; border-color: #1A784240; }
-.typeChip[data-type="Rent"] { color: #5C3A8C; background: #F2EBFB; border-color: #5C3A8C40; }
+.typeChip[data-type="Buyer"]    { color: #1A7842; background: #E8F5EE; border-color: #1A784240; }
+.typeChip[data-type="Seller"]   { color: #B06020; background: #FBF0E5; border-color: #B0602040; }
+.typeChip[data-type="Tenant"]   { color: #3A6EA8; background: #E8F0FA; border-color: #3A6EA840; }
+.typeChip[data-type="Landlord"] { color: #5C3A8C; background: #F2EBFB; border-color: #5C3A8C40; }
 
 /* Status chip */
 .statusChip {

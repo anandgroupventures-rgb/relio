@@ -7,15 +7,35 @@ import { LEAD_STATUSES, LEAD_SOURCES, BHK_OPTIONS } from "@/lib/utils/constants"
 import { ArrowLeft, Save, User, Home, UserCheck } from "lucide-react";
 import styles from "./new.module.css";
 
-const LEAD_TYPES = ["Buyer", "Seller", "Tenant", "Landlord", "NRI", "Investor"];
+const LEAD_TYPES = ["Buyer", "Seller", "Tenant", "Landlord"];
+
 const PRIORITIES = [
   { value: "hot", label: "Hot", color: "var(--r-error)" },
   { value: "warm", label: "Warm", color: "var(--r-secondary-container)" },
   { value: "cold", label: "Cold", color: "var(--r-outline)" },
 ];
 
-const BUDGETS = ["< 25L", "25 - 50L", "50L - 1Cr", "1 - 2Cr", "2 - 5Cr", "5Cr +"];
 const TIMELINES = ["Immediate", "Within 3 months", "3 - 6 months", "6 - 12 months", "Ready to Wait"];
+
+function getBudgetLabel(type) {
+  switch (type) {
+    case "Buyer":    return "Budget (in Crores)";
+    case "Seller":   return "Asking Price (in Crores)";
+    case "Tenant":   return "Monthly Budget (in Thousands)";
+    case "Landlord": return "Expected Rent (in Thousands)";
+    default:         return "Budget";
+  }
+}
+
+function getBudgetPlaceholder(type) {
+  switch (type) {
+    case "Buyer":    return "e.g. 1.5 Cr";
+    case "Seller":   return "e.g. 2.5 Cr";
+    case "Tenant":   return "e.g. ₹40k/month";
+    case "Landlord": return "e.g. ₹35k/month";
+    default:         return "Budget";
+  }
+}
 
 export default function NewLeadPage() {
   const router = useRouter();
@@ -60,6 +80,9 @@ export default function NewLeadPage() {
       setBusy(false);
     }
   }
+
+  const budgetLabel = getBudgetLabel(form.leadType);
+  const budgetPlaceholder = getBudgetPlaceholder(form.leadType);
 
   return (
     <div className={styles.page}>
@@ -136,15 +159,13 @@ export default function NewLeadPage() {
             </div>
 
             <div className={styles.field} style={{ marginTop: 16 }}>
-              <label className="text-label-md" style={{ color: "var(--r-on-surface-variant)" }}>Budget Range</label>
-              <div className={styles.grid3}>
-                {BUDGETS.map(b => (
-                  <label key={b} className={styles.radioCard}>
-                    <input type="radio" name="budget" value={b} checked={form.budget === b} onChange={set("budget")} className={styles.radioInput} />
-                    <div className={`${styles.radioPill} ${form.budget === b ? styles.radioPillActive : ""}`}>{b}</div>
-                  </label>
-                ))}
-              </div>
+              <label className="text-label-md" style={{ color: "var(--r-on-surface-variant)" }}>{budgetLabel}</label>
+              <input
+                className="r-input"
+                placeholder={budgetPlaceholder}
+                value={form.budget}
+                onChange={set("budget")}
+              />
             </div>
 
             <div className={styles.field} style={{ marginTop: 16 }}>
@@ -203,11 +224,11 @@ export default function NewLeadPage() {
         </form>
       </main>
 
-      {/* Fixed Footer */}
+      {/* Fixed Footer — positioned above bottom nav */}
       <footer className={styles.footer}>
         <button className={`r-btn r-btn-primary ${styles.saveBtn}`} form="add-lead-form" type="submit" disabled={busy}>
           <Save size={18} />
-          {busy ? "Saving…" : "Save Lead"}
+          {busy ? "Saving..." : "Save Lead"}
         </button>
       </footer>
     </div>

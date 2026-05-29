@@ -7,11 +7,6 @@ import { todayStr } from "@/lib/utils/dateHelpers";
 import { LEAD_STATUSES, LEAD_SOURCES, LEAD_TYPES, BHK_OPTIONS } from "@/lib/utils/constants";
 import styles from "./LeadForm.module.css";
 
-// ─── CRITICAL FIX: Row is defined OUTSIDE the component ──────────────────────
-// When Row was defined inside LeadForm, React saw it as a NEW component on every
-// re-render (because the function reference changed). This caused React to
-// unmount + remount the inputs on every keystroke, making focus jump back to
-// the first field after typing just one character in any other field.
 function Row({ label, children }) {
   return (
     <div className={styles.row}>
@@ -19,6 +14,26 @@ function Row({ label, children }) {
       {children}
     </div>
   );
+}
+
+function getBudgetLabel(type) {
+  switch (type) {
+    case "Buyer":    return "Budget (in Crores)";
+    case "Seller":   return "Asking Price (in Crores)";
+    case "Tenant":   return "Monthly Budget (in Thousands)";
+    case "Landlord": return "Expected Rent (in Thousands)";
+    default:         return "Budget";
+  }
+}
+
+function getBudgetPlaceholder(type) {
+  switch (type) {
+    case "Buyer":    return "e.g. 1.5 Cr";
+    case "Seller":   return "e.g. 2.5 Cr";
+    case "Tenant":   return "e.g. ₹40k/month";
+    case "Landlord": return "e.g. ₹35k/month";
+    default:         return "Budget";
+  }
 }
 
 export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode = false }) {
@@ -30,7 +45,7 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
     name:            lead?.name            || "",
     mobile:          lead?.mobile          || "",
     email:           lead?.email           || "",
-    type:            lead?.type            || "Buy",
+    type:            lead?.type            || "Buyer",
     projectInterest: lead?.projectInterest || "",
     budget:          lead?.budget          || "",
     source:          lead?.source          || "",
@@ -45,13 +60,11 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
   const [dupLead,  setDupLead]  = useState(null);
   const [showFull, setShowFull] = useState(!quickMode);
 
-  // Focus first field ONCE on mount only
   useEffect(() => {
     const t = setTimeout(() => firstRef.current?.focus(), 100);
     return () => clearTimeout(t);
   }, []); // eslint-disable-line
 
-  // Duplicate check — only runs when mobile changes
   useEffect(() => {
     const clean = form.mobile.replace(/\D/g, "");
     if (clean.length < 10) { setDupLead(null); return; }
@@ -83,6 +96,9 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
       setBusy(false);
     }
   }
+
+  const budgetLabel = getBudgetLabel(form.type);
+  const budgetPlaceholder = getBudgetPlaceholder(form.type);
 
   return (
     <div className={styles.form}>
@@ -120,7 +136,7 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
 
       {showFull && (
         <>
-          <Row label="Looking to">
+          <Row label="Classification">
             <div className={styles.chips}>
               {LEAD_TYPES.map(t => (
                 <button key={t} type="button"
@@ -130,8 +146,6 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
             </div>
           </Row>
 
-          {/* FIX #7: Show ALL BHK options including Plot/Land & Commercial
-              Previously used .slice(0,6) which cut off Plot/Land and Commercial */}
           <Row label="Configuration">
             <div className={styles.chips}>
               {BHK_OPTIONS.map(b => (
@@ -147,8 +161,8 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
               value={form.projectInterest} onChange={set("projectInterest")} />
           </Row>
 
-          <Row label="Budget">
-            <input className="relio-input" placeholder="1.5–2cr / ₹40k/month"
+          <Row label={budgetLabel}>
+            <input className="relio-input" placeholder={budgetPlaceholder}
               value={form.budget} onChange={set("budget")} />
           </Row>
 
@@ -198,7 +212,7 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
         )}
         <button type="button" className="relio-btn relio-btn-primary" onClick={handleSave}
           disabled={busy} style={{ flex: 1 }}>
-          {busy ? "Saving…" : isEdit ? "Save Changes" : "Add Lead"}
+          {busy ? "Saving…" : isEdit ? "Save Changes" : "Save Lead"}
         </button>
       </div>
     </div>

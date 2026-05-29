@@ -22,7 +22,7 @@ const THEMES = [
 ];
 
 const LEAD_FIELDS = [
-  { key: "type", label: "Type (Buy/Rent)" },
+  { key: "type", label: "Type (Buyer/Seller/Tenant/Landlord)" },
   { key: "bhk", label: "Configuration (BHK)" },
   { key: "projectInterest", label: "Project / Area" },
   { key: "budget", label: "Budget" },

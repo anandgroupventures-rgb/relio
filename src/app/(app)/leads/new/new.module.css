@@ -1,7 +1,7 @@
 .page {
   background: var(--r-background);
   min-height: 100dvh;
-  padding-bottom: 96px;
+  padding-bottom: calc(var(--nav-height) + 80px);
 }
 
 .header {
@@ -254,7 +254,7 @@
 /* Footer */
 .footer {
   position: fixed;
-  bottom: 0;
+  bottom: var(--nav-height);
   left: 0;
   right: 0;
   z-index: 50;

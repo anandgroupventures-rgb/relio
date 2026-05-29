@@ -81,7 +81,7 @@ export default function BulkImport({ leads, onDone, onCancel }) {
           name, mobile,
           email:           row[colMap.email]           || "",
           source:          row[colMap.source]          || "",
-          type:            row[colMap.type]            || "Buy",
+          type:            row[colMap.type]            || "Buyer",
           projectInterest: row[colMap.projectInterest] || "",
           budget:          row[colMap.budget]          || "",
           remarks:         row[colMap.remarks]         || "",

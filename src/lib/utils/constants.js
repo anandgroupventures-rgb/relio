@@ -34,7 +34,7 @@ export const LEAD_SOURCES = [
   "Site Visit", "Builder Event", "Other",
 ];
 
-export const LEAD_TYPES = ["Buy", "Rent"];
+export const LEAD_TYPES = ["Buyer", "Seller", "Tenant", "Landlord"];
 
 export const PRIORITIES = ["Hot", "Warm", "Cold"];
 
