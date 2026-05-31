@@ -185,15 +185,22 @@ export const DISQUALIFIED_STATUSES = [
 ];
 
 export function isDisqualified(lead) {
-  return lead.isQualified === false && lead.status !== "new";
+  // Explicitly disqualified: isQualified=false and past the new stage
+  if (lead.isQualified === false && lead.status !== "new") return true;
+  // Backward-compat: old leads without isQualified that have dead statuses
+  if (lead.isQualified === undefined && DISQUALIFIED_STATUSES.includes(lead.status)) return true;
+  return false;
 }
 
 export function isUncontacted(lead) {
-  return lead.status === "new" && lead.isQualified !== true;
+  // Uncontacted = status is "new" and hasn't been explicitly qualified
+  if (lead.isQualified === true) return false;
+  return lead.status === "new";
 }
 
 export function isPipeline(lead) {
-  return !isDisqualified(lead);
+  // Pipeline = NOT uncontacted AND NOT disqualified
+  return !isUncontacted(lead) && !isDisqualified(lead);
 }
 
 // Filter leads
