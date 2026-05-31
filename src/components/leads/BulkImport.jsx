@@ -4,19 +4,88 @@ import * as XLSX from "xlsx";
 import { addLead, updateLead } from "@/lib/firebase/leads";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { findDuplicate } from "@/lib/utils/leadHelpers";
+import { todayStr } from "@/lib/utils/dateHelpers";
+import { BHK_OPTIONS, LEAD_TYPES } from "@/lib/utils/constants";
 import styles from "./BulkImport.module.css";
 
-// Flexible column name mapping
+// ─── Flexible column name mapping ───────────────────────────────────────────
 const COL_MAP = {
-  name:            ["name","full name","client name","lead name","contact"],
-  mobile:          ["mobile","phone","mobile number","phone number","contact number","number"],
-  email:           ["email","email id","email address"],
-  source:          ["source","lead source","from"],
-  type:            ["type","buy or rent","looking for"],
-  projectInterest: ["project","area","location","project interest","interested in"],
-  budget:          ["budget","price range"],
-  remarks:         ["remarks","notes","comment","note"],
+  name:            ["name","full name","client name","lead name","contact","customer name"],
+  mobile:          ["mobile","phone","mobile number","phone number","contact number","cell"],
+  email:           ["email","email id","email address","e-mail"],
+  source:          ["source","lead source","from","channel","referral source"],
+  type:            ["type","category","lead type","buy or rent","looking for","client type","lead category"],
+  projectInterest: ["project","area","location","project interest","interested in","property","locality","locality interest"],
+  budget:          ["budget","price range","asking price","expected price"],
+  remarks:         ["remarks","notes","comment","note","comments","additional notes"],
+  leadDate:        ["lead date","date","capture date","entry date","created date","enquiry date"],
+  bhk:             ["bhk","configuration","unit type","property type","bedroom","bedrooms","unit"],
+  status:          ["status","lead status","current status","stage"],
+  followUpDate:    ["follow up","follow-up","followup date","next call","reminder","callback date","next follow up"],
+  locality:        ["locality","city","neighborhood","sector","block"],
 };
+
+// ─── Normalize lead type ─────────────────────────────────────────────────────
+function normalizeType(val) {
+  if (!val) return "Buyer";
+  const v = val.toString().trim().toLowerCase();
+  if (v.includes("sell") || v.includes("sell")) return "Seller";
+  if (v.includes("buy") || v.includes("purchase")) return "Buyer";
+  if (v.includes("rent") && v.includes("out")) return "Landlord";
+  if (v.includes("rent") || v.includes("tenant")) return "Tenant";
+  if (v.includes("landlord") || v.includes("owner")) return "Landlord";
+  if (LEAD_TYPES.includes(val.toString().trim())) return val.toString().trim();
+  return "Buyer";
+}
+
+// ─── Normalize BHK ───────────────────────────────────────────────────────────
+function normalizeBhk(val) {
+  if (!val) return "";
+  const v = val.toString().trim();
+  // Direct match first
+  if (BHK_OPTIONS.includes(v)) return v;
+  // Fuzzy match
+  const lower = v.toLowerCase();
+  if (lower.includes("studio")) return "Studio";
+  if (lower.includes("1") || lower.includes("one")) return "1 BHK";
+  if (lower.includes("2") || lower.includes("two")) return "2 BHK";
+  if (lower.includes("3") || lower.includes("three")) return "3 BHK";
+  if (lower.includes("4") || lower.includes("four")) return "4 BHK";
+  if (lower.includes("5") || lower.includes("five")) return "5 BHK";
+  if (lower.includes("villa")) return "Villa";
+  if (lower.includes("plot") || lower.includes("land")) return "Plot / Land";
+  if (lower.includes("commercial")) return "Commercial";
+  return v;
+}
+
+// ─── Normalize status ──────────────────────────────────────────────────────
+function normalizeStatus(val) {
+  if (!val) return "new";
+  const v = val.toString().trim().toLowerCase().replace(/\s+/g, "_");
+  const valid = [
+    "new","contacted","interested","details_shared","visit_scheduled",
+    "visit_done","negotiating","converted","call_back","not_answering",
+    "busy","switched_off","not_interested","lost","invalid_number"
+  ];
+  if (valid.includes(v)) return v;
+  // Common synonyms
+  if (v.includes("new")) return "new";
+  if (v.includes("contact")) return "contacted";
+  if (v.includes("interest")) return "interested";
+  if (v.includes("detail")) return "details_shared";
+  if (v.includes("visit_scheduled")) return "visit_scheduled";
+  if (v.includes("visit_done") || v.includes("visited")) return "visit_done";
+  if (v.includes("negotiat")) return "negotiating";
+  if (v.includes("convert") || v.includes("won") || v.includes("closed")) return "converted";
+  if (v.includes("call_back") || v.includes("callback")) return "call_back";
+  if (v.includes("not_answer") || v.includes("no answer")) return "not_answering";
+  if (v.includes("busy")) return "busy";
+  if (v.includes("switch")) return "switched_off";
+  if (v.includes("not_interest") || v.includes("not interested")) return "not_interested";
+  if (v.includes("lost") || v.includes("dead")) return "lost";
+  if (v.includes("invalid") || v.includes("wrong")) return "invalid_number";
+  return "new";
+}
 
 function mapColumns(header) {
   const map = {};
@@ -27,6 +96,18 @@ function mapColumns(header) {
     });
   });
   return map;
+}
+
+// Build a human-readable mapping summary
+function buildMappingSummary(map, headers) {
+  const summary = [];
+  Object.entries(COL_MAP).forEach(([field, aliases]) => {
+    const idx = map[field];
+    if (idx !== undefined && headers[idx]) {
+      summary.push({ field, header: headers[idx], aliases });
+    }
+  });
+  return summary;
 }
 
 export default function BulkImport({ leads, onDone, onCancel }) {
@@ -40,7 +121,8 @@ export default function BulkImport({ leads, onDone, onCancel }) {
   const [importing,  setImporting]  = useState(false);
   const [result,     setResult]     = useState({ imported:0, skipped:0, merged:0 });
   const [duplicates, setDuplicates] = useState([]); // rows with duplicate mobiles
-  const [mergeMode,  setMergeMode]  = useState(false); // if true, update existing leads instead of skip
+  const [mergeMode,  setMergeMode]  = useState(false);
+  const [mappingSummary, setMappingSummary] = useState([]);
 
   function handleFile(e) {
     const file = e.target.files[0];
@@ -55,6 +137,7 @@ export default function BulkImport({ leads, onDone, onCancel }) {
       const map  = mapColumns(hdr);
       setHeaders(hdr);
       setColMap(map);
+      setMappingSummary(buildMappingSummary(map, hdr));
       const allRows = data.slice(1);
       // Detect duplicates
       const dups = [];
@@ -68,9 +151,12 @@ export default function BulkImport({ leads, onDone, onCancel }) {
       setDuplicates(dups);
       setRows(allRows);
       const prev = allRows.slice(0, 5).map(row => ({
-        name:   row[map.name]   || "",
-        mobile: row[map.mobile] || "",
-        source: row[map.source] || "",
+        name:     row[map.name]   || "",
+        mobile:   row[map.mobile] || "",
+        source:   row[map.source] || "",
+        type:     normalizeType(row[map.type]),
+        bhk:      normalizeBhk(row[map.bhk]),
+        leadDate: row[map.leadDate] || todayStr(),
       }));
       setPreview(prev);
       setStep(2);
@@ -93,10 +179,15 @@ export default function BulkImport({ leads, onDone, onCancel }) {
             const updates = {};
             if (row[colMap.email]) updates.email = row[colMap.email];
             if (row[colMap.source]) updates.source = row[colMap.source];
-            if (row[colMap.type]) updates.type = row[colMap.type];
+            if (row[colMap.type]) updates.type = normalizeType(row[colMap.type]);
             if (row[colMap.projectInterest]) updates.projectInterest = row[colMap.projectInterest];
             if (row[colMap.budget]) updates.budget = row[colMap.budget];
             if (row[colMap.remarks]) updates.remarks = row[colMap.remarks];
+            if (row[colMap.bhk]) updates.bhk = normalizeBhk(row[colMap.bhk]);
+            if (row[colMap.status]) updates.status = normalizeStatus(row[colMap.status]);
+            if (row[colMap.followUpDate]) updates.followUpDate = row[colMap.followUpDate];
+            if (row[colMap.locality]) updates.locality = row[colMap.locality];
+            if (row[colMap.leadDate]) updates.leadDate = row[colMap.leadDate];
             if (Object.keys(updates).length > 0) {
               await updateLead(user.uid, dup.id, updates);
               merged++;
@@ -114,10 +205,15 @@ export default function BulkImport({ leads, onDone, onCancel }) {
           name, mobile,
           email:           row[colMap.email]           || "",
           source:          row[colMap.source]          || "",
-          type:            row[colMap.type]            || "Buyer",
-          projectInterest: row[colMap.projectInterest] || "",
+          type:            normalizeType(row[colMap.type]),
+          projectInterest: row[colMap.projectInterest] || row[colMap.locality] || "",
           budget:          row[colMap.budget]          || "",
           remarks:         row[colMap.remarks]         || "",
+          bhk:             normalizeBhk(row[colMap.bhk]),
+          status:          normalizeStatus(row[colMap.status]),
+          followUpDate:    row[colMap.followUpDate]    || "",
+          locality:        row[colMap.locality]        || "",
+          leadDate:        row[colMap.leadDate]        || todayStr(),
         });
         imported++;
       } catch { skipped++; }
@@ -140,8 +236,10 @@ export default function BulkImport({ leads, onDone, onCancel }) {
               onChange={handleFile} />
           </div>
           <div className={styles.template}>
-            <p className={styles.templateTitle}>Expected columns (any order, any spelling close to these):</p>
-            <p className={styles.templateCols}>Name · Mobile · Email · Source · Type · Project · Budget · Remarks</p>
+            <p className={styles.templateTitle}>Expected columns (any order, close spelling works):</p>
+            <p className={styles.templateCols}>
+              Name · Mobile · Email · Source · Type/Category · BHK · Project/Area · Locality · Budget · Status · Follow-up Date · Lead Date · Remarks
+            </p>
           </div>
         </>
       )}
@@ -154,10 +252,28 @@ export default function BulkImport({ leads, onDone, onCancel }) {
               ↩ Re-upload
             </button>
           </div>
+
+          {/* Column mapping summary */}
+          {mappingSummary.length > 0 && (
+            <div className={styles.mappingBox}>
+              <p className={styles.mappingTitle}>Matched columns</p>
+              <div className={styles.mappingList}>
+                {mappingSummary.map(m => (
+                  <span key={m.field} className={styles.mappingChip}>
+                    <strong>{m.header}</strong> → {m.field.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
+                  </span>
+                ))}
+              </div>
+              {Object.keys(colMap).length === 0 && (
+                <p className={styles.mappingWarn}>No recognizable columns found. Make sure headers are in the first row.</p>
+              )}
+            </div>
+          )}
+
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Name</th><th>Mobile</th><th>Source</th>
+                <th>Name</th><th>Mobile</th><th>Type</th><th>BHK</th><th>Date</th>
               </tr>
             </thead>
             <tbody>
@@ -165,7 +281,9 @@ export default function BulkImport({ leads, onDone, onCancel }) {
                 <tr key={i}>
                   <td>{r.name   || <span className={styles.missing}>—</span>}</td>
                   <td>{r.mobile || <span className={styles.missing}>—</span>}</td>
-                  <td>{r.source || <span className={styles.missing}>—</span>}</td>
+                  <td>{r.type   || <span className={styles.missing}>—</span>}</td>
+                  <td>{r.bhk    || <span className={styles.missing}>—</span>}</td>
+                  <td>{r.leadDate || <span className={styles.missing}>—</span>}</td>
                 </tr>
               ))}
             </tbody>

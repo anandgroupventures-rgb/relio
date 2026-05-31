@@ -37,3 +37,39 @@
 .doneTitle { font-size: 20px; font-weight: 800; color: var(--relio-text); }
 .doneSub   { font-size: 16px; color: var(--relio-success); font-weight: 600; }
 .skipped   { font-size: 13px; color: var(--relio-text-muted); }
+
+/* Column mapping summary */
+.mappingBox {
+  background: var(--relio-bg-subtle);
+  border: 1px solid var(--relio-border);
+  border-radius: var(--relio-radius-sm);
+  padding: 12px;
+}
+.mappingTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--relio-text-muted);
+  margin-bottom: 8px;
+}
+.mappingList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mappingChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--relio-radius-sm);
+  font-size: 12px;
+  background: var(--relio-gold-light);
+  color: var(--relio-text);
+  border: 1px solid var(--relio-gold-border);
+}
+.mappingWarn {
+  font-size: 12px;
+  color: var(--relio-warning);
+  margin-top: 8px;
+}
