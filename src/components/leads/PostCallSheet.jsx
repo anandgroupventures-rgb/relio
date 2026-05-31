@@ -17,6 +17,9 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
   const [note,      setNote]      = useState("");
   const [busy,      setBusy]      = useState(false);
 
+  const attempts = (lead?.callAttempts || 0) + 1;
+  const isDeadWarning = !answered && attempts >= 5;
+
   function reset() {
     setStep(1); setAnswered(null); setOutcome("");
     setFollowUp(""); setCustomDate(""); setNote("");
@@ -25,6 +28,7 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
   function handleClose() { reset(); onClose(); }
 
   async function handleDone() {
+    if (!user || !lead) return;
     setBusy(true);
     try {
       const fuDate = followUp === "custom" ? customDate : followUp;
@@ -35,9 +39,10 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
         outcome:   answered ? outcome : "not_answered",
         notes:     note,
         followUpSet: fuDate || null,
+        callAttempt: attempts,
       };
 
-      // Map outcome to status
+      // Map outcome to status and qualification
       const statusMap = {
         interested:       "interested",
         details_shared:   "details_shared",
@@ -48,10 +53,33 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
         converted:        "converted",
       };
 
+      let newStatus = lead.status;
+      let isQualified = lead.isQualified;
+
+      if (answered) {
+        if (outcome === "not_interested") {
+          newStatus = "not_interested";
+          isQualified = false;
+        } else if (statusMap[outcome]) {
+          newStatus = statusMap[outcome];
+          isQualified = true; // Any positive outcome qualifies the lead
+        } else if (outcome === "other") {
+          newStatus = "contacted";
+          isQualified = true;
+        }
+      } else {
+        // Not answered — pick disposition based on attempts or keep not_answering
+        newStatus = attempts >= 5 ? "lost" : "not_answering";
+        isQualified = false;
+      }
+
       const updates = {
         lastContactedAt: new Date(),
+        callAttempts: attempts,
+        status: newStatus,
+        isQualified,
         ...(answered && statusMap[outcome] ? { status: statusMap[outcome] } : {}),
-        ...(!answered ? { status: "not_answering" } : {}),
+        ...(!answered ? { status: newStatus } : {}),
         ...(fuDate ? { followUpDate: fuDate } : {}),
       };
 
@@ -88,6 +116,9 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
                 ❌ No answer
               </button>
             </div>
+            {attempts > 1 && (
+              <p className={styles.attemptNote}>Attempt #{attempts}</p>
+            )}
           </div>
         )}
 
@@ -109,6 +140,13 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
         {/* ── Step 3: Follow-up + note ── */}
         {step === 3 && (
           <div className={styles.step}>
+            {isDeadWarning && (
+              <div className={styles.deadWarning}>
+                <span>⚠</span>
+                <span>5th unanswered call. Consider marking as <strong>Lost</strong> or <strong>Invalid Number</strong>.</span>
+              </div>
+            )}
+
             <p className={styles.sectionLabel}>Set next follow-up</p>
             <div className={styles.fuOptions}>
               {FOLLOWUP_QUICK.map(q => (

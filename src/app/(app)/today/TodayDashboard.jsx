@@ -7,7 +7,7 @@ import { useLeads } from "@/lib/hooks/useLeads";
 import { useInventory } from "@/lib/hooks/useInventory";
 import { useSyncStatus } from "@/lib/hooks/useSyncStatus";
 import { isOverdue, isToday, formatFollowUp, stalenessLevel } from "@/lib/utils/dateHelpers";
-import { getTempStyle, getStatusLabel, getStatusColor } from "@/lib/utils/leadHelpers";
+import { getTempStyle, getStatusLabel, getStatusColor, isUncontacted } from "@/lib/utils/leadHelpers";
 import { LEAD_STATUSES } from "@/lib/utils/constants";
 import { getFollowupSuggestions, findMatchingProperties } from "@/lib/utils/smartSuggestions";
 import BottomSheet from "@/components/shared/BottomSheet";
@@ -44,6 +44,13 @@ export default function TodayDashboard() {
   const siteVisits = leads.filter(l => l.status === "visit_scheduled" && l.followUpDate && isToday(l.followUpDate));
   const converted = leads.filter(l => l.status === "converted");
   const bookings = leads.filter(l => l.status === "negotiating" || l.status === "converted");
+
+  // Needs first contact
+  const needsContact = leads.filter(isUncontacted).sort((a, b) => {
+    const da = a.leadDate || "9999";
+    const db = b.leadDate || "9999";
+    return da < db ? -1 : da > db ? 1 : 0;
+  });
 
   const availableProperties = inventory.filter(i => i.availability === "available");
   const staleInv = inventory.filter(i => {
@@ -145,6 +152,46 @@ export default function TodayDashboard() {
           </div>
         </section>
 
+        {/* Today's Schedule — Follow-ups first */}
+        <section className={`r-card ${styles.scheduleCard}`}>
+          <h2 className="text-headline-md" style={{ marginBottom: 16 }}>Today&apos;s Schedule</h2>
+          {siteVisits.length > 0 || dueToday.length > 0 ? (
+            <div className={styles.scheduleList}>
+              {siteVisits.slice(0, 3).map(lead => (
+                <ScheduleItem key={lead.id} lead={lead} time={lead.visitTime || "10:00 AM"} label={`Site visit${lead.visitLocation ? ` — ${lead.visitLocation}` : ""}`} onTap={() => router.push(`/leads/${lead.id}`)} onCall={() => handleCall(lead)} onWA={() => handleWA(lead)} />
+              ))}
+              {dueToday.filter(l => !siteVisits.find(s => s.id === l.id)).slice(0, 3).map(lead => (
+                <ScheduleItem key={lead.id} lead={lead} time="2:00 PM" label="Follow-up" onTap={() => router.push(`/leads/${lead.id}`)} onCall={() => handleCall(lead)} onWA={() => handleWA(lead)} />
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptySchedule}>
+              <p className="text-body-md" style={{ color: "var(--r-outline)" }}>No follow-ups for today</p>
+              <button className={styles.viewCalBtn} onClick={() => router.push("/calendar")}>View Calendar</button>
+            </div>
+          )}
+        </section>
+
+        {/* Needs First Contact */}
+        {needsContact.length > 0 && (
+          <section className={`r-card ${styles.scheduleCard}`}>
+            <div className={styles.sectionHeader} style={{ marginBottom: 16 }}>
+              <h2 className="text-headline-md">Needs First Contact</h2>
+              <span className="text-label-md" style={{ color: "var(--r-error)" }}>{needsContact.length} pending</span>
+            </div>
+            <div className={styles.scheduleList}>
+              {needsContact.slice(0, 5).map(lead => (
+                <ScheduleItem key={lead.id} lead={lead} time="Call" label={lead.projectInterest || "New lead"} onTap={() => router.push(`/leads/${lead.id}`)} onCall={() => handleCall(lead)} onWA={() => handleWA(lead)} />
+              ))}
+            </div>
+            {needsContact.length > 5 && (
+              <button className="r-btn r-btn-ghost" style={{ width: "100%", marginTop: 8 }} onClick={() => router.push("/leads")}>
+                View All {needsContact.length} Leads
+              </button>
+            )}
+          </section>
+        )}
+
         {/* Smart Suggestions */}
         {(followupSuggestions.length > 0 || topMatchAlerts.length > 0) && (
           <section className={`r-card ${styles.suggestionsCard}`}>
@@ -191,26 +238,6 @@ export default function TodayDashboard() {
             </div>
           </section>
         )}
-
-        {/* Today's Schedule */}
-        <section className={`r-card ${styles.scheduleCard}`}>
-          <h2 className="text-headline-md" style={{ marginBottom: 16 }}>Today&apos;s Schedule</h2>
-          {siteVisits.length > 0 || dueToday.length > 0 ? (
-            <div className={styles.scheduleList}>
-              {siteVisits.slice(0, 3).map(lead => (
-                <ScheduleItem key={lead.id} lead={lead} time={lead.visitTime || "10:00 AM"} label={`Site visit${lead.visitLocation ? ` — ${lead.visitLocation}` : ""}`} onTap={() => router.push(`/leads/${lead.id}`)} onCall={() => handleCall(lead)} onWA={() => handleWA(lead)} />
-              ))}
-              {dueToday.filter(l => !siteVisits.find(s => s.id === l.id)).slice(0, 3).map(lead => (
-                <ScheduleItem key={lead.id} lead={lead} time="2:00 PM" label="Follow-up" onTap={() => router.push(`/leads/${lead.id}`)} onCall={() => handleCall(lead)} onWA={() => handleWA(lead)} />
-              ))}
-            </div>
-          ) : (
-            <div className={styles.emptySchedule}>
-              <p className="text-body-md" style={{ color: "var(--r-outline)" }}>No schedule for today</p>
-              <button className={styles.viewCalBtn} onClick={() => router.push("/calendar")}>View Calendar</button>
-            </div>
-          )}
-        </section>
 
         {/* Recent Activities */}
         <section className={`r-card ${styles.activityCard}`}>

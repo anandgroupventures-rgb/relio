@@ -22,6 +22,8 @@ export async function addLead(uid, data) {
     createdAt:   serverTimestamp(),
     updatedAt:   serverTimestamp(),
     temperature: "warm",
+    isQualified: false,
+    callAttempts: 0,
   });
   return ref.id;
 }

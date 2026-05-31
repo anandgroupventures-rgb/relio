@@ -179,14 +179,37 @@ export function sortLeads(leads, sortBy, sortDir) {
   });
 }
 
+// ─── Qualification helpers ────────────────────────────────────────────────────
+export const DISQUALIFIED_STATUSES = [
+  "invalid_number","not_interested","lost","not_answering","busy","switched_off"
+];
+
+export function isDisqualified(lead) {
+  return lead.isQualified === false && lead.status !== "new";
+}
+
+export function isUncontacted(lead) {
+  return lead.status === "new" && lead.isQualified !== true;
+}
+
+export function isPipeline(lead) {
+  return !isDisqualified(lead);
+}
+
 // Filter leads
-export function filterLeads(leads, { search, status, source, type, priority, archived, dateFrom, dateTo }) {
+export function filterLeads(leads, { search, status, source, type, priority, archived, dateFrom, dateTo, bucket }) {
   return leads.filter(l => {
     // By default, hide archived leads unless explicitly viewing archived
     if (archived) {
       if (!l.isArchived) return false;
     } else {
       if (l.isArchived) return false;
+    }
+    // Bucket filter
+    if (bucket) {
+      if (bucket === "needs_contact" && !isUncontacted(l)) return false;
+      if (bucket === "pipeline" && !isPipeline(l)) return false;
+      if (bucket === "disqualified" && !isDisqualified(l)) return false;
     }
     if (search) {
       const q = search.toLowerCase();

@@ -608,6 +608,97 @@
   background: var(--r-surface-container);
 }
 
+/* Tab Bar */
+.tabBar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  background: var(--r-surface-container-highest);
+  border-radius: var(--r-radius-lg);
+  padding: 4px;
+  border: 1px solid var(--r-outline-variant);
+}
+.tabBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: var(--r-radius);
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--r-on-surface-variant);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+.tabBtnActive {
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+}
+.tabBadge {
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--r-error);
+  color: var(--r-on-error);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+/* Needs Contact quick actions */
+.needsContactActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.actionBtnPrimary {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 6, 102, 0.2);
+}
+.actionBtnPrimary:hover {
+  filter: brightness(1.1);
+}
+.actionBtnPrimary:active {
+  transform: scale(0.95);
+}
+.actionBtnSecondary {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-surface-container-high);
+  color: var(--r-primary);
+  border: 1px solid var(--r-outline-variant);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.actionBtnSecondary:hover {
+  background: var(--r-surface-container);
+}
+.actionBtnSecondary:active {
+  transform: scale(0.95);
+}
+
 /* View Toggle Bar */
 .viewBar {
   display: flex;

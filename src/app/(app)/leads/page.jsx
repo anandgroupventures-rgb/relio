@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useLeads } from "@/lib/hooks/useLeads";
-import { filterLeads, sortLeads, getTempStyle, getStatusLabel } from "@/lib/utils/leadHelpers";
+import { filterLeads, sortLeads, getTempStyle, getStatusLabel, isUncontacted, isPipeline, isDisqualified } from "@/lib/utils/leadHelpers";
 import { LEAD_STATUSES, LEAD_SOURCES, BHK_OPTIONS } from "@/lib/utils/constants";
-import { formatFollowUp, isOverdue } from "@/lib/utils/dateHelpers";
+import { formatFollowUp, isOverdue, DATE_PRESETS, getPresetRange, formatShortDate } from "@/lib/utils/dateHelpers";
 import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
 import { bulkDeleteLeads, bulkArchiveLeads, updateLead } from "@/lib/firebase/leads";
@@ -15,7 +15,6 @@ const LeadForm = dynamic(() => import("@/components/leads/LeadForm"), { ssr: fal
 const BulkImport = dynamic(() => import("@/components/leads/BulkImport"), { ssr: false });
 const PostCallSheet = dynamic(() => import("@/components/leads/PostCallSheet"), { ssr: false });
 import { Bell, Search, Phone, MessageCircle, Plus, MapPin, Home, ChevronRight, Trash2, Archive, X, CheckSquare, Square, LayoutGrid, List, Upload, SlidersHorizontal, Calendar } from "lucide-react";
-import { DATE_PRESETS, getPresetRange, formatShortDate } from "@/lib/utils/dateHelpers";
 import styles from "./leads.module.css";
 
 function ssGet(key, fallback) {
@@ -32,13 +31,14 @@ export default function LeadsPage() {
   const { leads, loading, hasMore, loadMore } = useLeads();
 
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
-  const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"" }));
+  const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false }));
   const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy", "createdAt"));
   const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "desc"));
+  const [activeTab, setActiveTab] = useState(() => ssGet("leads_tab", "needs_contact")); // needs_contact | pipeline
+  const [pipelineView, setPipelineView] = useState(() => ssGet("leads_pipelineView", "list")); // list | kanban
   const [showAdd,  setShowAdd]  = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [postCall, setPostCall] = useState(null);
-  const [viewMode, setViewMode] = useState(() => ssGet("leads_view", "list")); // list | kanban
   const [showFilters, setShowFilters] = useState(false);
   const [draftFilter, setDraftFilter] = useState(filter);
   const [draftSortBy, setDraftSortBy] = useState(sortBy);
@@ -68,12 +68,17 @@ export default function LeadsPage() {
   }
   function handleSortBy(val)  { setSortBy(val); ssSet("leads_sortBy", val); }
   function handleSortDir(val) { setSortDir(val); ssSet("leads_sortDir", val); }
-  function handleViewMode(val) { setViewMode(val); ssSet("leads_view", val); }
+  function handleActiveTab(val) { setActiveTab(val); ssSet("leads_tab", val); }
+  function handlePipelineView(val) { setPipelineView(val); ssSet("leads_pipelineView", val); }
 
   const displayed = useMemo(() => {
-    const filtered = filterLeads(leads, { search, ...filter });
-    return sortLeads(filtered, sortBy, sortDir);
-  }, [leads, search, filter, sortBy, sortDir]);
+    let bucket = activeTab === "needs_contact" ? "needs_contact" : (filter.showDisqualified ? "disqualified" : "pipeline");
+    const filtered = filterLeads(leads, { search, ...filter, bucket });
+    // Needs contact defaults to oldest leadDate first
+    const sb = activeTab === "needs_contact" ? "leadDate" : sortBy;
+    const sd = activeTab === "needs_contact" ? "asc" : sortDir;
+    return sortLeads(filtered, sb, sd);
+  }, [leads, search, filter, sortBy, sortDir, activeTab]);
 
   function toggleSort(field) {
     if (sortBy === field) {
@@ -153,7 +158,7 @@ export default function LeadsPage() {
       window.open(`https://wa.me/91${lead.mobile?.replace(/\D/g, "")}?text=${encoded}`, "_blank");
       setBulkWAProgress(i + 1);
       if (i < selectedLeads.length - 1) {
-        await new Promise(r => setTimeout(r, 1200)); // 1.2s gap so user can switch back
+        await new Promise(r => setTimeout(r, 1200));
       }
     }
     setBulkWAProgress(0);
@@ -166,7 +171,7 @@ export default function LeadsPage() {
   // ─── Active filter pills ────────────────────────────────────────────────────
   function getActivePills() {
     const pills = [];
-    if (sortBy !== "createdAt" || sortDir !== "desc") {
+    if (activeTab !== "needs_contact" && (sortBy !== "createdAt" || sortDir !== "desc")) {
       const sortLabel = { createdAt: "Date", leadDate: "Lead Date", name: "Name", priority: "Priority", followUp: "Follow-up", status: "Status" }[sortBy] || sortBy;
       pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("createdAt"); handleSortDir("desc"); } });
     }
@@ -175,6 +180,7 @@ export default function LeadsPage() {
     if (filter.source) pills.push({ key: "source", label: `Source: ${filter.source}`, onRemove: () => handleFilter(f => ({ ...f, source: "" })) });
     if (filter.priority) pills.push({ key: "priority", label: `Priority: ${filter.priority.charAt(0).toUpperCase() + filter.priority.slice(1)}`, onRemove: () => handleFilter(f => ({ ...f, priority: "" })) });
     if (filter.archived) pills.push({ key: "archived", label: "Archived", onRemove: () => handleFilter(f => ({ ...f, archived: false })) });
+    if (activeTab === "pipeline" && filter.showDisqualified) pills.push({ key: "disqualified", label: "Disqualified", onRemove: () => handleFilter(f => ({ ...f, showDisqualified: false })) });
     if (filter.dateFrom || filter.dateTo) {
       let dLabel = "Date: ";
       if (filter.datePreset && filter.datePreset !== "custom") {
@@ -214,7 +220,7 @@ export default function LeadsPage() {
   }
 
   function clearAllFilters() {
-    const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "" };
+    const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "", showDisqualified: false };
     setDraftFilter(empty);
     setDraftSortBy("createdAt");
     setDraftSortDir("desc");
@@ -231,6 +237,10 @@ export default function LeadsPage() {
     const { from, to } = getPresetRange(preset);
     setDraftFilter(f => ({ ...f, datePreset: preset, dateFrom: from, dateTo: to }));
   }
+
+  // Counts
+  const needsContactCount = leads.filter(isUncontacted).length;
+  const disqualifiedCount = leads.filter(isDisqualified).length;
 
   return (
     <div className={`${styles.page} ${isSelecting ? styles.pageSelecting : ""}`}>
@@ -303,53 +313,39 @@ export default function LeadsPage() {
           </div>
         )}
 
-        {/* View Toggle + Filter */}
-        <div className={styles.viewBar}>
+        {/* Main Tabs: Needs Contact | Pipeline */}
+        <div className={styles.tabBar}>
           <button
-            className={`${styles.filterTrigger} ${hasActiveFilters() ? styles.filterTriggerActive : ""}`}
-            onClick={openFilters}
-            title="Filters"
+            className={`${styles.tabBtn} ${activeTab === "needs_contact" ? styles.tabBtnActive : ""}`}
+            onClick={() => handleActiveTab("needs_contact")}
           >
-            <SlidersHorizontal size={16} />
-            {hasActiveFilters() && <span className={styles.filterBadge}>{activePills.length}</span>}
-            <span className={styles.filterLabel}>Filters</span>
+            Needs Contact
+            {needsContactCount > 0 && <span className={styles.tabBadge}>{needsContactCount}</span>}
           </button>
-          <div className={styles.viewToggle}>
-            <button className={`${styles.viewBtn} ${viewMode === "list" ? styles.viewBtnActive : ""}`} onClick={() => handleViewMode("list")} title="List view">
-              <List size={18} />
-            </button>
-            <button className={`${styles.viewBtn} ${viewMode === "kanban" ? styles.viewBtnActive : ""}`} onClick={() => handleViewMode("kanban")} title="Kanban view">
-              <LayoutGrid size={18} />
-            </button>
-            <button className={styles.viewBtn} onClick={() => setShowBulk(true)} title="Bulk import">
-              <Upload size={18} />
-            </button>
-          </div>
+          <button
+            className={`${styles.tabBtn} ${activeTab === "pipeline" ? styles.tabBtnActive : ""}`}
+            onClick={() => handleActiveTab("pipeline")}
+          >
+            Pipeline
+          </button>
         </div>
 
-        {/* Lead Cards — List or Kanban */}
-        {viewMode === "list" ? (
+        {/* ─── Needs Contact Tab ─────────────────────────────────────────────── */}
+        {activeTab === "needs_contact" && (
           <section className={styles.grid}>
             {loading && <p className={styles.loadingMsg}>Loading leads…</p>}
             {!loading && displayed.length === 0 && (
               <EmptyState
                 icon={<UsersIcon />}
-                title={filter.archived ? "No archived leads" : "No leads yet"}
-                body={filter.archived ? "Archived leads will appear here." : "Tap + Add to capture your first lead. Takes 20 seconds."}
+                title="All caught up!"
+                body="Every lead has been contacted. New enquiries will appear here."
                 action={
-                  filter.archived ? (
-                    <button className="r-btn r-btn-ghost" onClick={() => handleFilter(f => ({ ...f, archived: false }))}>View Active Leads</button>
-                  ) : (
-                    <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-                      <button className="r-btn r-btn-primary" onClick={() => setShowAdd(true)}>+ Add Lead</button>
-                      <button className="r-btn r-btn-ghost" onClick={() => setShowBulk(true)}>Import</button>
-                    </div>
-                  )
+                  <button className="r-btn r-btn-primary" onClick={() => router.push("/leads/new")}>+ Add Lead</button>
                 }
               />
             )}
             {displayed.map(lead => (
-              <LeadCardDesign
+              <NeedsContactCard
                 key={lead.id}
                 lead={lead}
                 isSelecting={isSelecting}
@@ -364,29 +360,95 @@ export default function LeadsPage() {
                 onWA={() => handleWA(lead)}
               />
             ))}
-            {hasMore && viewMode === "list" && (
-              <button className="r-btn r-btn-ghost" onClick={loadMore} style={{ width: "100%", marginTop: 8 }}>
-                Load More
-              </button>
-            )}
           </section>
-        ) : (
-          <KanbanBoard
-            leads={displayed}
-            loading={loading}
-            isSelecting={isSelecting}
-            selectedIds={selectedIds}
-            onTap={(lead) => {
-              if (isSelecting) toggleSelection(lead.id);
-              else router.push(`/leads/${lead.id}`);
-            }}
-            onLongPressStart={(id) => startLongPress(id)}
-            onLongPressEnd={cancelLongPress}
-            onMove={async (leadId, newStatus) => {
-              if (!user) return;
-              await updateLead(user.uid, leadId, { status: newStatus });
-            }}
-          />
+        )}
+
+        {/* ─── Pipeline Tab ──────────────────────────────────────────────────── */}
+        {activeTab === "pipeline" && (
+          <>
+            {/* Pipeline toolbar: filter + list/kanban/disqualified */}
+            <div className={styles.viewBar}>
+              <button
+                className={`${styles.filterTrigger} ${hasActiveFilters() ? styles.filterTriggerActive : ""}`}
+                onClick={openFilters}
+                title="Filters"
+              >
+                <SlidersHorizontal size={16} />
+                {hasActiveFilters() && <span className={styles.filterBadge}>{activePills.length}</span>}
+                <span className={styles.filterLabel}>Filters</span>
+              </button>
+              <div className={styles.viewToggle}>
+                <button className={`${styles.viewBtn} ${pipelineView === "list" ? styles.viewBtnActive : ""}`} onClick={() => handlePipelineView("list")} title="List view">
+                  <List size={18} />
+                </button>
+                <button className={`${styles.viewBtn} ${pipelineView === "kanban" ? styles.viewBtnActive : ""}`} onClick={() => handlePipelineView("kanban")} title="Kanban view">
+                  <LayoutGrid size={18} />
+                </button>
+                <button className={styles.viewBtn} onClick={() => setShowBulk(true)} title="Bulk import">
+                  <Upload size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Pipeline Content */}
+            {pipelineView === "list" ? (
+              <section className={styles.grid}>
+                {loading && <p className={styles.loadingMsg}>Loading leads…</p>}
+                {!loading && displayed.length === 0 && (
+                  <EmptyState
+                    icon={<UsersIcon />}
+                    title={filter.showDisqualified ? "No disqualified leads" : "No pipeline leads"}
+                    body={filter.showDisqualified ? "Disqualified leads will appear here." : "Qualified leads move here after first contact."}
+                    action={
+                      filter.showDisqualified ? (
+                        <button className="r-btn r-btn-ghost" onClick={() => handleFilter(f => ({ ...f, showDisqualified: false }))}>View Active Pipeline</button>
+                      ) : (
+                        <button className="r-btn r-btn-primary" onClick={() => handleActiveTab("needs_contact")}>Contact New Leads</button>
+                      )
+                    }
+                  />
+                )}
+                {displayed.map(lead => (
+                  <LeadCardDesign
+                    key={lead.id}
+                    lead={lead}
+                    isSelecting={isSelecting}
+                    isSelected={selectedIds.has(lead.id)}
+                    onTap={() => {
+                      if (isSelecting) toggleSelection(lead.id);
+                      else router.push(`/leads/${lead.id}`);
+                    }}
+                    onLongPressStart={() => startLongPress(lead.id)}
+                    onLongPressEnd={cancelLongPress}
+                    onCall={() => handleCall(lead)}
+                    onWA={() => handleWA(lead)}
+                  />
+                ))}
+                {hasMore && pipelineView === "list" && (
+                  <button className="r-btn r-btn-ghost" onClick={loadMore} style={{ width: "100%", marginTop: 8 }}>
+                    Load More
+                  </button>
+                )}
+              </section>
+            ) : (
+              <KanbanBoard
+                leads={displayed}
+                loading={loading}
+                isSelecting={isSelecting}
+                selectedIds={selectedIds}
+                onTap={(lead) => {
+                  if (isSelecting) toggleSelection(lead.id);
+                  else router.push(`/leads/${lead.id}`);
+                }}
+                onLongPressStart={(id) => startLongPress(id)}
+                onLongPressEnd={cancelLongPress}
+                onMove={async (leadId, newStatus) => {
+                  if (!user) return;
+                  await updateLead(user.uid, leadId, { status: newStatus });
+                }}
+              />
+            )}
+          </>
         )}
       </main>
 
@@ -431,6 +493,27 @@ export default function LeadsPage() {
       {/* Filter & Sort Sheet */}
       <BottomSheet open={showFilters} onClose={() => setShowFilters(false)} title="Filters & Sort" tall>
         <div style={{ padding: "0 16px 24px", maxHeight: "70vh", overflowY: "auto" }}>
+          {/* Pipeline View Toggle */}
+          {activeTab === "pipeline" && (
+            <section style={{ marginBottom: 24 }}>
+              <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Pipeline View</h4>
+              <div className={styles.sheetChips}>
+                <button
+                  className={`${styles.sheetChip} ${!draftFilter.showDisqualified ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, showDisqualified: false }))}
+                >
+                  Active Pipeline
+                </button>
+                <button
+                  className={`${styles.sheetChip} ${draftFilter.showDisqualified ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, showDisqualified: true }))}
+                >
+                  Disqualified ({disqualifiedCount})
+                </button>
+              </div>
+            </section>
+          )}
+
           {/* Sort */}
           <section style={{ marginBottom: 24 }}>
             <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Sort by</h4>
@@ -630,6 +713,73 @@ export default function LeadsPage() {
   );
 }
 
+// ─── Needs Contact Card ──────────────────────────────────────────────────────
+function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
+  const initials = lead.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
+  const daysOld = lead.leadDate ? Math.floor((Date.now() - new Date(lead.leadDate + "T00:00:00").getTime()) / 86400000) : null;
+
+  return (
+    <div
+      className={`${styles.leadCard} ${isSelected ? styles.leadCardSelected : ""}`}
+      onClick={onTap}
+      onMouseDown={onLongPressStart}
+      onMouseUp={onLongPressEnd}
+      onMouseLeave={onLongPressEnd}
+      onTouchStart={onLongPressStart}
+      onTouchEnd={onLongPressEnd}
+      onContextMenu={e => e.preventDefault()}
+    >
+      {isSelecting && (
+        <div className={styles.selectBox}>
+          {isSelected ? <CheckSquare size={22} color="var(--r-primary)" /> : <Square size={22} color="var(--r-outline)" />}
+        </div>
+      )}
+
+      <div className={styles.cardTop}>
+        <div className={styles.cardAvatar} style={{ background: "var(--r-error-bg)", color: "var(--r-error)" }}>
+          {initials}
+        </div>
+        <div className={styles.cardInfo} style={{ flex: 1 }}>
+          <h3 className="text-body-lg" style={{ fontWeight: 600, color: "var(--r-primary)" }}>{lead.name}</h3>
+          <p className="text-data-mono" style={{ color: "var(--r-on-surface-variant)" }}>+91 {lead.mobile}</p>
+        </div>
+        <div className={styles.needsContactActions} onClick={e => e.stopPropagation()}>
+          <button className={styles.actionBtnPrimary} onClick={onCall} title="Call">
+            <Phone size={18} />
+          </button>
+          <button className={styles.actionBtnSecondary} onClick={onWA} title="WhatsApp">
+            <MessageCircle size={18} />
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.cardMeta}>
+        {lead.projectInterest && (
+          <div className={styles.metaRow}>
+            <MapPin size={16} color="var(--r-secondary)" />
+            <span className="text-body-md" style={{ color: "var(--r-on-surface-variant)" }}>
+              {lead.bhk && `${lead.bhk} in `}{lead.projectInterest}
+            </span>
+          </div>
+        )}
+        <div className={styles.tagRow}>
+          {lead.source && (
+            <span className={styles.tag} style={{ background: "var(--r-secondary-fixed)", color: "var(--r-on-secondary-fixed)" }}>
+              {lead.source}
+            </span>
+          )}
+          {lead.leadDate && (
+            <span className={styles.tag} style={{ background: daysOld > 2 ? "var(--r-error-container)" : "var(--r-primary-fixed)", color: daysOld > 2 ? "var(--r-error)" : "var(--r-on-primary-fixed)" }}>
+              {daysOld > 2 ? `⚠ ${daysOld}d old` : `Captured ${formatShortDate(lead.leadDate)}`}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Pipeline Lead Card ────────────────────────────────────────────────────
 function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
   const temp = getTempStyle(lead.temperature || "warm");
   const fu = formatFollowUp(lead.followUpDate);
@@ -735,11 +885,12 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
   );
 }
 
+// ─── Kanban Board ──────────────────────────────────────────────────────────
 function KanbanBoard({ leads, loading, isSelecting, selectedIds, onTap, onLongPressStart, onLongPressEnd, onMove }) {
   const router = useRouter();
   const columns = [
-    { value: "new", label: "New", color: "var(--r-primary)" },
-    { value: "contacted", label: "Contacted", color: "var(--r-primary-container)" },
+    { value: "new", label: "Uncontacted", color: "var(--r-error)" },
+    { value: "contacted", label: "Contacted", color: "var(--r-primary)" },
     { value: "interested", label: "Interested", color: "var(--r-secondary)" },
     { value: "details_shared", label: "Details Shared", color: "var(--r-secondary-container)" },
     { value: "visit_scheduled", label: "Visit Scheduled", color: "var(--r-on-primary-container)" },
@@ -752,8 +903,8 @@ function KanbanBoard({ leads, loading, isSelecting, selectedIds, onTap, onLongPr
   if (leads.length === 0) return (
     <EmptyState
       icon={<UsersIcon />}
-      title="No leads yet"
-      body="Tap + Add to capture your first lead."
+      title="No pipeline leads"
+      body="Qualified leads appear here after first contact."
       action={
         <button className="r-btn r-btn-primary" onClick={() => router.push("/leads/new")}>+ Add Lead</button>
       }
