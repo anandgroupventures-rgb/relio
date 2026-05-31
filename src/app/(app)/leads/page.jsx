@@ -28,7 +28,7 @@ function ssSet(key, value) {
 export default function LeadsPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { leads, loading, hasMore, loadMore } = useLeads();
+  const { leads, loading, hasMore, loadMore, uncontactedCount } = useLeads();
 
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
   const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false }));
@@ -239,7 +239,7 @@ export default function LeadsPage() {
   }
 
   // Counts
-  const needsContactCount = leads.filter(isUncontacted).length;
+  const needsContactCount = uncontactedCount || leads.filter(isUncontacted).length;
   const disqualifiedCount = leads.filter(isDisqualified).length;
 
   return (
@@ -852,6 +852,11 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
           </div>
         )}
         <div className={styles.tagRow}>
+          {lead.budget && (
+            <span className={styles.tag} style={{ background: "var(--r-primary-fixed)", color: "var(--r-on-primary-fixed)" }}>
+              {lead.budget}
+            </span>
+          )}
           {lead.source && (
             <span className={styles.tag} style={{ background: "var(--r-secondary-fixed)", color: "var(--r-on-secondary-fixed)" }}>
               {lead.source}
@@ -895,7 +900,6 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
 function KanbanBoard({ leads, loading, isSelecting, selectedIds, onTap, onLongPressStart, onLongPressEnd, onMove }) {
   const router = useRouter();
   const columns = [
-    { value: "new", label: "Uncontacted", color: "var(--r-error)" },
     { value: "contacted", label: "Contacted", color: "var(--r-primary)" },
     { value: "interested", label: "Interested", color: "var(--r-secondary)" },
     { value: "details_shared", label: "Details Shared", color: "var(--r-secondary-container)" },

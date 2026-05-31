@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   collection, query, orderBy, limit, startAfter,
-  onSnapshot, getDocs
+  onSnapshot, getDocs, getCountFromServer, where
 } from "firebase/firestore";
 import { getDbInstance } from "@/lib/firebase/config";
 import { useAuth } from "./useAuth";
@@ -18,6 +18,8 @@ export function useLeads() {
   const [hasMore, setHasMore] = useState(true);
   const [lastDoc, setLastDoc] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [uncontactedCount, setUncontactedCount] = useState(0);
   const initialLoadDone = useRef(false);
 
   // Offline-first: load from IndexedDB immediately
@@ -46,6 +48,37 @@ export function useLeads() {
 
     loadLocal();
     return () => { cancelled = true; };
+  }, [user]);
+
+  // Firestore count queries (run once per user)
+  useEffect(() => {
+    if (!user) return;
+    const db = getDbInstance();
+    if (!db) return;
+
+    async function fetchCounts() {
+      try {
+        // Total leads
+        const totalSnap = await getCountFromServer(collection(db, "users", user.uid, "leads"));
+        setTotalCount(totalSnap.data().count);
+
+        // Uncontacted leads (status === "new")
+        const uncontactedQ = query(
+          collection(db, "users", user.uid, "leads"),
+          where("status", "==", "new")
+        );
+        const uncontactedSnap = await getCountFromServer(uncontactedQ);
+        setUncontactedCount(uncontactedSnap.data().count);
+      } catch (e) {
+        console.error("[useLeads] Count query failed:", e);
+        // Fallback to loaded leads length
+        setTotalCount(leads.length);
+        setUncontactedCount(leads.filter(l => l.status === "new").length);
+      }
+    }
+
+    fetchCounts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Firestore subscription: sync from server and merge
@@ -141,5 +174,5 @@ export function useLeads() {
     setHasMore(snap.docs.length === PAGE_SIZE);
   }, [user, hasMore, lastDoc]);
 
-  return { leads, loading, hasMore, loadMore, isOffline };
+  return { leads, loading, hasMore, loadMore, isOffline, totalCount, uncontactedCount };
 }

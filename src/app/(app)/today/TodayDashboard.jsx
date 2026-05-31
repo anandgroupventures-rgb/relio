@@ -21,7 +21,7 @@ import styles from "./today.module.css";
 export default function TodayDashboard() {
   const router = useRouter();
   const { user } = useAuth();
-  const { leads, loading: leadsLoading, isOffline } = useLeads();
+  const { leads, loading: leadsLoading, isOffline, totalCount, uncontactedCount } = useLeads();
   const { inventory } = useInventory();
   const syncStatus = useSyncStatus();
 
@@ -129,7 +129,7 @@ export default function TodayDashboard() {
         {/* KPI Cards - Horizontal Scroll */}
         <section className={styles.kpiSection}>
           <div className={styles.kpiScroll}>
-            <KpiCard label="Total Leads" value={leads.length} trend={activeLeads.length > 0 ? `${activeLeads.length} active` : null} icon={<TrendingUp size={16} />} accent="primary" />
+            <KpiCard label="Total Leads" value={totalCount || leads.length} trend={activeLeads.length > 0 ? `${activeLeads.length} active` : null} icon={<TrendingUp size={16} />} accent="primary" />
             <KpiCard label="Active" value={activeLeads.length} trend={`${hotLeads.length} hot`} icon={<Zap size={16} />} accent="primary" />
             <KpiCard label="Site Visits" value={siteVisits.length} trend={siteVisits.length > 0 ? "Today" : "None"} icon={<MapPin size={16} />} accent="secondary" />
             <KpiCard label="Bookings" value={bookings.length} trend={`${converted.length} closed`} icon={<Handshake size={16} />} accent="secondary" />
