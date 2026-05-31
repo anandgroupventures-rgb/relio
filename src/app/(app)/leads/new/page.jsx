@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { addLead } from "@/lib/firebase/leads";
 import { LEAD_STATUSES, LEAD_SOURCES, BHK_OPTIONS } from "@/lib/utils/constants";
+import { todayStr } from "@/lib/utils/dateHelpers";
 import { ArrowLeft, Save, User, Home, UserCheck } from "lucide-react";
 import styles from "./new.module.css";
 
@@ -44,7 +45,7 @@ export default function NewLeadPage() {
   const [form, setForm] = useState({
     name: "", mobile: "", email: "", locality: "",
     leadType: "Buyer", bhk: "", budget: "", timeline: "Immediate",
-    source: "Referral", assignedTo: "Self", priority: "warm",
+    source: "Referral", assignedTo: "Self", priority: "warm", leadDate: todayStr(),
     projectInterest: "", remarks: "",
   });
   const [busy, setBusy] = useState(false);
@@ -70,6 +71,7 @@ export default function NewLeadPage() {
         source: form.source,
         status: "new",
         priority: form.priority,
+        leadDate: form.leadDate,
         projectInterest: form.projectInterest || form.locality,
         remarks: form.remarks,
         followUpDate: "",
@@ -130,6 +132,10 @@ export default function NewLeadPage() {
               <div className={styles.field}>
                 <label className="text-label-md" style={{ color: "var(--r-on-surface-variant)" }}>Email Address</label>
                 <input className="r-input" placeholder="rahul.s@example.com" type="email" value={form.email} onChange={set("email")} />
+              </div>
+              <div className={styles.field}>
+                <label className="text-label-md" style={{ color: "var(--r-on-surface-variant)" }}>Lead Date</label>
+                <input className="r-input" type="date" value={form.leadDate} onChange={set("leadDate")} />
               </div>
               <div className={styles.field}>
                 <label className="text-label-md" style={{ color: "var(--r-on-surface-variant)" }}>City & Locality</label>

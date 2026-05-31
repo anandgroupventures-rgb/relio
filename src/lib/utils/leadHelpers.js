@@ -165,6 +165,7 @@ export function sortLeads(leads, sortBy, sortDir) {
     let va, vb;
     switch (sortBy) {
       case "name":       va = a.name?.toLowerCase();     vb = b.name?.toLowerCase();     break;
+      case "leadDate":   va = a.leadDate || "9999";       vb = b.leadDate || "9999";       break;
       case "followUp":   va = a.followUpDate || "9999";  vb = b.followUpDate || "9999";  break;
       case "status":     va = a.status || "";            vb = b.status || "";            break;
       case "priority":   va = ["hot","warm","cold","dormant"].indexOf(a.temperature||"warm");
@@ -179,7 +180,7 @@ export function sortLeads(leads, sortBy, sortDir) {
 }
 
 // Filter leads
-export function filterLeads(leads, { search, status, source, type, priority, archived }) {
+export function filterLeads(leads, { search, status, source, type, priority, archived, dateFrom, dateTo }) {
   return leads.filter(l => {
     // By default, hide archived leads unless explicitly viewing archived
     if (archived) {
@@ -197,6 +198,13 @@ export function filterLeads(leads, { search, status, source, type, priority, arc
     if (source   && l.source   !== source)   return false;
     if (type     && l.type     !== type)     return false;
     if (priority && (l.temperature || calcTemperature(l)) !== priority.toLowerCase()) return false;
+    // Date range filter on leadDate
+    if (dateFrom && l.leadDate) {
+      if (l.leadDate < dateFrom) return false;
+    }
+    if (dateTo && l.leadDate) {
+      if (l.leadDate > dateTo) return false;
+    }
     return true;
   });
 }

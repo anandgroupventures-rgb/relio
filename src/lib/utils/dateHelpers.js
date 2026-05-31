@@ -75,3 +75,52 @@ export function formatTimelineDate(ts) {
   if (diffDays < 7)   return `${diffDays}d ago`;
   return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
+
+// ─── Date Preset Helpers for Lead Filtering ─────────────────────────────────
+export const DATE_PRESETS = [
+  { value: "today",      label: "Today" },
+  { value: "yesterday",  label: "Yesterday" },
+  { value: "last7",      label: "Last 7 Days" },
+  { value: "thisMonth",  label: "This Month" },
+  { value: "custom",     label: "Custom Range" },
+];
+
+export function getPresetRange(preset) {
+  const today = todayStr();
+  const d = new Date();
+  switch (preset) {
+    case "today": {
+      return { from: today, to: today };
+    }
+    case "yesterday": {
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      const ys = `${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;
+      return { from: ys, to: ys };
+    }
+    case "last7": {
+      const s = new Date();
+      s.setDate(s.getDate() - 6);
+      const ss = `${s.getFullYear()}-${String(s.getMonth()+1).padStart(2,'0')}-${String(s.getDate()).padStart(2,'0')}`;
+      return { from: ss, to: today };
+    }
+    case "thisMonth": {
+      const start = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+      return { from: start, to: today };
+    }
+    default:
+      return { from: "", to: "" };
+  }
+}
+
+// Format a YYYY-MM-DD string to "12 Jan" or "15 Mar 2025"
+export function formatShortDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  const thisYear = new Date().getFullYear();
+  return d.toLocaleDateString("en-IN", {
+    day:   "numeric",
+    month: "short",
+    ...(d.getFullYear() !== thisYear ? { year: "numeric" } : {}),
+  });
+}

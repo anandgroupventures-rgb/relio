@@ -14,7 +14,8 @@ import { bulkDeleteLeads, bulkArchiveLeads, updateLead } from "@/lib/firebase/le
 const LeadForm = dynamic(() => import("@/components/leads/LeadForm"), { ssr: false });
 const BulkImport = dynamic(() => import("@/components/leads/BulkImport"), { ssr: false });
 const PostCallSheet = dynamic(() => import("@/components/leads/PostCallSheet"), { ssr: false });
-import { Bell, Search, Phone, MessageCircle, Plus, MapPin, Home, ChevronRight, Trash2, Archive, X, CheckSquare, Square, LayoutGrid, List, Upload } from "lucide-react";
+import { Bell, Search, Phone, MessageCircle, Plus, MapPin, Home, ChevronRight, Trash2, Archive, X, CheckSquare, Square, LayoutGrid, List, Upload, SlidersHorizontal, Calendar } from "lucide-react";
+import { DATE_PRESETS, getPresetRange, formatShortDate } from "@/lib/utils/dateHelpers";
 import styles from "./leads.module.css";
 
 function ssGet(key, fallback) {
@@ -31,13 +32,17 @@ export default function LeadsPage() {
   const { leads, loading, hasMore, loadMore } = useLeads();
 
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
-  const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false }));
+  const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"" }));
   const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy", "createdAt"));
   const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "desc"));
   const [showAdd,  setShowAdd]  = useState(false);
   const [showBulk, setShowBulk] = useState(false);
   const [postCall, setPostCall] = useState(null);
   const [viewMode, setViewMode] = useState(() => ssGet("leads_view", "list")); // list | kanban
+  const [showFilters, setShowFilters] = useState(false);
+  const [draftFilter, setDraftFilter] = useState(filter);
+  const [draftSortBy, setDraftSortBy] = useState(sortBy);
+  const [draftSortDir, setDraftSortDir] = useState(sortDir);
 
   // Multi-select state
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -155,8 +160,77 @@ export default function LeadsPage() {
     clearSelection();
   }
 
-  const statusChips = [{ value: "", label: "All" }, ...LEAD_STATUSES.map(s => ({ value: s.value, label: s.label }))];
   const propertyChips = ["Residential", "Commercial", "Plots"];
+  const priorityChips = ["hot", "warm", "cold", "dormant"];
+
+  // ─── Active filter pills ────────────────────────────────────────────────────
+  function getActivePills() {
+    const pills = [];
+    if (sortBy !== "createdAt" || sortDir !== "desc") {
+      const sortLabel = { createdAt: "Date", leadDate: "Lead Date", name: "Name", priority: "Priority", followUp: "Follow-up", status: "Status" }[sortBy] || sortBy;
+      pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("createdAt"); handleSortDir("desc"); } });
+    }
+    if (filter.status) pills.push({ key: "status", label: `Status: ${filter.status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}`, onRemove: () => handleFilter(f => ({ ...f, status: "" })) });
+    if (filter.type) pills.push({ key: "type", label: `Type: ${filter.type}`, onRemove: () => handleFilter(f => ({ ...f, type: "" })) });
+    if (filter.source) pills.push({ key: "source", label: `Source: ${filter.source}`, onRemove: () => handleFilter(f => ({ ...f, source: "" })) });
+    if (filter.priority) pills.push({ key: "priority", label: `Priority: ${filter.priority.charAt(0).toUpperCase() + filter.priority.slice(1)}`, onRemove: () => handleFilter(f => ({ ...f, priority: "" })) });
+    if (filter.archived) pills.push({ key: "archived", label: "Archived", onRemove: () => handleFilter(f => ({ ...f, archived: false })) });
+    if (filter.dateFrom || filter.dateTo) {
+      let dLabel = "Date: ";
+      if (filter.datePreset && filter.datePreset !== "custom") {
+        dLabel += DATE_PRESETS.find(p => p.value === filter.datePreset)?.label || filter.datePreset;
+      } else if (filter.dateFrom && filter.dateTo) {
+        dLabel += `${formatShortDate(filter.dateFrom)} – ${formatShortDate(filter.dateTo)}`;
+      } else if (filter.dateFrom) {
+        dLabel += `From ${formatShortDate(filter.dateFrom)}`;
+      } else {
+        dLabel += `Until ${formatShortDate(filter.dateTo)}`;
+      }
+      pills.push({ key: "date", label: dLabel, onRemove: () => handleFilter(f => ({ ...f, dateFrom: "", dateTo: "", datePreset: "" })) });
+    }
+    return pills;
+  }
+
+  const activePills = getActivePills();
+  const visiblePills = activePills.slice(0, 3);
+  const hiddenCount = activePills.length - 3;
+
+  function hasActiveFilters() {
+    return activePills.length > 0;
+  }
+
+  function openFilters() {
+    setDraftFilter(filter);
+    setDraftSortBy(sortBy);
+    setDraftSortDir(sortDir);
+    setShowFilters(true);
+  }
+
+  function applyFilters() {
+    setFilter(draftFilter);
+    setSortBy(draftSortBy);
+    setSortDir(draftSortDir);
+    setShowFilters(false);
+  }
+
+  function clearAllFilters() {
+    const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "" };
+    setDraftFilter(empty);
+    setDraftSortBy("createdAt");
+    setDraftSortDir("desc");
+    setFilter(empty);
+    setSortBy("createdAt");
+    setSortDir("desc");
+  }
+
+  function handlePreset(preset) {
+    if (preset === "custom") {
+      setDraftFilter(f => ({ ...f, datePreset: preset }));
+      return;
+    }
+    const { from, to } = getPresetRange(preset);
+    setDraftFilter(f => ({ ...f, datePreset: preset, dateFrom: from, dateTo: to }));
+  }
 
   return (
     <div className={`${styles.page} ${isSelecting ? styles.pageSelecting : ""}`}>
@@ -193,7 +267,7 @@ export default function LeadsPage() {
       </header>
 
       <main className={styles.main}>
-        {/* Search */}
+        {/* Search + Filter */}
         <div className={styles.searchWrap}>
           <Search size={20} color="var(--r-outline)" className={styles.searchIcon} />
           <input
@@ -205,27 +279,40 @@ export default function LeadsPage() {
           {search && (
             <button className={styles.clearBtn} onClick={() => handleSearch("")}>×</button>
           )}
+          <button
+            className={`${styles.filterTrigger} ${hasActiveFilters() ? styles.filterTriggerActive : ""}`}
+            onClick={openFilters}
+            title="Filters"
+          >
+            <SlidersHorizontal size={18} />
+            {hasActiveFilters() && <span className={styles.filterBadge}>{activePills.length}</span>}
+          </button>
         </div>
 
-        {/* View Toggle + Archived */}
-        <div className={styles.viewBar}>
-          <div className={styles.chipsScroll}>
-            {statusChips.map(chip => (
-              <button
-                key={chip.value}
-                className={`r-chip ${filter.status === chip.value && !filter.archived ? "r-chip-active" : ""}`}
-                onClick={() => handleFilter(f => ({ ...f, status: chip.value, archived: false }))}
-              >
-                {chip.label}
+        {/* Active filter pills */}
+        {activePills.length > 0 && (
+          <div className={styles.pillsRow}>
+            <div className={styles.pillsScroll}>
+              {visiblePills.map(pill => (
+                <button key={pill.key} className={styles.filterPill} onClick={pill.onRemove}>
+                  {pill.label}
+                  <X size={12} style={{ marginLeft: 4 }} />
+                </button>
+              ))}
+              {hiddenCount > 0 && (
+                <button className={styles.filterPillMore} onClick={openFilters}>
+                  +{hiddenCount} more
+                </button>
+              )}
+              <button className={styles.clearAllPill} onClick={clearAllFilters}>
+                Clear All
               </button>
-            ))}
-            <button
-              className={`r-chip ${filter.archived ? "r-chip-active" : ""}`}
-              onClick={() => handleFilter(f => ({ ...f, status: "", archived: !f.archived }))}
-            >
-              Archived
-            </button>
+            </div>
           </div>
+        )}
+
+        {/* View Toggle */}
+        <div className={styles.viewBar}>
           <div className={styles.viewToggle}>
             <button className={`${styles.viewBtn} ${viewMode === "list" ? styles.viewBtnActive : ""}`} onClick={() => handleViewMode("list")} title="List view">
               <List size={18} />
@@ -238,41 +325,6 @@ export default function LeadsPage() {
             </button>
           </div>
         </div>
-
-        {/* Property Type Chips */}
-        <div className={styles.chipsRow}>
-          <div className={styles.chipsScroll}>
-            {propertyChips.map(chip => (
-              <button
-                key={chip}
-                className={`${styles.propChip} ${filter.type === chip ? styles.propChipActive : ""}`}
-                onClick={() => handleFilter(f => ({ ...f, type: f.type === chip ? "" : chip }))}
-              >
-                {chip === "Residential" ? <Home size={14} /> : chip === "Commercial" ? <MapPin size={14} /> : <MapPin size={14} />}
-                {chip}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sort — only in list mode */}
-        {viewMode === "list" && (
-          <div className={styles.sortRow}>
-            {[
-              { key: "createdAt", label: "Date" },
-              { key: "name", label: "Name" },
-              { key: "priority", label: "Priority" },
-              { key: "followUp", label: "Follow-up" },
-              { key: "status", label: "Status" },
-            ].map(o => (
-              <button key={o.key}
-                className={`${styles.sortBtn} ${sortBy === o.key ? styles.sortBtnActive : ""}`}
-                onClick={() => toggleSort(o.key)}>
-                {o.label}{sortBy === o.key ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Lead Cards — List or Kanban */}
         {viewMode === "list" ? (
@@ -374,6 +426,173 @@ export default function LeadsPage() {
           </div>
         </div>
       )}
+
+      {/* Filter & Sort Sheet */}
+      <BottomSheet open={showFilters} onClose={() => setShowFilters(false)} title="Filters & Sort" tall>
+        <div style={{ padding: "0 16px 24px", maxHeight: "70vh", overflowY: "auto" }}>
+          {/* Sort */}
+          <section style={{ marginBottom: 24 }}>
+            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Sort by</h4>
+            <div className={styles.sheetChips}>
+              {[
+                { key: "createdAt", label: "Date" },
+                { key: "leadDate", label: "Lead Date" },
+                { key: "name", label: "Name" },
+                { key: "priority", label: "Priority" },
+                { key: "followUp", label: "Follow-up" },
+                { key: "status", label: "Status" },
+              ].map(o => (
+                <button
+                  key={o.key}
+                  className={`${styles.sheetChip} ${draftSortBy === o.key ? styles.sheetChipActive : ""}`}
+                  onClick={() => {
+                    if (draftSortBy === o.key) setDraftSortDir(draftSortDir === "asc" ? "desc" : "asc");
+                    else { setDraftSortBy(o.key); setDraftSortDir("desc"); }
+                  }}
+                >
+                  {o.label} {draftSortBy === o.key ? (draftSortDir === "asc" ? "↑" : "↓") : ""}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Date Range */}
+          <section style={{ marginBottom: 24 }}>
+            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Date Range</h4>
+            <div className={styles.sheetChips}>
+              {DATE_PRESETS.map(p => (
+                <button
+                  key={p.value}
+                  className={`${styles.sheetChip} ${draftFilter.datePreset === p.value ? styles.sheetChipActive : ""}`}
+                  onClick={() => handlePreset(p.value)}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            {draftFilter.datePreset === "custom" && (
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <label className="text-label-md" style={{ color: "var(--r-on-surface-variant)", display: "block", marginBottom: 4 }}>From</label>
+                  <input
+                    type="date"
+                    className="r-input"
+                    value={draftFilter.dateFrom}
+                    onChange={e => setDraftFilter(f => ({ ...f, dateFrom: e.target.value }))}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label className="text-label-md" style={{ color: "var(--r-on-surface-variant)", display: "block", marginBottom: 4 }}>To</label>
+                  <input
+                    type="date"
+                    className="r-input"
+                    value={draftFilter.dateTo}
+                    onChange={e => setDraftFilter(f => ({ ...f, dateTo: e.target.value }))}
+                  />
+                </div>
+              </div>
+            )}
+          </section>
+
+          {/* Status */}
+          <section style={{ marginBottom: 24 }}>
+            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Status</h4>
+            <div className={styles.sheetChips}>
+              <button
+                className={`${styles.sheetChip} ${!draftFilter.status && !draftFilter.archived ? styles.sheetChipActive : ""}`}
+                onClick={() => setDraftFilter(f => ({ ...f, status: "", archived: false }))}
+              >
+                All Active
+              </button>
+              {LEAD_STATUSES.map(s => (
+                <button
+                  key={s.value}
+                  className={`${styles.sheetChip} ${draftFilter.status === s.value ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, status: s.value, archived: false }))}
+                >
+                  {s.label}
+                </button>
+              ))}
+              <button
+                className={`${styles.sheetChip} ${draftFilter.archived ? styles.sheetChipActive : ""}`}
+                onClick={() => setDraftFilter(f => ({ ...f, status: "", archived: true }))}
+              >
+                Archived
+              </button>
+            </div>
+          </section>
+
+          {/* Property Type */}
+          <section style={{ marginBottom: 24 }}>
+            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Property Type</h4>
+            <div className={styles.sheetChips}>
+              {propertyChips.map(chip => (
+                <button
+                  key={chip}
+                  className={`${styles.sheetChip} ${draftFilter.type === chip ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, type: f.type === chip ? "" : chip }))}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Source */}
+          <section style={{ marginBottom: 24 }}>
+            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Source</h4>
+            <div className={styles.sheetChips}>
+              <button
+                className={`${styles.sheetChip} ${!draftFilter.source ? styles.sheetChipActive : ""}`}
+                onClick={() => setDraftFilter(f => ({ ...f, source: "" }))}
+              >
+                Any
+              </button>
+              {LEAD_SOURCES.map(src => (
+                <button
+                  key={src}
+                  className={`${styles.sheetChip} ${draftFilter.source === src ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, source: f.source === src ? "" : src }))}
+                >
+                  {src}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Priority */}
+          <section style={{ marginBottom: 24 }}>
+            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Priority</h4>
+            <div className={styles.sheetChips}>
+              <button
+                className={`${styles.sheetChip} ${!draftFilter.priority ? styles.sheetChipActive : ""}`}
+                onClick={() => setDraftFilter(f => ({ ...f, priority: "" }))}
+              >
+                Any
+              </button>
+              {priorityChips.map(p => (
+                <button
+                  key={p}
+                  className={`${styles.sheetChip} ${draftFilter.priority === p ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, priority: f.priority === p ? "" : p }))}
+                >
+                  {p.charAt(0).toUpperCase() + p.slice(1)}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Footer actions */}
+          <div style={{ display: "flex", gap: 12, paddingTop: 12, borderTop: "1px solid var(--r-outline-variant)", position: "sticky", bottom: 0, background: "var(--r-surface-container-lowest)" }}>
+            <button className="r-btn r-btn-ghost" style={{ flex: 1 }} onClick={clearAllFilters}>
+              Clear All
+            </button>
+            <button className="r-btn r-btn-primary" style={{ flex: 1 }} onClick={applyFilters}>
+              Apply
+            </button>
+          </div>
+        </div>
+      </BottomSheet>
 
       <BottomSheet open={showAdd} onClose={() => setShowAdd(false)} title="Add Lead" tall>
         <LeadForm leads={leads} quickMode onDone={() => setShowAdd(false)} onCancel={() => setShowAdd(false)} />
@@ -490,6 +709,14 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
             </span>
           )}
         </div>
+        {lead.leadDate && (
+          <div className={styles.metaRow} style={{ marginTop: 6 }}>
+            <Calendar size={14} color="var(--r-outline)" />
+            <span className="text-label-md" style={{ color: "var(--r-outline)" }}>
+              Captured {formatShortDate(lead.leadDate)}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className={styles.cardBottom}>

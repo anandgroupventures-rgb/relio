@@ -67,6 +67,9 @@
 /* Search */
 .searchWrap {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 16px;
 }
 
@@ -79,8 +82,8 @@
 }
 
 .searchInput {
-  width: 100%;
-  padding: 16px 16px 16px 48px;
+  flex: 1;
+  padding: 14px 40px 14px 48px;
   border: 1px solid var(--r-outline-variant);
   border-radius: var(--r-radius-lg);
   background: var(--r-surface-container-lowest);
@@ -102,7 +105,7 @@
 
 .clearBtn {
   position: absolute;
-  right: 12px;
+  right: 56px;
   top: 50%;
   transform: translateY(-50%);
   width: 28px;
@@ -116,6 +119,146 @@
   font-size: 18px;
   border: none;
   cursor: pointer;
+}
+
+/* Filter trigger button */
+.filterTrigger {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-surface-container-highest);
+  color: var(--r-on-surface-variant);
+  border: 1px solid var(--r-outline-variant);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+.filterTrigger:hover {
+  background: var(--r-surface-container-high);
+}
+.filterTriggerActive {
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+  border-color: var(--r-primary);
+}
+.filterBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--r-error);
+  color: var(--r-on-error);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* Active filter pills */
+.pillsRow {
+  margin-bottom: 12px;
+}
+.pillsScroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.pillsScroll::-webkit-scrollbar { display: none; }
+
+.filterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: var(--r-radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--r-primary-fixed);
+  color: var(--r-on-primary-fixed);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.filterPill:hover {
+  filter: brightness(0.95);
+}
+
+.filterPillMore {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--r-radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--r-surface-container-high);
+  color: var(--r-primary);
+  border: 1px dashed var(--r-outline);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.clearAllPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--r-radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--r-error);
+  border: 1px solid var(--r-error-container);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.clearAllPill:hover {
+  background: var(--r-error-container);
+}
+
+/* Filter sheet chips */
+.sheetChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sheetChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--r-radius);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--r-outline-variant);
+  background: var(--r-surface-container-lowest);
+  color: var(--r-on-surface-variant);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.sheetChip:hover {
+  background: var(--r-surface-container-low);
+}
+.sheetChipActive {
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+  border-color: var(--r-primary);
 }
 
 /* Chips */
@@ -463,7 +606,7 @@
 .viewBar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   margin-bottom: 12px;
 }

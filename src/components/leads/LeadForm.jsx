@@ -50,6 +50,7 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
     budget:          lead?.budget          || "",
     source:          lead?.source          || "",
     status:          lead?.status          || "new",
+    leadDate:        lead?.leadDate        || todayStr(),
     followUpDate:    lead?.followUpDate    || "",
     remarks:         lead?.remarks         || "",
     referredBy:      lead?.referredBy      || "",
@@ -177,6 +178,11 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
             <select className="relio-input" value={form.status} onChange={set("status")}>
               {LEAD_STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
+          </Row>
+
+          <Row label="Lead Date">
+            <input className="relio-input" type="date"
+              value={form.leadDate} onChange={set("leadDate")} />
           </Row>
 
           <Row label="Follow-up Date">
