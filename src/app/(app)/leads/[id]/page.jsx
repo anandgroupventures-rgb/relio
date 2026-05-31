@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useInventory } from "@/lib/hooks/useInventory";
-import { getLead, getInteractions, addInteraction, updateLead, uploadVoiceNote, uploadDocument } from "@/lib/firebase/leads";
+import { getLead, getInteractions, addInteraction, updateLead, deleteInteraction, updateInteraction, uploadVoiceNote, uploadDocument } from "@/lib/firebase/leads";
 import { getTempStyle, getStatusLabel, getStatusColor } from "@/lib/utils/leadHelpers";
 import { formatTimelineDate, formatFollowUp, isOverdue } from "@/lib/utils/dateHelpers";
 import { predictBestCallTime } from "@/lib/utils/smartSuggestions";
@@ -12,7 +12,8 @@ import LeadForm from "@/components/leads/LeadForm";
 import {
   ArrowLeft, Bell, Phone, MessageCircle, Mail, Calendar, Check, Edit,
   MapPin, Building, Wallet, Clock, Mic, StopCircle, Play, Trash2,
-  Home as HomeIcon, ChevronRight, FileText, Upload, Paperclip, Zap, Send
+  Home as HomeIcon, ChevronRight, FileText, Upload, Paperclip, Zap, Send,
+  X
 } from "lucide-react";
 import styles from "./detail.module.css";
 
@@ -48,6 +49,14 @@ export default function LeadDetailPage() {
   const [showFollowUp, setShowFollowUp] = useState(false);
   const [followUpDate, setFollowUpDate] = useState("");
   const [showStatusSheet, setShowStatusSheet] = useState(false);
+
+  // Edit / Delete interaction
+  const [editingInt, setEditingInt] = useState(null);
+  const [editIntText, setEditIntText] = useState("");
+
+  // Log Visit
+  const [showLogVisit, setShowLogVisit] = useState(false);
+  const [logVisitProject, setLogVisitProject] = useState("");
 
   // Schedule Visit
   const [showScheduleVisit, setShowScheduleVisit] = useState(false);
@@ -125,10 +134,29 @@ export default function LeadDetailPage() {
 
   async function handleLogVisit() {
     if (!user || !lead) return;
+    const project = logVisitProject.trim() || lead.projectInterest || "Site visit";
     await updateLead(user.uid, lead.id, { status: "visit_done", lastVisitDate: new Date().toISOString().split("T")[0] });
-    await addInteraction(user.uid, lead.id, { type: "visit", note: "Site visit completed" });
+    await addInteraction(user.uid, lead.id, { type: "visit", note: `Visit completed — ${project}`, visitProject: project });
     setLead(prev => ({ ...prev, status: "visit_done", lastVisitDate: new Date().toISOString().split("T")[0] }));
-    setInteractions(prev => [{ id: Date.now().toString(), type: "visit", note: "Site visit completed", createdAt: { toDate: () => new Date() } }, ...prev]);
+    setInteractions(prev => [{ id: Date.now().toString(), type: "visit", note: `Visit completed — ${project}`, visitProject: project, createdAt: { toDate: () => new Date() } }, ...prev]);
+    setShowLogVisit(false);
+    setLogVisitProject("");
+  }
+
+  async function handleDeleteInteraction(intId) {
+    if (!user || !lead || !intId) return;
+    if (!window.confirm("Delete this activity? This cannot be undone.")) return;
+    await deleteInteraction(user.uid, lead.id, intId);
+    setInteractions(prev => prev.filter(i => i.id !== intId));
+  }
+
+  async function handleSaveEditInteraction() {
+    if (!user || !lead || !editingInt) return;
+    if (!editIntText.trim()) return;
+    await updateInteraction(user.uid, lead.id, editingInt.id, { note: editIntText.trim() });
+    setInteractions(prev => prev.map(i => i.id === editingInt.id ? { ...i, note: editIntText.trim() } : i));
+    setEditingInt(null);
+    setEditIntText("");
   }
 
   function handleCall() {
@@ -404,24 +432,22 @@ export default function LeadDetailPage() {
           </div>
         </section>
 
-        {/* Suggested Properties */}
-        {matchedProperties.length > 0 && (
-          <section className={`r-card ${styles.matchCard}`}>
-            <h3 className="text-headline-md" style={{ marginBottom: 12 }}>Suggested Properties</h3>
-            <div className={styles.matchList}>
-              {matchedProperties.map(item => (
-                <div key={item.id} className={styles.matchItem} onClick={() => router.push("/inventory")}>
-                  <div className={styles.matchAvatar}><HomeIcon size={18} /></div>
-                  <div className={styles.matchInfo}>
-                    <p className="text-body-md" style={{ fontWeight: 600 }}>{item.projectName}</p>
-                    <p className="text-body-md" style={{ color: "var(--r-on-surface-variant)" }}>{item.bhk} {item.area && `· ${item.area}`}</p>
-                  </div>
-                  <ChevronRight size={16} color="var(--r-outline)" />
-                </div>
-              ))}
+        {/* Requirement */}
+        <section className={`r-card ${styles.reqCard}`}>
+          <h3 className="text-headline-md" style={{ marginBottom: 16 }}>Requirement</h3>
+          <div className={styles.reqList}>
+            <ReqItem icon={<Building size={18} />} label="Property Type" value={lead.bhk || "—"} />
+            <ReqItem icon={<MapPin size={18} />} label="Location" value={lead.projectInterest || "—"} />
+            <ReqItem icon={<Wallet size={18} />} label="Budget" value={lead.budget || "—"} />
+            <ReqItem icon={<Clock size={18} />} label="Timeline" value={fu ? (overdue ? `Overdue: ${fu}` : fu) : "—"} />
+          </div>
+          {lead.email && (
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--r-outline-variant)" }}>
+              <p className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 8 }}>Contact</p>
+              <p className="text-body-md">{lead.email}</p>
             </div>
-          </section>
-        )}
+          )}
+        </section>
 
         {/* Tabs */}
         <section className={`r-card ${styles.tabsCard}`}>
@@ -435,7 +461,7 @@ export default function LeadDetailPage() {
               <div className={styles.activityFeed}>
                 <div className={styles.activityActions}>
                   <button className={styles.addNoteBtn} onClick={() => setNoteOpen(true)}><Edit size={14} /> Add Note</button>
-                  <button className={styles.addNoteBtn} onClick={handleLogVisit} style={{ background: "var(--r-secondary-container)", color: "var(--r-on-secondary-container)" }}><MapPin size={14} /> Log Visit</button>
+                  <button className={styles.addNoteBtn} onClick={() => { setLogVisitProject(lead.projectInterest || ""); setShowLogVisit(true); }} style={{ background: "var(--r-secondary-container)", color: "var(--r-on-secondary-container)" }}><MapPin size={14} /> Log Visit</button>
                   <button className={`${styles.addNoteBtn} ${recording ? styles.recordingBtn : ""}`} onClick={recording ? stopRecording : startRecording}>
                     {recording ? <><StopCircle size={14} /> Stop ({recordTime}s)</> : <><Mic size={14} /> Voice Note</>}
                   </button>
@@ -480,7 +506,27 @@ export default function LeadDetailPage() {
                       <div className={styles.activityBody}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                           <p className="text-body-md" style={{ fontWeight: 600 }}>{meta.label}</p>
-                          <span className="text-label-md" style={{ color: "var(--r-outline)" }}>{formatTimelineDate(int.createdAt)}</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span className="text-label-md" style={{ color: "var(--r-outline)" }}>{formatTimelineDate(int.createdAt)}</span>
+                            {(int.type === "note" || int.type === "visit") && int.id && (
+                              <div style={{ display: "flex", gap: 4 }}>
+                                <button
+                                  className={styles.intActionBtn}
+                                  onClick={() => { setEditingInt(int); setEditIntText(int.note || ""); }}
+                                  title="Edit"
+                                >
+                                  <Edit size={12} />
+                                </button>
+                                <button
+                                  className={styles.intActionBtn}
+                                  onClick={() => handleDeleteInteraction(int.id)}
+                                  title="Delete"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                         {int.type === "voice_note" && int.voiceUrl ? (
                           <audio controls src={int.voiceUrl} style={{ width: "100%", marginTop: 8, height: 36 }} />
@@ -609,22 +655,24 @@ export default function LeadDetailPage() {
           </div>
         </section>
 
-        {/* Requirements */}
-        <section className={`r-card ${styles.reqCard}`}>
-          <h3 className="text-headline-md" style={{ marginBottom: 16 }}>Requirement</h3>
-          <div className={styles.reqList}>
-            <ReqItem icon={<Building size={18} />} label="Property Type" value={lead.bhk || "—"} />
-            <ReqItem icon={<MapPin size={18} />} label="Location" value={lead.projectInterest || "—"} />
-            <ReqItem icon={<Wallet size={18} />} label="Budget" value={lead.budget || "—"} />
-            <ReqItem icon={<Clock size={18} />} label="Timeline" value={fu ? (overdue ? `Overdue: ${fu}` : fu) : "—"} />
-          </div>
-          {lead.email && (
-            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--r-outline-variant)" }}>
-              <p className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 8 }}>Contact</p>
-              <p className="text-body-md">{lead.email}</p>
+        {/* Suggested Properties */}
+        {matchedProperties.length > 0 && (
+          <section className={`r-card ${styles.matchCard}`}>
+            <h3 className="text-headline-md" style={{ marginBottom: 12 }}>Suggested Properties</h3>
+            <div className={styles.matchList}>
+              {matchedProperties.map(item => (
+                <div key={item.id} className={styles.matchItem} onClick={() => router.push("/inventory")}>
+                  <div className={styles.matchAvatar}><HomeIcon size={18} /></div>
+                  <div className={styles.matchInfo}>
+                    <p className="text-body-md" style={{ fontWeight: 600 }}>{item.projectName}</p>
+                    <p className="text-body-md" style={{ color: "var(--r-on-surface-variant)" }}>{item.bhk} {item.area && `· ${item.area}`}</p>
+                  </div>
+                  <ChevronRight size={16} color="var(--r-outline)" />
+                </div>
+              ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* Quick Stats */}
         <section className={styles.quickStats}>
@@ -732,6 +780,36 @@ export default function LeadDetailPage() {
             </button>
           ))}
           {templates.length === 0 && <p className="text-body-md" style={{ color: "var(--r-outline)", textAlign: "center" }}>No templates yet. Create them in Settings.</p>}
+        </div>
+      </BottomSheet>
+
+      {/* Log Visit Sheet */}
+      <BottomSheet open={showLogVisit} onClose={() => setShowLogVisit(false)} title="Log Site Visit">
+        <div style={{ padding: 16 }}>
+          <p className="text-body-md" style={{ color: "var(--r-on-surface-variant)", marginBottom: 12 }}>Enter the project or property where the visit was done</p>
+          <input
+            type="text"
+            className="r-input"
+            placeholder="e.g. Smartworld Gems, Dwarka..."
+            value={logVisitProject}
+            onChange={e => setLogVisitProject(e.target.value)}
+            style={{ marginBottom: 16 }}
+          />
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="r-btn r-btn-ghost" onClick={() => setShowLogVisit(false)} style={{ flex: 1 }}>Cancel</button>
+            <button className="r-btn r-btn-primary" onClick={handleLogVisit} disabled={!logVisitProject.trim()} style={{ flex: 1 }}>Log Visit</button>
+          </div>
+        </div>
+      </BottomSheet>
+
+      {/* Edit Interaction Sheet */}
+      <BottomSheet open={!!editingInt} onClose={() => { setEditingInt(null); setEditIntText(""); }} title="Edit Activity">
+        <div style={{ padding: 16 }}>
+          <textarea className="r-input" rows={3} value={editIntText} onChange={e => setEditIntText(e.target.value)} />
+          <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+            <button className="r-btn r-btn-ghost" onClick={() => { setEditingInt(null); setEditIntText(""); }} style={{ flex: 1 }}>Cancel</button>
+            <button className="r-btn r-btn-primary" onClick={handleSaveEditInteraction} disabled={!editIntText.trim()} style={{ flex: 1 }}>Save</button>
+          </div>
         </div>
       </BottomSheet>
 

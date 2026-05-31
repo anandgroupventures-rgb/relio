@@ -154,18 +154,18 @@
   justify-content: center;
   gap: 6px;
   padding: 10px 8px;
-  border: 1px solid #25D366;
-  color: #25D366;
+  border: 1px solid #128C7E;
+  color: #fff;
   border-radius: var(--r-radius);
   font-size: 12px;
   font-weight: 600;
-  background: transparent;
+  background: #25D366;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
 }
 .waBtn:hover {
-  background: rgba(37, 211, 102, 0.05);
+  background: #128C7E;
 }
 
 .smsBtn {
@@ -265,6 +265,26 @@
 }
 .editFab:active {
   transform: scale(0.95);
+}
+
+/* Inline interaction actions */
+.intActionBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--r-surface-container-high);
+  color: var(--r-on-surface-variant);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+.intActionBtn:hover {
+  background: var(--r-primary-fixed);
+  color: var(--r-primary);
 }
 
 /* Pipeline — Vertical Stepper */

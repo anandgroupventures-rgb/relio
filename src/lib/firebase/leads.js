@@ -83,6 +83,21 @@ export async function getInteractions(uid, leadId) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
+// ─── Delete Interaction ─────────────────────────────────────────────────────────
+export async function deleteInteraction(uid, leadId, interactionId) {
+  await deleteDoc(
+    doc(getDb(), "users", uid, "leads", leadId, "interactions", interactionId)
+  );
+}
+
+// ─── Update Interaction ───────────────────────────────────────────────────────
+export async function updateInteraction(uid, leadId, interactionId, data) {
+  await updateDoc(
+    doc(getDb(), "users", uid, "leads", leadId, "interactions", interactionId),
+    data
+  );
+}
+
 // ─── Archive Lead ─────────────────────────────────────────────────────────────
 export async function archiveLead(uid, id) {
   await updateDoc(leadDoc(uid, id), {
