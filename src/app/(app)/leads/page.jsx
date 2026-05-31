@@ -267,7 +267,7 @@ export default function LeadsPage() {
       </header>
 
       <main className={styles.main}>
-        {/* Search + Filter */}
+        {/* Search */}
         <div className={styles.searchWrap}>
           <Search size={20} color="var(--r-outline)" className={styles.searchIcon} />
           <input
@@ -279,14 +279,6 @@ export default function LeadsPage() {
           {search && (
             <button className={styles.clearBtn} onClick={() => handleSearch("")}>×</button>
           )}
-          <button
-            className={`${styles.filterTrigger} ${hasActiveFilters() ? styles.filterTriggerActive : ""}`}
-            onClick={openFilters}
-            title="Filters"
-          >
-            <SlidersHorizontal size={18} />
-            {hasActiveFilters() && <span className={styles.filterBadge}>{activePills.length}</span>}
-          </button>
         </div>
 
         {/* Active filter pills */}
@@ -311,8 +303,17 @@ export default function LeadsPage() {
           </div>
         )}
 
-        {/* View Toggle */}
+        {/* View Toggle + Filter */}
         <div className={styles.viewBar}>
+          <button
+            className={`${styles.filterTrigger} ${hasActiveFilters() ? styles.filterTriggerActive : ""}`}
+            onClick={openFilters}
+            title="Filters"
+          >
+            <SlidersHorizontal size={16} />
+            {hasActiveFilters() && <span className={styles.filterBadge}>{activePills.length}</span>}
+            <span className={styles.filterLabel}>Filters</span>
+          </button>
           <div className={styles.viewToggle}>
             <button className={`${styles.viewBtn} ${viewMode === "list" ? styles.viewBtnActive : ""}`} onClick={() => handleViewMode("list")} title="List view">
               <List size={18} />

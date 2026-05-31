@@ -67,9 +67,6 @@
 /* Search */
 .searchWrap {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-bottom: 16px;
 }
 
@@ -82,8 +79,8 @@
 }
 
 .searchInput {
-  flex: 1;
-  padding: 14px 40px 14px 48px;
+  width: 100%;
+  padding: 16px 40px 16px 48px;
   border: 1px solid var(--r-outline-variant);
   border-radius: var(--r-radius-lg);
   background: var(--r-surface-container-lowest);
@@ -105,7 +102,7 @@
 
 .clearBtn {
   position: absolute;
-  right: 56px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   width: 28px;
@@ -123,12 +120,13 @@
 
 /* Filter trigger button */
 .filterTrigger {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-radius-lg);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--r-radius);
+  font-size: 13px;
+  font-weight: 600;
   background: var(--r-surface-container-highest);
   color: var(--r-on-surface-variant);
   border: 1px solid var(--r-outline-variant);
@@ -147,8 +145,8 @@
 }
 .filterBadge {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: -6px;
+  right: -6px;
   min-width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -160,6 +158,14 @@
   align-items: center;
   justify-content: center;
   padding: 0 4px;
+}
+.filterLabel {
+  display: none;
+}
+@media (min-width: 640px) {
+  .filterLabel {
+    display: inline;
+  }
 }
 
 /* Active filter pills */
@@ -606,7 +612,7 @@
 .viewBar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
 }
