@@ -1,10 +1,11 @@
 "use client";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useLeads } from "@/lib/hooks/useLeads";
 import { todayStr, formatFollowUp, isOverdue } from "@/lib/utils/dateHelpers";
 import { getTempStyle } from "@/lib/utils/leadHelpers";
-import { ArrowLeft, ChevronLeft, ChevronRight, CalendarDays, Bell } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, Bell } from "lucide-react";
 import styles from "./calendar.module.css";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -12,6 +13,7 @@ const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 export default function CalendarPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const { leads, loading } = useLeads();
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
