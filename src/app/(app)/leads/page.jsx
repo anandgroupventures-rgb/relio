@@ -94,7 +94,9 @@ export default function LeadsPage() {
     setPostCall(lead);
   }
   function handleWA(lead) {
-    window.open(`https://wa.me/91${lead.mobile?.replace(/\D/g, "")}`, "_blank");
+    const digits = lead.mobile?.replace(/\D/g, "") || "";
+    const clean = digits.startsWith("91") ? digits.slice(2) : digits;
+    window.open(`https://wa.me/91${clean}`, "_blank");
   }
 
   // Multi-select handlers
@@ -155,7 +157,9 @@ export default function LeadsPage() {
         .replace(/{date}/g, new Date().toLocaleDateString("en-IN"))
         .replace(/{time}/g, new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }));
       const encoded = encodeURIComponent(personalized);
-      window.open(`https://wa.me/91${lead.mobile?.replace(/\D/g, "")}?text=${encoded}`, "_blank");
+      const digits = lead.mobile?.replace(/\D/g, "") || "";
+      const clean = digits.startsWith("91") ? digits.slice(2) : digits;
+      window.open(`https://wa.me/91${clean}?text=${encoded}`, "_blank");
       setBulkWAProgress(i + 1);
       if (i < selectedLeads.length - 1) {
         await new Promise(r => setTimeout(r, 1200));
@@ -750,11 +754,11 @@ function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressSta
           <p className="text-data-mono" style={{ color: "var(--r-on-surface-variant)" }}>+91 {lead.mobile}</p>
         </div>
         <div className={styles.needsContactActions} onClick={e => e.stopPropagation()}>
-          <button className={styles.actionBtnPrimary} onClick={onCall} title="Call">
-            <Phone size={18} />
-          </button>
-          <button className={styles.actionBtnSecondary} onClick={onWA} title="WhatsApp">
+          <button className={styles.actionBtnPrimary} onClick={onWA} title="WhatsApp" style={{ background: "#25D366", color: "#fff", border: "none" }}>
             <MessageCircle size={18} />
+          </button>
+          <button className={styles.actionBtnSecondary} onClick={onCall} title="Call">
+            <Phone size={18} />
           </button>
         </div>
       </div>
