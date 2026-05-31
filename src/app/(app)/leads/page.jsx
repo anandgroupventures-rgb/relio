@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { useLeads } from "@/lib/hooks/useLeads";
 import { filterLeads, sortLeads, getTempStyle, getStatusLabel, isUncontacted, isPipeline, isDisqualified } from "@/lib/utils/leadHelpers";
 import { LEAD_STATUSES, LEAD_SOURCES, BHK_OPTIONS } from "@/lib/utils/constants";
-import { formatFollowUp, isOverdue, DATE_PRESETS, getPresetRange, formatShortDate } from "@/lib/utils/dateHelpers";
+import { formatFollowUp, isOverdue, DATE_PRESETS, getPresetRange, formatShortDate, isValidDateStr } from "@/lib/utils/dateHelpers";
 import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
 import { bulkDeleteLeads, bulkArchiveLeads, updateLead } from "@/lib/firebase/leads";
@@ -360,6 +360,11 @@ export default function LeadsPage() {
                 onWA={() => handleWA(lead)}
               />
             ))}
+            {hasMore && (
+              <button className="r-btn r-btn-ghost" onClick={loadMore} style={{ width: "100%", marginTop: 8 }}>
+                Load More
+              </button>
+            )}
           </section>
         )}
 
@@ -716,7 +721,8 @@ export default function LeadsPage() {
 // ─── Needs Contact Card ──────────────────────────────────────────────────────
 function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
   const initials = lead.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
-  const daysOld = lead.leadDate ? Math.floor((Date.now() - new Date(lead.leadDate + "T00:00:00").getTime()) / 86400000) : null;
+  const hasValidDate = isValidDateStr(lead.leadDate);
+  const daysOld = hasValidDate ? Math.floor((Date.now() - new Date(lead.leadDate + "T00:00:00").getTime()) / 86400000) : null;
 
   return (
     <div
@@ -768,7 +774,7 @@ function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressSta
               {lead.source}
             </span>
           )}
-          {lead.leadDate && (
+          {hasValidDate && (
             <span className={styles.tag} style={{ background: daysOld > 2 ? "var(--r-error-container)" : "var(--r-primary-fixed)", color: daysOld > 2 ? "var(--r-error)" : "var(--r-on-primary-fixed)" }}>
               {daysOld > 2 ? `⚠ ${daysOld}d old` : `Captured ${formatShortDate(lead.leadDate)}`}
             </span>
@@ -860,7 +866,7 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
             </span>
           )}
         </div>
-        {lead.leadDate && (
+        {isValidDateStr(lead.leadDate) && (
           <div className={styles.metaRow} style={{ marginTop: 6 }}>
             <Calendar size={14} color="var(--r-outline)" />
             <span className="text-label-md" style={{ color: "var(--r-outline)" }}>

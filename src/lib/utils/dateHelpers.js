@@ -113,9 +113,18 @@ export function getPresetRange(preset) {
   }
 }
 
+// Validate a YYYY-MM-DD string
+export function isValidDateStr(dateStr) {
+  if (!dateStr || typeof dateStr !== "string") return false;
+  const re = /^\d{4}-\d{2}-\d{2}$/;
+  if (!re.test(dateStr)) return false;
+  const d = new Date(dateStr + "T00:00:00");
+  return !isNaN(d.getTime());
+}
+
 // Format a YYYY-MM-DD string to "12 Jan" or "15 Mar 2025"
 export function formatShortDate(dateStr) {
-  if (!dateStr) return "";
+  if (!isValidDateStr(dateStr)) return "";
   const d = new Date(dateStr + "T00:00:00");
   const thisYear = new Date().getFullYear();
   return d.toLocaleDateString("en-IN", {

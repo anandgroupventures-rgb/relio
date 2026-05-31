@@ -37,10 +37,10 @@ export default function TodayDashboard() {
   const firstName = user?.displayName?.split(" ")[0] || "";
 
   // Stats
-  const activeLeads = leads.filter(l => !["converted", "lost", "disqualified", "invalid_number"].includes(l.status));
-  const hotLeads = leads.filter(l => l.temperature === "hot" && !["converted", "lost"].includes(l.status));
-  const overdue = leads.filter(l => l.followUpDate && isOverdue(l.followUpDate) && !["converted", "lost", "disqualified", "invalid_number"].includes(l.status));
-  const dueToday = leads.filter(l => l.followUpDate && isToday(l.followUpDate));
+  const activeLeads = leads.filter(l => l.status !== "new" && !["converted", "lost", "disqualified", "invalid_number"].includes(l.status));
+  const hotLeads = leads.filter(l => l.temperature === "hot" && l.status !== "new" && !["converted", "lost"].includes(l.status));
+  const overdue = leads.filter(l => l.followUpDate && isOverdue(l.followUpDate) && l.status !== "new" && !["converted", "lost", "disqualified", "invalid_number"].includes(l.status));
+  const dueToday = leads.filter(l => l.followUpDate && isToday(l.followUpDate) && l.status !== "new");
   const siteVisits = leads.filter(l => l.status === "visit_scheduled" && l.followUpDate && isToday(l.followUpDate));
   const converted = leads.filter(l => l.status === "converted");
   const bookings = leads.filter(l => l.status === "negotiating" || l.status === "converted");
