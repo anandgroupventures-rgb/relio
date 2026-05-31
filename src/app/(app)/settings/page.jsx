@@ -110,10 +110,32 @@ export default function SettingsPage() {
       document.documentElement.style.setProperty("--r-background", "#1A1612");
       document.documentElement.style.setProperty("--r-surface", "#2A2520");
       document.documentElement.style.setProperty("--r-on-surface", "#F5F0EA");
+      document.documentElement.style.setProperty("--r-surface-dim", "#141210");
+      document.documentElement.style.setProperty("--r-surface-bright", "#2A2520");
+      document.documentElement.style.setProperty("--r-surface-variant", "#3A3530");
+      document.documentElement.style.setProperty("--r-on-surface-variant", "#C6C0B8");
+      document.documentElement.style.setProperty("--r-surface-container-lowest", "#1A1612");
+      document.documentElement.style.setProperty("--r-surface-container-low", "#221E1A");
+      document.documentElement.style.setProperty("--r-surface-container", "#2A2520");
+      document.documentElement.style.setProperty("--r-surface-container-high", "#322C28");
+      document.documentElement.style.setProperty("--r-surface-container-highest", "#3A3530");
+      document.documentElement.style.setProperty("--r-outline", "#5A554F");
+      document.documentElement.style.setProperty("--r-outline-variant", "#3A3530");
     } else {
       document.documentElement.style.setProperty("--r-background", t.bg);
       document.documentElement.style.setProperty("--r-surface", "#fcf9f8");
       document.documentElement.style.setProperty("--r-on-surface", "#1b1c1c");
+      document.documentElement.style.setProperty("--r-surface-dim", "#dcd9d9");
+      document.documentElement.style.setProperty("--r-surface-bright", "#fcf9f8");
+      document.documentElement.style.setProperty("--r-surface-variant", "#e5e2e1");
+      document.documentElement.style.setProperty("--r-on-surface-variant", "#454652");
+      document.documentElement.style.setProperty("--r-surface-container-lowest", "#ffffff");
+      document.documentElement.style.setProperty("--r-surface-container-low", "#f6f3f2");
+      document.documentElement.style.setProperty("--r-surface-container", "#f0eded");
+      document.documentElement.style.setProperty("--r-surface-container-high", "#eae7e7");
+      document.documentElement.style.setProperty("--r-surface-container-highest", "#e5e2e1");
+      document.documentElement.style.setProperty("--r-outline", "#767683");
+      document.documentElement.style.setProperty("--r-outline-variant", "#c6c5d4");
     }
     setThemeState(id);
     savePref("relio_theme", id);
@@ -300,7 +322,7 @@ export default function SettingsPage() {
             </button>
             <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Settings</h1>
           </div>
-          <button className={styles.notifBtn}>
+          <button className={styles.notifBtn} aria-label="Notifications">
             <Bell size={20} color="var(--r-on-surface-variant)" />
           </button>
         </div>

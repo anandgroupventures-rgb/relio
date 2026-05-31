@@ -178,7 +178,9 @@ export default function LeadDetailPage() {
       templateName = template.name;
     }
     const encoded = encodeURIComponent(msg);
-    window.open(`https://wa.me/91${lead.mobile?.replace(/\D/g, "")}?text=${encoded}`, "_blank");
+    const digits = lead.mobile?.replace(/\D/g, "") || "";
+    const clean = digits.startsWith("91") ? digits.slice(2) : digits;
+    window.open(`https://wa.me/91${clean}?text=${encoded}`, "_blank");
     // Log to timeline
     if (user) {
       await addInteraction(user.uid, lead.id, {
@@ -207,7 +209,9 @@ export default function LeadDetailPage() {
         .replace(/{date}/g, new Date().toLocaleDateString("en-IN"));
     }
     const encoded = encodeURIComponent(msg);
-    window.open(`sms:+91${lead.mobile?.replace(/\D/g, "")}?body=${encoded}`, "_blank");
+    const digitsSms = lead.mobile?.replace(/\D/g, "") || "";
+    const cleanSms = digitsSms.startsWith("91") ? digitsSms.slice(2) : digitsSms;
+    window.open(`sms:+91${cleanSms}?body=${encoded}`, "_blank");
     if (user) {
       await addInteraction(user.uid, lead.id, {
         type: "sms",
@@ -369,13 +373,13 @@ export default function LeadDetailPage() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
-            <button className={styles.backBtn} onClick={() => router.push("/leads")}>
+            <button className={styles.backBtn} onClick={() => router.push("/leads")} aria-label="Back to leads">
               <ArrowLeft size={22} color="var(--r-primary)" />
             </button>
-            <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Relio</h1>
+            <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Lead</h1>
           </div>
           <div className={styles.headerRight}>
-            <button className={styles.headerIcon}>
+            <button className={styles.headerIcon} aria-label="Notifications">
               <Bell size={20} color="var(--r-on-surface-variant)" />
             </button>
             <div className={styles.headerAvatar}>{(user?.displayName?.[0] || "U").toUpperCase()}</div>
@@ -406,12 +410,12 @@ export default function LeadDetailPage() {
             {lead.source && <span className="r-badge" style={{ background: "var(--r-primary-fixed)", color: "var(--r-on-primary-fixed)" }}>{lead.source}</span>}
           </div>
           <div className={styles.actionBar}>
-            <button className={`${styles.actionBtn} ${styles.actionBtnPrimary}`} onClick={handleCall}><Phone size={16} /> Call</button>
-            <button className={styles.waBtn} onClick={() => templates.length > 0 ? setShowWASheet(true) : handleWA()}><MessageCircle size={16} /> WhatsApp</button>
-            <button className={styles.smsBtn} onClick={() => smsTemplates.length > 0 ? setShowSmsSheet(true) : handleSMS()}><Send size={16} /> SMS</button>
-            <button className={styles.actionBtnSecondary} onClick={() => setShowFollowUp(true)}><Calendar size={16} /> Follow-up</button>
-            <button className={styles.actionBtnSecondary} onClick={() => setShowScheduleVisit(true)}><MapPin size={16} /> Visit</button>
-            <button className={styles.actionBtnSecondary} onClick={() => setNoteOpen(true)}><Edit size={16} /> Note</button>
+            <button className={`${styles.actionBtn} ${styles.actionBtnPrimary}`} onClick={handleCall} aria-label="Call lead"><Phone size={16} /> Call</button>
+            <button className={styles.waBtn} onClick={() => templates.length > 0 ? setShowWASheet(true) : handleWA()} aria-label="WhatsApp lead"><MessageCircle size={16} /> WhatsApp</button>
+            <button className={styles.smsBtn} onClick={() => smsTemplates.length > 0 ? setShowSmsSheet(true) : handleSMS()} aria-label="SMS lead"><Send size={16} /> SMS</button>
+            <button className={styles.actionBtnSecondary} onClick={() => setShowFollowUp(true)} aria-label="Schedule follow-up"><Calendar size={16} /> Follow-up</button>
+            <button className={styles.actionBtnSecondary} onClick={() => setShowScheduleVisit(true)} aria-label="Schedule site visit"><MapPin size={16} /> Visit</button>
+            <button className={styles.actionBtnSecondary} onClick={() => setNoteOpen(true)} aria-label="Add note"><Edit size={16} /> Note</button>
           </div>
         </section>
 
@@ -436,7 +440,7 @@ export default function LeadDetailPage() {
         <section className={`r-card ${styles.reqCard}`}>
           <h3 className="text-headline-md" style={{ marginBottom: 16 }}>Requirement</h3>
           <div className={styles.reqList}>
-            <ReqItem icon={<Building size={18} />} label="Property Type" value={lead.bhk || "—"} />
+            <ReqItem icon={<Building size={18} />} label="Property Type" value={lead.type || "—"} />
             <ReqItem icon={<MapPin size={18} />} label="Location" value={lead.projectInterest || "—"} />
             <ReqItem icon={<Wallet size={18} />} label="Budget" value={lead.budget || "—"} />
             <ReqItem icon={<Clock size={18} />} label="Timeline" value={fu ? (overdue ? `Overdue: ${fu}` : fu) : "—"} />
@@ -451,14 +455,22 @@ export default function LeadDetailPage() {
 
         {/* Tabs */}
         <section className={`r-card ${styles.tabsCard}`}>
-          <div className={styles.tabsBar}>
+          <div className={styles.tabsBar} role="tablist" aria-label="Lead sections">
             {["activity", "documents", "visits", "payments"].map(tab => (
-              <button key={tab} className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ""}`} onClick={() => setActiveTab(tab)}>{tab[0].toUpperCase() + tab.slice(1)}</button>
+              <button
+                key={tab}
+                className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ""}`}
+                onClick={() => setActiveTab(tab)}
+                role="tab"
+                aria-selected={activeTab === tab}
+                id={`ld-tab-${tab}`}
+                aria-controls={`ld-panel-${tab}`}
+              >{tab[0].toUpperCase() + tab.slice(1)}</button>
             ))}
           </div>
           <div className={styles.tabContent}>
             {activeTab === "activity" && (
-              <div className={styles.activityFeed}>
+              <div className={styles.activityFeed} role="tabpanel" id="ld-panel-activity" aria-labelledby="ld-tab-activity">
                 <div className={styles.activityActions}>
                   <button className={styles.addNoteBtn} onClick={() => setNoteOpen(true)}><Edit size={14} /> Add Note</button>
                   <button className={styles.addNoteBtn} onClick={() => { setLogVisitProject(lead.projectInterest || ""); setShowLogVisit(true); }} style={{ background: "var(--r-secondary-container)", color: "var(--r-on-secondary-container)" }}><MapPin size={14} /> Log Visit</button>
@@ -513,14 +525,14 @@ export default function LeadDetailPage() {
                                 <button
                                   className={styles.intActionBtn}
                                   onClick={() => { setEditingInt(int); setEditIntText(int.note || ""); }}
-                                  title="Edit"
+                                  aria-label="Edit activity"
                                 >
                                   <Edit size={12} />
                                 </button>
                                 <button
                                   className={styles.intActionBtn}
                                   onClick={() => handleDeleteInteraction(int.id)}
-                                  title="Delete"
+                                  aria-label="Delete activity"
                                 >
                                   <Trash2 size={12} />
                                 </button>
@@ -550,7 +562,7 @@ export default function LeadDetailPage() {
               </div>
             )}
             {activeTab === "documents" && (
-              <div>
+              <div role="tabpanel" id="ld-panel-documents" aria-labelledby="ld-tab-documents">
                 <div style={{ marginBottom: 16 }}>
                   <input
                     ref={fileInputRef}
@@ -600,7 +612,7 @@ export default function LeadDetailPage() {
               </div>
             )}
             {activeTab === "visits" && (
-              <div className={styles.activityFeed}>
+              <div className={styles.activityFeed} role="tabpanel" id="ld-panel-visits" aria-labelledby="ld-tab-visits">
                 {/* Upcoming scheduled visit */}
                 {lead.visitDate && (
                   <div className={styles.activityItem}>
@@ -651,7 +663,7 @@ export default function LeadDetailPage() {
                 ))}
               </div>
             )}
-            {activeTab === "payments" && <div style={{ padding: 24, textAlign: "center" }}><p className="text-body-md" style={{ color: "var(--r-outline)" }}>Payment tracking coming soon</p></div>}
+            {activeTab === "payments" && <div role="tabpanel" id="ld-panel-payments" aria-labelledby="ld-tab-payments" style={{ padding: 24, textAlign: "center" }}><p className="text-body-md" style={{ color: "var(--r-outline)" }}>Payment tracking coming soon</p></div>}
           </div>
         </section>
 
@@ -829,7 +841,7 @@ export default function LeadDetailPage() {
       </BottomSheet>
 
       {/* Floating Edit FAB */}
-      <button className={styles.editFab} onClick={() => setShowEdit(true)} title="Edit lead">
+      <button className={styles.editFab} onClick={() => setShowEdit(true)} aria-label="Edit lead">
         <Edit size={24} />
       </button>
     </div>

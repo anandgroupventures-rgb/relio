@@ -216,7 +216,7 @@ export default function DealsPage() {
             </button>
             <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Deals & Commission</h1>
           </div>
-          <button className={styles.notifBtn}>
+          <button className={styles.notifBtn} aria-label="Notifications">
             <Bell size={20} color="var(--r-on-surface-variant)" />
           </button>
         </div>
@@ -317,7 +317,7 @@ export default function DealsPage() {
                       <option value="partial">Partial</option>
                       <option value="received">Received</option>
                     </select>
-                    <button className={styles.deleteBtn} onClick={() => handleDelete(deal.id)}>
+                    <button className={styles.deleteBtn} onClick={() => handleDelete(deal.id)} aria-label="Delete deal">
                       <X size={16} />
                     </button>
                   </div>
@@ -411,7 +411,7 @@ export default function DealsPage() {
                     </div>
                   </div>
                   {exp.note && <p className="text-body-md" style={{ color: "var(--r-on-surface-variant)", marginTop: 4 }}>{exp.note}</p>}
-                  <button className={styles.deleteBtn} onClick={() => handleDeleteExpense(exp.id)} style={{ marginTop: 4 }}>
+                  <button className={styles.deleteBtn} onClick={() => handleDeleteExpense(exp.id)} style={{ marginTop: 4 }} aria-label="Delete expense">
                     <X size={14} />
                   </button>
                 </div>
@@ -427,7 +427,7 @@ export default function DealsPage() {
           <div className={`r-card ${styles.addSheet}`} onClick={e => e.stopPropagation()}>
             <div className={styles.sheetHeader}>
               <h2 className="text-headline-md">Add Deal</h2>
-              <button className={styles.closeBtn} onClick={() => setShowAdd(false)}><X size={20} /></button>
+              <button className={styles.closeBtn} onClick={() => setShowAdd(false)} aria-label="Close"><X size={20} /></button>
             </div>
             <div className={styles.sheetBody}>
               <div className={styles.field}>
@@ -494,7 +494,7 @@ export default function DealsPage() {
           <div className={`r-card ${styles.addSheet}`} onClick={e => e.stopPropagation()}>
             <div className={styles.sheetHeader}>
               <h2 className="text-headline-md">Add Expense</h2>
-              <button className={styles.closeBtn} onClick={() => setShowExpense(false)}><X size={20} /></button>
+              <button className={styles.closeBtn} onClick={() => setShowExpense(false)} aria-label="Close"><X size={20} /></button>
             </div>
             <div className={styles.sheetBody}>
               <div className={styles.field}>
@@ -531,7 +531,7 @@ export default function DealsPage() {
           <div className={`r-card ${styles.addSheet}`} onClick={e => e.stopPropagation()}>
             <div className={styles.sheetHeader}>
               <h2 className="text-headline-md">Add Payment Milestone</h2>
-              <button className={styles.closeBtn} onClick={() => setShowMilestones(null)}><X size={20} /></button>
+              <button className={styles.closeBtn} onClick={() => setShowMilestones(null)} aria-label="Close"><X size={20} /></button>
             </div>
             <div className={styles.sheetBody}>
               <div className={styles.field}>

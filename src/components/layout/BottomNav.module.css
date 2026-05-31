@@ -4,7 +4,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 480px;
+  max-width: 720px;
   height: var(--nav-height);
   background: var(--r-surface-container-lowest);
   border-top: 1px solid var(--r-outline-variant);
@@ -42,11 +42,12 @@
 }
 
 .active {
-  color: var(--r-on-secondary-container);
+  color: var(--r-primary);
 }
 
 .active .iconWrap {
-  background: var(--r-secondary-container);
+  background: var(--r-primary);
+  color: var(--r-on-primary);
 }
 
 .label {

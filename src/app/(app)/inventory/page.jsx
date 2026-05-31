@@ -10,6 +10,7 @@ import { AVAILABILITY } from "@/lib/utils/constants";
 import InvCard from "@/components/inventory/InvCard";
 import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
+import { SkeletonList } from "@/components/shared/Skeleton";
 
 const InvForm = dynamic(() => import("@/components/inventory/InvForm"), { ssr: false });
 const InvBulkImport = dynamic(() => import("@/components/inventory/InvBulkImport"), { ssr: false });
@@ -146,16 +147,16 @@ export default function InventoryPage() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
-            <button className={styles.backBtn} onClick={() => router.push("/today")}>
-              <ArrowLeft size={22} color="var(--r-primary)" />
-            </button>
-            <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Inventory</h1>
+            <div className={styles.avatar}>
+              {(user?.displayName?.[0] || "U").toUpperCase()}
+            </div>
+            <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Relio</h1>
           </div>
           <div className={styles.headerRight}>
-            <button className={styles.headerIcon} onClick={() => setShowAdd(true)}>
+            <button className={styles.headerIcon} onClick={() => setShowAdd(true)} aria-label="Add property">
               <Plus size={20} color="var(--r-primary)" />
             </button>
-            <button className={styles.notifBtn}>
+            <button className={styles.notifBtn} aria-label="Notifications">
               <Bell size={20} color="var(--r-on-surface-variant)" />
             </button>
           </div>
@@ -208,7 +209,7 @@ export default function InventoryPage() {
 
         {/* List */}
         <div className={styles.list}>
-          {loading && <p className="text-body-md" style={{ color: "var(--r-outline)", textAlign: "center", padding: 40 }}>Loading inventory…</p>}
+          {loading && <SkeletonList count={5} />}
           {!loading && displayed.length === 0 && (
             <EmptyState icon={<Home size={48} color="var(--r-outline)" />} title="No properties yet"
               body="Add your first property or import a spreadsheet."
@@ -223,14 +224,18 @@ export default function InventoryPage() {
             <InvCard key={item.id} item={item}
               onEdit={() => setEditItem(item)}
               onCall={() => window.open(`tel:${item.ownerMobile}`, "_self")}
-              onWhatsApp={() => window.open(`https://wa.me/91${item.ownerMobile?.replace(/\D/g, "")}`, "_blank")}
+              onWhatsApp={() => {
+                const digits = item.ownerMobile?.replace(/\D/g, "") || "";
+                const clean = digits.startsWith("91") ? digits.slice(2) : digits;
+                window.open(`https://wa.me/91${clean}`, "_blank");
+              }}
               onShare={() => setShowShare(item)} />
           ))}
         </div>
       </main>
 
       {/* FAB */}
-      <button className="r-fab" onClick={() => router.push("/inventory/new")}>
+      <button className="r-fab" onClick={() => router.push("/inventory/new")} aria-label="Add property">
         <Plus size={28} />
       </button>
 

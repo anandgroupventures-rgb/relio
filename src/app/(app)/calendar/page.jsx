@@ -71,12 +71,12 @@ export default function CalendarPage() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
-            <button className={styles.backBtn} onClick={() => router.push("/today")}>
-              <ArrowLeft size={22} color="var(--r-primary)" />
-            </button>
-            <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Calendar</h1>
+            <div className={styles.avatar}>
+              {(user?.displayName?.[0] || "U").toUpperCase()}
+            </div>
+            <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>Relio</h1>
           </div>
-          <button className={styles.notifBtn}>
+          <button className={styles.notifBtn} aria-label="Notifications">
             <Bell size={20} color="var(--r-on-surface-variant)" />
           </button>
         </div>
@@ -85,11 +85,11 @@ export default function CalendarPage() {
       <main className={styles.main}>
         {/* Month Nav */}
         <div className={styles.monthNav}>
-          <button className={styles.navBtn} onClick={prevMonth}>
+          <button className={styles.navBtn} onClick={prevMonth} aria-label="Previous month">
             <ChevronLeft size={20} />
           </button>
           <span className="text-headline-md">{MONTHS[viewMonth]} {viewYear}</span>
-          <button className={styles.navBtn} onClick={nextMonth}>
+          <button className={styles.navBtn} onClick={nextMonth} aria-label="Next month">
             <ChevronRight size={20} />
           </button>
         </div>

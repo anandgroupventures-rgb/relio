@@ -85,7 +85,9 @@ export default function TodayDashboard() {
     setPostCallLead(lead);
   }
   function handleWA(lead) {
-    window.open(`https://wa.me/91${lead.mobile?.replace(/\D/g, "")}`, "_blank");
+    const digits = lead.mobile?.replace(/\D/g, "") || "";
+    const clean = digits.startsWith("91") ? digits.slice(2) : digits;
+    window.open(`https://wa.me/91${clean}`, "_blank");
   }
 
   // Recent activity (mocked from lead interactions / status changes)
@@ -106,6 +108,9 @@ export default function TodayDashboard() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
+            <div className={styles.avatar}>
+              {(user?.displayName?.[0] || "U").toUpperCase()}
+            </div>
             <h1 className="text-headline-lg-mobile" style={{ color: "var(--r-primary)" }}>Relio</h1>
           </div>
           <div className={styles.headerRight}>
@@ -133,7 +138,7 @@ export default function TodayDashboard() {
             <KpiCard label="Active" value={activeLeads.length} trend={`${hotLeads.length} hot`} icon={<Zap size={16} />} accent="primary" />
             <KpiCard label="Site Visits" value={siteVisits.length} trend={siteVisits.length > 0 ? "Today" : "None"} icon={<MapPin size={16} />} accent="secondary" />
             <KpiCard label="Bookings" value={bookings.length} trend={`${converted.length} closed`} icon={<Handshake size={16} />} accent="secondary" />
-            <KpiCard label="Revenue" value="₹0" trend="Track deals" icon={<Wallet size={16} />} accent="secondary" />
+
           </div>
         </section>
 
@@ -266,7 +271,7 @@ export default function TodayDashboard() {
       </main>
 
       {/* FAB */}
-      <button className="r-fab" onClick={() => router.push("/leads/new")}>
+      <button className="r-fab" onClick={() => setShowAddLead(true)} aria-label="Add new lead">
         <Plus size={28} />
       </button>
 
@@ -314,11 +319,12 @@ function FunnelBar({ label, count, pct, color }) {
 }
 
 function ScheduleItem({ lead, time, label, onTap, onCall, onWA }) {
+  const isTimeString = /^\d{1,2}:\d{2}/.test(time);
   return (
     <div className={styles.scheduleItem}>
       <div className={styles.scheduleTime}>
         <div className="text-body-md" style={{ fontWeight: 700, color: "var(--r-primary)" }}>{time}</div>
-        <div className="text-label-md" style={{ color: "var(--r-outline)" }}>AM</div>
+        {isTimeString && <div className="text-label-md" style={{ color: "var(--r-outline)" }}>AM</div>}
       </div>
       <div className={styles.scheduleBody} onClick={onTap}>
         <div className="text-body-md" style={{ fontWeight: 600 }}>{lead.name}</div>

@@ -9,6 +9,7 @@ import { LEAD_STATUSES, LEAD_SOURCES, BHK_OPTIONS } from "@/lib/utils/constants"
 import { formatFollowUp, isOverdue, DATE_PRESETS, getPresetRange, formatShortDate, isValidDateStr } from "@/lib/utils/dateHelpers";
 import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
+import { SkeletonList } from "@/components/shared/Skeleton";
 import { bulkDeleteLeads, bulkArchiveLeads, updateLead } from "@/lib/firebase/leads";
 
 const LeadForm = dynamic(() => import("@/components/leads/LeadForm"), { ssr: false });
@@ -253,7 +254,7 @@ export default function LeadsPage() {
         <div className={styles.headerContent}>
           {isSelecting ? (
             <div className={styles.headerLeft} style={{ flex: 1 }}>
-              <button className={styles.backBtn} onClick={clearSelection}>
+              <button className={styles.backBtn} onClick={clearSelection} aria-label="Cancel selection">
                 <X size={22} color="var(--r-primary)" />
               </button>
               <h1 className="text-headline-md" style={{ color: "var(--r-primary)" }}>
@@ -269,11 +270,11 @@ export default function LeadsPage() {
             </div>
           )}
           {isSelecting ? (
-            <button className={styles.headerAction} onClick={selectAll}>
+            <button className={styles.headerAction} onClick={selectAll} aria-label="Select all">
               <CheckSquare size={20} color="var(--r-primary)" />
             </button>
           ) : (
-            <button className={styles.notifBtn}>
+            <button className={styles.notifBtn} aria-label="Notifications">
               <Bell size={22} color="var(--r-primary)" />
             </button>
           )}
@@ -318,10 +319,14 @@ export default function LeadsPage() {
         )}
 
         {/* Main Tabs: Needs Contact | Pipeline */}
-        <div className={styles.tabBar}>
+        <div className={styles.tabBar} role="tablist" aria-label="Leads view">
           <button
             className={`${styles.tabBtn} ${activeTab === "needs_contact" ? styles.tabBtnActive : ""}`}
             onClick={() => handleActiveTab("needs_contact")}
+            role="tab"
+            aria-selected={activeTab === "needs_contact"}
+            id="tab-needs-contact"
+            aria-controls="panel-needs-contact"
           >
             Needs Contact
             {needsContactCount > 0 && <span className={styles.tabBadge}>{needsContactCount}</span>}
@@ -329,6 +334,10 @@ export default function LeadsPage() {
           <button
             className={`${styles.tabBtn} ${activeTab === "pipeline" ? styles.tabBtnActive : ""}`}
             onClick={() => handleActiveTab("pipeline")}
+            role="tab"
+            aria-selected={activeTab === "pipeline"}
+            id="tab-pipeline"
+            aria-controls="panel-pipeline"
           >
             Pipeline
           </button>
@@ -336,8 +345,8 @@ export default function LeadsPage() {
 
         {/* ─── Needs Contact Tab ─────────────────────────────────────────────── */}
         {activeTab === "needs_contact" && (
-          <section className={styles.grid}>
-            {loading && <p className={styles.loadingMsg}>Loading leads…</p>}
+          <section className={styles.grid} role="tabpanel" id="panel-needs-contact" aria-labelledby="tab-needs-contact">
+            {loading && <SkeletonList count={5} />}
             {!loading && displayed.length === 0 && (
               <EmptyState
                 icon={<UsersIcon />}
@@ -374,7 +383,7 @@ export default function LeadsPage() {
 
         {/* ─── Pipeline Tab ──────────────────────────────────────────────────── */}
         {activeTab === "pipeline" && (
-          <>
+          <section role="tabpanel" id="panel-pipeline" aria-labelledby="tab-pipeline">
             {/* Pipeline toolbar: filter + list/kanban/disqualified */}
             <div className={styles.viewBar}>
               <button
@@ -387,13 +396,13 @@ export default function LeadsPage() {
                 <span className={styles.filterLabel}>Filters</span>
               </button>
               <div className={styles.viewToggle}>
-                <button className={`${styles.viewBtn} ${pipelineView === "list" ? styles.viewBtnActive : ""}`} onClick={() => handlePipelineView("list")} title="List view">
+                <button className={`${styles.viewBtn} ${pipelineView === "list" ? styles.viewBtnActive : ""}`} onClick={() => handlePipelineView("list")} aria-label="List view">
                   <List size={18} />
                 </button>
-                <button className={`${styles.viewBtn} ${pipelineView === "kanban" ? styles.viewBtnActive : ""}`} onClick={() => handlePipelineView("kanban")} title="Kanban view">
+                <button className={`${styles.viewBtn} ${pipelineView === "kanban" ? styles.viewBtnActive : ""}`} onClick={() => handlePipelineView("kanban")} aria-label="Kanban view">
                   <LayoutGrid size={18} />
                 </button>
-                <button className={styles.viewBtn} onClick={() => setShowBulk(true)} title="Bulk import">
+                <button className={styles.viewBtn} onClick={() => setShowBulk(true)} aria-label="Bulk import">
                   <Upload size={18} />
                 </button>
               </div>
@@ -402,7 +411,7 @@ export default function LeadsPage() {
             {/* Pipeline Content */}
             {pipelineView === "list" ? (
               <section className={styles.grid}>
-                {loading && <p className={styles.loadingMsg}>Loading leads…</p>}
+                {loading && <SkeletonList count={5} />}
                 {!loading && displayed.length === 0 && (
                   <EmptyState
                     icon={<UsersIcon />}
@@ -440,24 +449,29 @@ export default function LeadsPage() {
                 )}
               </section>
             ) : (
-              <KanbanBoard
-                leads={displayed}
-                loading={loading}
-                isSelecting={isSelecting}
-                selectedIds={selectedIds}
-                onTap={(lead) => {
-                  if (isSelecting) toggleSelection(lead.id);
-                  else router.push(`/leads/${lead.id}`);
-                }}
-                onLongPressStart={(id) => startLongPress(id)}
-                onLongPressEnd={cancelLongPress}
-                onMove={async (leadId, newStatus) => {
-                  if (!user) return;
-                  await updateLead(user.uid, leadId, { status: newStatus });
-                }}
-              />
+              <>
+                {loading && <SkeletonList count={3} />}
+                {!loading && (
+                <KanbanBoard
+                  leads={displayed}
+                  loading={false}
+                  isSelecting={isSelecting}
+                  selectedIds={selectedIds}
+                  onTap={(lead) => {
+                    if (isSelecting) toggleSelection(lead.id);
+                    else router.push(`/leads/${lead.id}`);
+                  }}
+                  onLongPressStart={(id) => startLongPress(id)}
+                  onLongPressEnd={cancelLongPress}
+                  onMove={async (leadId, newStatus) => {
+                    if (!user) return;
+                    await updateLead(user.uid, leadId, { status: newStatus });
+                  }}
+                />
+                )}
+              </>
             )}
-          </>
+          </section>
         )}
       </main>
 
@@ -754,10 +768,10 @@ function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressSta
           <p className="text-data-mono" style={{ color: "var(--r-on-surface-variant)" }}>+91 {lead.mobile}</p>
         </div>
         <div className={styles.needsContactActions} onClick={e => e.stopPropagation()}>
-          <button className={styles.actionBtnPrimary} onClick={onWA} title="WhatsApp" style={{ background: "#25D366", color: "#fff", border: "none" }}>
+          <button className={styles.actionBtnPrimary} onClick={onWA} aria-label="WhatsApp" style={{ background: "#25D366", color: "#fff", border: "none" }}>
             <MessageCircle size={18} />
           </button>
-          <button className={styles.actionBtnSecondary} onClick={onCall} title="Call">
+          <button className={styles.actionBtnSecondary} onClick={onCall} aria-label="Call">
             <Phone size={18} />
           </button>
         </div>
