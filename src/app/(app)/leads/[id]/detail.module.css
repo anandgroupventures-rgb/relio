@@ -118,37 +118,46 @@
   margin-bottom: 16px;
 }
 
-/* Action Bar */
+/* Action Bar — always visible, wraps to 2 rows */
 .actionBar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.actionBar::-webkit-scrollbar { display: none; }
-
-.actionBtn {
-  flex: 1;
-  min-width: max-content;
-  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 
-.waBtn {
-  flex: 1;
-  min-width: max-content;
+.actionBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: var(--r-radius);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  border: none;
+}
+
+.actionBtnPrimary {
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+}
+.actionBtnPrimary:hover {
+  filter: brightness(1.05);
+}
+
+.waBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
   border: 1px solid #25D366;
   color: #25D366;
   border-radius: var(--r-radius);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   background: transparent;
   cursor: pointer;
@@ -160,17 +169,15 @@
 }
 
 .smsBtn {
-  flex: 1;
-  min-width: max-content;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 6px;
+  padding: 10px 8px;
   border: 1px solid var(--r-primary);
   color: var(--r-primary);
   border-radius: var(--r-radius);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   background: transparent;
   cursor: pointer;
@@ -181,21 +188,83 @@
   background: var(--r-primary-fixed);
 }
 
-.iconBtn {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-radius);
-  border: 1px solid var(--r-outline-variant);
-  color: var(--r-primary);
+.actionBtnSecondary {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  gap: 6px;
+  padding: 10px 8px;
+  border: 1px solid var(--r-outline-variant);
+  color: var(--r-on-surface-variant);
+  border-radius: var(--r-radius);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--r-surface-container-lowest);
   cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.actionBtnSecondary:hover {
+  background: var(--r-surface-container);
+}
+
+/* Pipeline Status — Current Stage Only */
+.currentStageCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-radius: var(--r-radius);
+  background: var(--r-surface-container-low);
+  border: 1px solid var(--r-outline-variant);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.currentStageCard:hover {
+  background: var(--r-surface-container);
+}
+.currentStageCard:active {
+  transform: scale(0.98);
+}
+
+.currentStageLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.currentStageDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--r-secondary-container);
   flex-shrink: 0;
 }
-.iconBtn:hover {
-  background: var(--r-surface-container);
+
+/* Floating Edit FAB */
+.editFab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 24px + env(safe-area-inset-bottom));
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--r-primary);
+  color: var(--r-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 6, 102, 0.25);
+  border: none;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.15s ease;
+}
+.editFab:hover {
+  filter: brightness(1.05);
+}
+.editFab:active {
+  transform: scale(0.95);
 }
 
 /* Pipeline — Vertical Stepper */

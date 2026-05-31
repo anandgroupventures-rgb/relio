@@ -93,12 +93,16 @@ export default function LeadDetailPage() {
 
   async function handleStatusChange(status) {
     if (!user || !lead) return;
+    const currentLabel = getStatusLabel(lead.status);
+    const newLabel = getStatusLabel(status);
+    if (status === lead.status) return;
+    if (!window.confirm(`Move lead from "${currentLabel}" to "${newLabel}"?`)) return;
     await updateLead(user.uid, lead.id, { status });
     await addInteraction(user.uid, lead.id, {
-      type: "status_change", note: `Status changed to ${getStatusLabel(status)}`, from: lead.status, to: status,
+      type: "status_change", note: `Status changed to ${newLabel}`, from: lead.status, to: status,
     });
     setLead(prev => ({ ...prev, status }));
-    setInteractions(prev => [{ id: Date.now().toString(), type: "status_change", note: `Status changed to ${getStatusLabel(status)}`, createdAt: { toDate: () => new Date() } }, ...prev]);
+    setInteractions(prev => [{ id: Date.now().toString(), type: "status_change", note: `Status changed to ${newLabel}`, createdAt: { toDate: () => new Date() } }, ...prev]);
   }
 
   async function handleAddNote() {
@@ -374,51 +378,29 @@ export default function LeadDetailPage() {
             {lead.source && <span className="r-badge" style={{ background: "var(--r-primary-fixed)", color: "var(--r-on-primary-fixed)" }}>{lead.source}</span>}
           </div>
           <div className={styles.actionBar}>
-            <button className={`r-btn r-btn-primary ${styles.actionBtn}`} onClick={handleCall}><Phone size={18} /> Call</button>
-            <button className={styles.waBtn} onClick={() => templates.length > 0 ? setShowWASheet(true) : handleWA()}><MessageCircle size={18} /> WhatsApp</button>
-            <button className={styles.smsBtn} onClick={() => smsTemplates.length > 0 ? setShowSmsSheet(true) : handleSMS()} title="Send SMS"><Send size={18} /> SMS</button>
-            <button className={styles.iconBtn} onClick={() => setShowScheduleVisit(true)} title="Schedule visit"><MapPin size={18} /></button>
-            <button className={styles.iconBtn} onClick={() => setShowFollowUp(true)} title="Schedule follow-up"><Calendar size={18} /></button>
+            <button className={`${styles.actionBtn} ${styles.actionBtnPrimary}`} onClick={handleCall}><Phone size={16} /> Call</button>
+            <button className={styles.waBtn} onClick={() => templates.length > 0 ? setShowWASheet(true) : handleWA()}><MessageCircle size={16} /> WhatsApp</button>
+            <button className={styles.smsBtn} onClick={() => smsTemplates.length > 0 ? setShowSmsSheet(true) : handleSMS()}><Send size={16} /> SMS</button>
+            <button className={styles.actionBtnSecondary} onClick={() => setShowFollowUp(true)}><Calendar size={16} /> Follow-up</button>
+            <button className={styles.actionBtnSecondary} onClick={() => setShowScheduleVisit(true)}><MapPin size={16} /> Visit</button>
+            <button className={styles.actionBtnSecondary} onClick={() => setNoteOpen(true)}><Edit size={16} /> Note</button>
           </div>
         </section>
 
-        {/* Pipeline — Vertical Stepper */}
+        {/* Pipeline — Current Stage Only */}
         <section className={`r-card ${styles.pipelineCard}`}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-            <h3 className="text-headline-md">Pipeline Status</h3>
-            <button className="r-btn r-btn-sm r-btn-ghost" onClick={() => setShowStatusSheet(true)} style={{ padding: "6px 12px", fontSize: 12 }}>
-              Update
-            </button>
-          </div>
-          <p className="text-body-md" style={{ color: "var(--r-outline)", marginBottom: 16, fontSize: 13 }}>
-            Tap any stage to update status
-          </p>
-          <div className={styles.stepper}>
-            {PIPELINE.map((step, i) => {
-              const done = i <= pipelineIndex;
-              const isCurrent = i === pipelineIndex;
-              const isFuture = i > pipelineIndex;
-              return (
-                <div key={step.value} className={styles.stepperRow} onClick={() => handleStatusChange(step.value)}>
-                  <div className={styles.stepperLeft}>
-                    <div className={`${styles.stepperDot} ${done ? styles.stepperDone : ""} ${isCurrent ? styles.stepperCurrent : ""} ${isFuture ? styles.stepperFuture : ""}`}>
-                      {done && !isCurrent ? <Check size={14} /> : isCurrent ? <div className={styles.stepperPulse} /> : null}
-                    </div>
-                    {i < PIPELINE.length - 1 && <div className={`${styles.stepperLine} ${done ? styles.stepperLineDone : ""}`} />}
-                  </div>
-                  <div className={`${styles.stepperBody} ${isCurrent ? styles.stepperBodyCurrent : ""}`}>
-                    <p className="text-body-md" style={{ fontWeight: isCurrent ? 700 : 600, color: isFuture ? "var(--r-outline)" : "var(--r-on-surface)" }}>
-                      {step.label}
-                    </p>
-                    {isCurrent && (
-                      <p className="text-body-md" style={{ color: "var(--r-secondary)", fontSize: 12, marginTop: 2 }}>
-                        Current stage
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+          <h3 className="text-headline-md" style={{ marginBottom: 12 }}>Pipeline Status</h3>
+          <div className={styles.currentStageCard} onClick={() => setShowStatusSheet(true)}>
+            <div className={styles.currentStageLeft}>
+              <div className={styles.currentStageDot} />
+              <div>
+                <p className="text-body-md" style={{ fontWeight: 700, color: "var(--r-on-surface)" }}>
+                  {PIPELINE.find(p => p.value === lead.status)?.label || getStatusLabel(lead.status)}
+                </p>
+                <p className="text-label-md" style={{ color: "var(--r-outline)", marginTop: 2 }}>Current stage</p>
+              </div>
+            </div>
+            <ChevronRight size={20} color="var(--r-outline)" />
           </div>
         </section>
 
@@ -767,6 +749,11 @@ export default function LeadDetailPage() {
           {smsTemplates.length === 0 && <p className="text-body-md" style={{ color: "var(--r-outline)", textAlign: "center" }}>No SMS templates yet. Create them in Settings.</p>}
         </div>
       </BottomSheet>
+
+      {/* Floating Edit FAB */}
+      <button className={styles.editFab} onClick={() => setShowEdit(true)} title="Edit lead">
+        <Edit size={24} />
+      </button>
     </div>
   );
 }
