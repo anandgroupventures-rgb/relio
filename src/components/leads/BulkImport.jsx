@@ -168,7 +168,7 @@ export default function BulkImport({ leads, onDone, onCancel }) {
     reader.onload = evt => {
       const wb   = XLSX.read(evt.target.result, { type: "binary" });
       const ws   = wb.Sheets[wb.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(ws, { header:1, defval:"" });
+      const data = XLSX.utils.sheet_to_json(ws, { header:1, defval:"", raw:true });
       if (data.length < 2) return;
       const hdr  = data[0].map(h => h?.toString().trim());
       const map  = mapColumns(hdr);

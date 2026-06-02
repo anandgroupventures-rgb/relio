@@ -794,7 +794,6 @@ export default function LeadsPage() {
 function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
   const initials = lead.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
   const hasValidDate = isValidDateStr(lead.leadDate);
-  const daysOld = hasValidDate ? Math.floor((Date.now() - new Date(lead.leadDate + "T00:00:00").getTime()) / 86400000) : null;
 
   return (
     <div
@@ -847,8 +846,8 @@ function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressSta
             </span>
           )}
           {hasValidDate && (
-            <span className={styles.tag} style={{ background: daysOld > 2 ? "var(--r-error-container)" : "var(--r-primary-fixed)", color: daysOld > 2 ? "var(--r-error)" : "var(--r-on-primary-fixed)" }}>
-              {daysOld > 2 ? `⚠ ${daysOld}d old` : `Captured ${formatShortDate(lead.leadDate)}`}
+            <span className={styles.tag} style={{ background: "var(--r-primary-fixed)", color: "var(--r-on-primary-fixed)" }}>
+              {formatShortDate(lead.leadDate)}
             </span>
           )}
         </div>
