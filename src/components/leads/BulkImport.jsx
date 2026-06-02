@@ -58,6 +58,43 @@ function normalizeBhk(val) {
   return v;
 }
 
+// ─── Normalize date ────────────────────────────────────────────────────────
+function normalizeDate(val) {
+  if (!val) return todayStr();
+
+  // Already ISO → return as-is
+  if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+
+  // JS Date object (from XLSX auto-parse)
+  if (val instanceof Date && !isNaN(val.getTime())) {
+    return `${val.getFullYear()}-${String(val.getMonth() + 1).padStart(2, '0')}-${String(val.getDate()).padStart(2, '0')}`;
+  }
+
+  const str = val.toString().trim();
+
+  // DD/MM/YYYY or DD-MM-YYYY (Indian / European format)
+  const ddmm = str.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+  if (ddmm) {
+    const [, day, month, year] = ddmm;
+    const d = parseInt(day, 10);
+    const m = parseInt(month, 10);
+    // If day > 12, it's definitely DD/MM/YYYY
+    // If month > 12, it's definitely DD/MM/YYYY
+    // Otherwise default to DD/MM/YYYY since user's data is in this format
+    if (d > 12 || m > 12 || d <= 12) {
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+  }
+
+  // Try native Date parse as last resort
+  const d = new Date(str);
+  if (!isNaN(d.getTime())) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  return todayStr();
+}
+
 // ─── Normalize status ──────────────────────────────────────────────────────
 function normalizeStatus(val) {
   if (!val) return "new";
@@ -156,7 +193,7 @@ export default function BulkImport({ leads, onDone, onCancel }) {
         source:   row[map.source] || "",
         type:     normalizeType(row[map.type]),
         bhk:      normalizeBhk(row[map.bhk]),
-        leadDate: row[map.leadDate] || todayStr(),
+        leadDate: normalizeDate(row[map.leadDate]),
       }));
       setPreview(prev);
       setStep(2);
@@ -187,7 +224,7 @@ export default function BulkImport({ leads, onDone, onCancel }) {
             if (row[colMap.status]) updates.status = normalizeStatus(row[colMap.status]);
             if (row[colMap.followUpDate]) updates.followUpDate = row[colMap.followUpDate];
             if (row[colMap.locality]) updates.locality = row[colMap.locality];
-            if (row[colMap.leadDate]) updates.leadDate = row[colMap.leadDate];
+            if (row[colMap.leadDate]) updates.leadDate = normalizeDate(row[colMap.leadDate]);
             if (Object.keys(updates).length > 0) {
               await updateLead(user.uid, dup.id, updates);
               merged++;
@@ -213,7 +250,7 @@ export default function BulkImport({ leads, onDone, onCancel }) {
           status:          normalizeStatus(row[colMap.status]),
           followUpDate:    row[colMap.followUpDate]    || "",
           locality:        row[colMap.locality]        || "",
-          leadDate:        row[colMap.leadDate]        || todayStr(),
+          leadDate:        normalizeDate(row[colMap.leadDate]),
         });
         imported++;
       } catch { skipped++; }
