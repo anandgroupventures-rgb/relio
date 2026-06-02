@@ -122,14 +122,13 @@ export function isValidDateStr(dateStr) {
   return !isNaN(d.getTime());
 }
 
-// Format a YYYY-MM-DD string to "12 Jan" or "15 Mar 2025"
+// Format a YYYY-MM-DD string to "12 Jan 2025"
 export function formatShortDate(dateStr) {
   if (!isValidDateStr(dateStr)) return "";
   const d = new Date(dateStr + "T00:00:00");
-  const thisYear = new Date().getFullYear();
   return d.toLocaleDateString("en-IN", {
     day:   "numeric",
     month: "short",
-    ...(d.getFullYear() !== thisYear ? { year: "numeric" } : {}),
+    year:  "numeric",
   });
 }

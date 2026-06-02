@@ -87,6 +87,16 @@ function normalizeDate(val) {
     return `${year}-${month}-${day}`;
   }
 
+  // 1b. DD/M/YY, DD-MM-YY (two-digit year — common in broker sheets)
+  const ddmmyy = v.match(/^(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{2})$/);
+  if (ddmmyy) {
+    const day = ddmmyy[1].padStart(2, '0');
+    const month = ddmmyy[2].padStart(2, '0');
+    const yy = parseInt(ddmmyy[3], 10);
+    const year = yy < 50 ? 2000 + yy : 1900 + yy; // 26 → 2026, 99 → 1999
+    return `${year}-${month}-${day}`;
+  }
+
   // 2. YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD
   const yyyymmdd = v.match(/^(\d{4})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{1,2})$/);
   if (yyyymmdd) {
