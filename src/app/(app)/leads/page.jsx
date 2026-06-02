@@ -33,7 +33,7 @@ export default function LeadsPage() {
 
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
   const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false }));
-  const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy", "createdAt"));
+  const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy", "leadDate"));
   const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "desc"));
   const [activeTab, setActiveTab] = useState(() => ssGet("leads_tab", "needs_contact")); // needs_contact | pipeline
   const [pipelineView, setPipelineView] = useState(() => ssGet("leads_pipelineView", "list")); // list | kanban
@@ -177,9 +177,9 @@ export default function LeadsPage() {
   // ─── Active filter pills ────────────────────────────────────────────────────
   function getActivePills() {
     const pills = [];
-    if (activeTab !== "needs_contact" && (sortBy !== "createdAt" || sortDir !== "desc")) {
-      const sortLabel = { createdAt: "Date", leadDate: "Lead Date", name: "Name", priority: "Priority", followUp: "Follow-up", status: "Status" }[sortBy] || sortBy;
-      pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("createdAt"); handleSortDir("desc"); } });
+    if (activeTab !== "needs_contact" && (sortBy !== "leadDate" || sortDir !== "desc")) {
+      const sortLabel = { leadDate: "Lead Date", name: "Name", priority: "Priority", followUp: "Follow-up", status: "Status" }[sortBy] || sortBy;
+      pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("leadDate"); handleSortDir("desc"); } });
     }
     if (filter.status) pills.push({ key: "status", label: `Status: ${filter.status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}`, onRemove: () => handleFilter(f => ({ ...f, status: "" })) });
     if (filter.type) pills.push({ key: "type", label: `Type: ${filter.type}`, onRemove: () => handleFilter(f => ({ ...f, type: "" })) });
@@ -228,10 +228,10 @@ export default function LeadsPage() {
   function clearAllFilters() {
     const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "", showDisqualified: false };
     setDraftFilter(empty);
-    setDraftSortBy("createdAt");
+    setDraftSortBy("leadDate");
     setDraftSortDir("desc");
     setFilter(empty);
-    setSortBy("createdAt");
+    setSortBy("leadDate");
     setSortDir("desc");
   }
 
@@ -339,7 +339,7 @@ export default function LeadsPage() {
             <span className={styles.filterLabel}>
               {activeTab === "needs_contact"
                 ? "Sort: Lead Date ↑"
-                : `Sort: ${sortBy === "createdAt" ? "Date" : sortBy === "leadDate" ? "Lead Date" : sortBy === "name" ? "Name" : sortBy === "priority" ? "Priority" : sortBy === "followUp" ? "Follow-up" : "Status"} ${sortDir === "asc" ? "↑" : "↓"}`}
+                : `Sort: ${sortBy === "leadDate" ? "Lead Date" : sortBy === "name" ? "Name" : sortBy === "priority" ? "Priority" : sortBy === "followUp" ? "Follow-up" : "Status"} ${sortDir === "asc" ? "↑" : "↓"}`}
             </span>
           </button>
         </div>
@@ -559,7 +559,6 @@ export default function LeadsPage() {
             <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Sort by</h4>
             <div className={styles.sheetChips}>
               {[
-                { key: "createdAt", label: "Date" },
                 { key: "leadDate", label: "Lead Date" },
                 { key: "name", label: "Name" },
                 { key: "priority", label: "Priority" },
@@ -582,7 +581,7 @@ export default function LeadsPage() {
 
           {/* Date Range */}
           <section style={{ marginBottom: 24 }}>
-            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Date Range</h4>
+            <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Lead Date Range</h4>
             <div className={styles.sheetChips}>
               {DATE_PRESETS.map(p => (
                 <button
@@ -726,7 +725,6 @@ export default function LeadsPage() {
           </p>
           {[
             { key: "leadDate", label: "Lead Date" },
-            { key: "createdAt", label: "Date Created" },
             { key: "name", label: "Name" },
             { key: "priority", label: "Priority" },
             { key: "followUp", label: "Follow-up" },
