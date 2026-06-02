@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { findDuplicate } from "@/lib/utils/leadHelpers";
 import { todayStr } from "@/lib/utils/dateHelpers";
 import { BHK_OPTIONS, LEAD_TYPES } from "@/lib/utils/constants";
+import { Upload, ClipboardPaste } from "lucide-react";
 import styles from "./BulkImport.module.css";
 
 // ─── Flexible column name mapping ───────────────────────────────────────────
@@ -25,7 +26,6 @@ const COL_MAP = {
   locality:        ["locality","city","neighborhood","sector","block"],
 };
 
-// ─── Normalize lead type ─────────────────────────────────────────────────────
 function normalizeType(val) {
   if (!val) return "Buyer";
   const v = val.toString().trim().toLowerCase();
@@ -38,13 +38,10 @@ function normalizeType(val) {
   return "Buyer";
 }
 
-// ─── Normalize BHK ───────────────────────────────────────────────────────────
 function normalizeBhk(val) {
   if (!val) return "";
   const v = val.toString().trim();
-  // Direct match first
   if (BHK_OPTIONS.includes(v)) return v;
-  // Fuzzy match
   const lower = v.toLowerCase();
   if (lower.includes("studio")) return "Studio";
   if (lower.includes("1") || lower.includes("one")) return "1 BHK";
@@ -58,44 +55,29 @@ function normalizeBhk(val) {
   return v;
 }
 
-// ─── Normalize date ────────────────────────────────────────────────────────
 function normalizeDate(val) {
   if (!val) return todayStr();
-
-  // Already ISO → return as-is
   if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-
-  // JS Date object (from XLSX auto-parse)
   if (val instanceof Date && !isNaN(val.getTime())) {
     return `${val.getFullYear()}-${String(val.getMonth() + 1).padStart(2, '0')}-${String(val.getDate()).padStart(2, '0')}`;
   }
-
   const str = val.toString().trim();
-
-  // DD/MM/YYYY or DD-MM-YYYY (Indian / European format)
   const ddmm = str.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
   if (ddmm) {
     const [, day, month, year] = ddmm;
     const d = parseInt(day, 10);
     const m = parseInt(month, 10);
-    // If day > 12, it's definitely DD/MM/YYYY
-    // If month > 12, it's definitely DD/MM/YYYY
-    // Otherwise default to DD/MM/YYYY since user's data is in this format
     if (d > 12 || m > 12 || d <= 12) {
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
   }
-
-  // Try native Date parse as last resort
   const d = new Date(str);
   if (!isNaN(d.getTime())) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
-
   return todayStr();
 }
 
-// ─── Normalize status ──────────────────────────────────────────────────────
 function normalizeStatus(val) {
   if (!val) return "new";
   const v = val.toString().trim().toLowerCase().replace(/\s+/g, "_");
@@ -105,14 +87,13 @@ function normalizeStatus(val) {
     "busy","switched_off","not_interested","lost","invalid_number"
   ];
   if (valid.includes(v)) return v;
-  // Common synonyms
   if (v.includes("new")) return "new";
   if (v.includes("contact")) return "contacted";
   if (v.includes("interest")) return "interested";
   if (v.includes("detail")) return "details_shared";
   if (v.includes("visit_scheduled")) return "visit_scheduled";
   if (v.includes("visit_done") || v.includes("visited")) return "visit_done";
-  if (v.includes("negotiat")) return "negotiating";
+  if (v.includes("negociat")) return "negotiating";
   if (v.includes("convert") || v.includes("won") || v.includes("closed")) return "converted";
   if (v.includes("call_back") || v.includes("callback")) return "call_back";
   if (v.includes("not_answer") || v.includes("no answer")) return "not_answering";
@@ -135,7 +116,6 @@ function mapColumns(header) {
   return map;
 }
 
-// Build a human-readable mapping summary
 function buildMappingSummary(map, headers) {
   const summary = [];
   Object.entries(COL_MAP).forEach(([field, aliases]) => {
@@ -147,9 +127,18 @@ function buildMappingSummary(map, headers) {
   return summary;
 }
 
+// Parse tab / newline delimited paste (Excel / Sheets clipboard)
+function parsePaste(text) {
+  if (!text.trim()) return [];
+  const lines = text.trim().split(/\r?\n/);
+  return lines.map(line => line.split("\t").map(cell => cell.trim()));
+}
+
 export default function BulkImport({ leads, onDone, onCancel }) {
   const { user }     = useAuth();
   const fileRef      = useRef(null);
+  const [inputMode,  setInputMode]  = useState("file"); // "file" | "paste"
+  const [pasteText,  setPasteText]  = useState("");
   const [rows,       setRows]       = useState([]);
   const [colMap,     setColMap]     = useState({});
   const [headers,    setHeaders]    = useState([]);
@@ -157,9 +146,39 @@ export default function BulkImport({ leads, onDone, onCancel }) {
   const [step,       setStep]       = useState(1); // 1=upload, 2=preview, 3=done
   const [importing,  setImporting]  = useState(false);
   const [result,     setResult]     = useState({ imported:0, skipped:0, merged:0 });
-  const [duplicates, setDuplicates] = useState([]); // rows with duplicate mobiles
+  const [duplicates, setDuplicates] = useState([]);
   const [mergeMode,  setMergeMode]  = useState(false);
   const [mappingSummary, setMappingSummary] = useState([]);
+
+  function processData(data) {
+    if (data.length < 2) return;
+    const hdr  = data[0].map(h => h?.toString().trim());
+    const map  = mapColumns(hdr);
+    setHeaders(hdr);
+    setColMap(map);
+    setMappingSummary(buildMappingSummary(map, hdr));
+    const allRows = data.slice(1).filter(r => r.some(c => c !== ""));
+    const dups = [];
+    const cleanRows = [];
+    for (const row of allRows) {
+      const mobile = row[map.mobile]?.toString().trim();
+      const dup = mobile ? findDuplicate(leads, mobile) : null;
+      if (dup) dups.push({ row, dup, mobile });
+      else cleanRows.push(row);
+    }
+    setDuplicates(dups);
+    setRows(allRows);
+    const prev = allRows.slice(0, 5).map(row => ({
+      name:     row[map.name]   || "",
+      mobile:   row[map.mobile] || "",
+      source:   row[map.source] || "",
+      type:     normalizeType(row[map.type]),
+      bhk:      normalizeBhk(row[map.bhk]),
+      leadDate: normalizeDate(row[map.leadDate]),
+    }));
+    setPreview(prev);
+    setStep(2);
+  }
 
   function handleFile(e) {
     const file = e.target.files[0];
@@ -169,36 +188,18 @@ export default function BulkImport({ leads, onDone, onCancel }) {
       const wb   = XLSX.read(evt.target.result, { type: "binary" });
       const ws   = wb.Sheets[wb.SheetNames[0]];
       const data = XLSX.utils.sheet_to_json(ws, { header:1, defval:"", raw:true });
-      if (data.length < 2) return;
-      const hdr  = data[0].map(h => h?.toString().trim());
-      const map  = mapColumns(hdr);
-      setHeaders(hdr);
-      setColMap(map);
-      setMappingSummary(buildMappingSummary(map, hdr));
-      const allRows = data.slice(1);
-      // Detect duplicates
-      const dups = [];
-      const cleanRows = [];
-      for (const row of allRows) {
-        const mobile = row[map.mobile]?.toString().trim();
-        const dup = mobile ? findDuplicate(leads, mobile) : null;
-        if (dup) dups.push({ row, dup, mobile });
-        else cleanRows.push(row);
-      }
-      setDuplicates(dups);
-      setRows(allRows);
-      const prev = allRows.slice(0, 5).map(row => ({
-        name:     row[map.name]   || "",
-        mobile:   row[map.mobile] || "",
-        source:   row[map.source] || "",
-        type:     normalizeType(row[map.type]),
-        bhk:      normalizeBhk(row[map.bhk]),
-        leadDate: normalizeDate(row[map.leadDate]),
-      }));
-      setPreview(prev);
-      setStep(2);
+      processData(data);
     };
     reader.readAsBinaryString(file);
+  }
+
+  function handlePaste() {
+    const data = parsePaste(pasteText);
+    if (data.length < 2) {
+      alert("Paste at least a header row and one data row.");
+      return;
+    }
+    processData(data);
   }
 
   async function handleImport() {
@@ -211,7 +212,6 @@ export default function BulkImport({ leads, onDone, onCancel }) {
       const dup = findDuplicate(leads, mobile);
       if (dup) {
         if (mergeMode) {
-          // Merge new data into existing lead
           try {
             const updates = {};
             if (row[colMap.email]) updates.email = row[colMap.email];
@@ -228,13 +228,9 @@ export default function BulkImport({ leads, onDone, onCancel }) {
             if (Object.keys(updates).length > 0) {
               await updateLead(user.uid, dup.id, updates);
               merged++;
-            } else {
-              skipped++;
-            }
+            } else { skipped++; }
           } catch { skipped++; }
-        } else {
-          skipped++;
-        }
+        } else { skipped++; }
         continue;
       }
       try {
@@ -260,18 +256,68 @@ export default function BulkImport({ leads, onDone, onCancel }) {
     setImporting(false);
   }
 
+  function reset() {
+    setStep(1);
+    setPasteText("");
+    setRows([]);
+    setColMap({});
+    setHeaders([]);
+    setPreview([]);
+    setDuplicates([]);
+    setMappingSummary([]);
+    setMergeMode(false);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
   return (
     <div className={styles.wrap}>
 
       {step === 1 && (
         <>
-          <div className={styles.uploadZone} onClick={() => fileRef.current?.click()}>
-            <span className={styles.uploadIcon}>📂</span>
-            <p className={styles.uploadTitle}>Tap to upload Excel or CSV</p>
-            <p className={styles.uploadSub}>Columns should include: Name, Mobile. All others optional.</p>
-            <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" style={{ display:"none" }}
-              onChange={handleFile} />
+          {/* Mode switcher */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+            <button
+              className={`${styles.modeBtn} ${inputMode === "file" ? styles.modeBtnActive : ""}`}
+              onClick={() => setInputMode("file")}
+            >
+              <Upload size={16} /> Upload File
+            </button>
+            <button
+              className={`${styles.modeBtn} ${inputMode === "paste" ? styles.modeBtnActive : ""}`}
+              onClick={() => setInputMode("paste")}
+            >
+              <ClipboardPaste size={16} /> Copy & Paste
+            </button>
           </div>
+
+          {inputMode === "file" ? (
+            <>
+              <div className={styles.uploadZone} onClick={() => fileRef.current?.click()}>
+                <span className={styles.uploadIcon}>📂</span>
+                <p className={styles.uploadTitle}>Tap to upload Excel or CSV</p>
+                <p className={styles.uploadSub}>Columns should include: Name, Mobile. All others optional.</p>
+                <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" style={{ display:"none" }}
+                  onChange={handleFile} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <textarea
+                  className="r-input"
+                  rows={8}
+                  placeholder={`Paste leads copied from Excel / Sheets here...\n\nInclude the header row (Name, Mobile, Email, Source, Project, Lead Date etc.)\n\nExample:\nName\tMobile\tSource\tProject\tLead Date\nAkhil Jain\t919876543210\tMeta\tEmaar Palm\t29/05/2026\nAnita\t919876543211\tMeta\tSmartworld\t28/05/2026`}
+                  value={pasteText}
+                  onChange={e => setPasteText(e.target.value)}
+                  style={{ fontFamily: "monospace", fontSize: 13, resize: "vertical" }}
+                />
+                <button className="r-btn r-btn-primary" onClick={handlePaste} disabled={!pasteText.trim()}>
+                  Parse {pasteText.trim().split(/\r?\n/).length} rows
+                </button>
+              </div>
+            </>
+          )}
+
           <div className={styles.template}>
             <p className={styles.templateTitle}>Expected columns (any order, close spelling works):</p>
             <p className={styles.templateCols}>
@@ -285,12 +331,11 @@ export default function BulkImport({ leads, onDone, onCancel }) {
         <>
           <div className={styles.previewHeader}>
             <span className={styles.previewCount}>Found <strong>{rows.length}</strong> rows</span>
-            <button className={styles.reupload} onClick={() => { setStep(1); fileRef.current.value=""; }}>
+            <button className={styles.reupload} onClick={reset}>
               ↩ Re-upload
             </button>
           </div>
 
-          {/* Column mapping summary */}
           {mappingSummary.length > 0 && (
             <div className={styles.mappingBox}>
               <p className={styles.mappingTitle}>Matched columns</p>
