@@ -34,7 +34,7 @@ export default function LeadsPage() {
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
   const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false }));
   const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy", "leadDate"));
-  const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "desc"));
+  const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "asc"));
   const [activeTab, setActiveTab] = useState(() => ssGet("leads_tab", "needs_contact")); // needs_contact | pipeline
   const [pipelineView, setPipelineView] = useState(() => ssGet("leads_pipelineView", "list")); // list | kanban
   const [showAdd,  setShowAdd]  = useState(false);
@@ -76,10 +76,7 @@ export default function LeadsPage() {
   const displayed = useMemo(() => {
     let bucket = activeTab === "needs_contact" ? "needs_contact" : (filter.showDisqualified ? "disqualified" : "pipeline");
     const filtered = filterLeads(leads, { search, ...filter, bucket });
-    // Needs contact defaults to oldest leadDate first
-    const sb = activeTab === "needs_contact" ? "leadDate" : sortBy;
-    const sd = activeTab === "needs_contact" ? "asc" : sortDir;
-    return sortLeads(filtered, sb, sd);
+    return sortLeads(filtered, sortBy, sortDir);
   }, [leads, search, filter, sortBy, sortDir, activeTab]);
 
   function toggleSort(field) {
@@ -177,9 +174,9 @@ export default function LeadsPage() {
   // ─── Active filter pills ────────────────────────────────────────────────────
   function getActivePills() {
     const pills = [];
-    if (activeTab !== "needs_contact" && (sortBy !== "leadDate" || sortDir !== "desc")) {
+    if (sortBy !== "leadDate" || sortDir !== "asc") {
       const sortLabel = { leadDate: "Lead Date", name: "Name", priority: "Priority", followUp: "Follow-up", status: "Status" }[sortBy] || sortBy;
-      pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("leadDate"); handleSortDir("desc"); } });
+      pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("leadDate"); handleSortDir("asc"); } });
     }
     if (filter.status) pills.push({ key: "status", label: `Status: ${filter.status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}`, onRemove: () => handleFilter(f => ({ ...f, status: "" })) });
     if (filter.type) pills.push({ key: "type", label: `Type: ${filter.type}`, onRemove: () => handleFilter(f => ({ ...f, type: "" })) });
@@ -229,10 +226,10 @@ export default function LeadsPage() {
     const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "", showDisqualified: false };
     setDraftFilter(empty);
     setDraftSortBy("leadDate");
-    setDraftSortDir("desc");
+    setDraftSortDir("asc");
     setFilter(empty);
     setSortBy("leadDate");
-    setSortDir("desc");
+    setSortDir("asc");
   }
 
   function handlePreset(preset) {
@@ -337,9 +334,7 @@ export default function LeadsPage() {
           >
             <ArrowUpDown size={16} />
             <span className={styles.filterLabel}>
-              {activeTab === "needs_contact"
-                ? "Sort: Lead Date ↑"
-                : `Sort: ${sortBy === "leadDate" ? "Lead Date" : sortBy === "name" ? "Name" : sortBy === "priority" ? "Priority" : sortBy === "followUp" ? "Follow-up" : "Status"} ${sortDir === "asc" ? "↑" : "↓"}`}
+              {`Sort: ${sortBy === "leadDate" ? "Lead Date" : sortBy === "name" ? "Name" : sortBy === "priority" ? "Priority" : sortBy === "followUp" ? "Follow-up" : "Status"} ${sortDir === "asc" ? "↑" : "↓"}`}
             </span>
           </button>
         </div>
@@ -570,7 +565,7 @@ export default function LeadsPage() {
                   className={`${styles.sheetChip} ${draftSortBy === o.key ? styles.sheetChipActive : ""}`}
                   onClick={() => {
                     if (draftSortBy === o.key) setDraftSortDir(draftSortDir === "asc" ? "desc" : "asc");
-                    else { setDraftSortBy(o.key); setDraftSortDir("desc"); }
+                    else { setDraftSortBy(o.key); setDraftSortDir("asc"); }
                   }}
                 >
                   {o.label} {draftSortBy === o.key ? (draftSortDir === "asc" ? "↑" : "↓") : ""}
