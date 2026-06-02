@@ -56,25 +56,72 @@ function normalizeBhk(val) {
 }
 
 function normalizeDate(val) {
-  if (!val) return todayStr();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+  if (!val || val === "") return todayStr();
+
+  const v = val.toString().trim();
+
+  // Already ISO → return as-is
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+
+  // JS Date object (from XLSX auto-parse)
   if (val instanceof Date && !isNaN(val.getTime())) {
     return `${val.getFullYear()}-${String(val.getMonth() + 1).padStart(2, '0')}-${String(val.getDate()).padStart(2, '0')}`;
   }
-  const str = val.toString().trim();
-  const ddmm = str.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
-  if (ddmm) {
-    const [, day, month, year] = ddmm;
-    const d = parseInt(day, 10);
-    const m = parseInt(month, 10);
-    if (d > 12 || m > 12 || d <= 12) {
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+
+  // Excel serial date (integer > 30000, e.g. 45179)
+  const serial = parseInt(v, 10);
+  if (!isNaN(serial) && serial > 30000 && serial < 100000 && /^\d+$/.test(v)) {
+    const epoch = new Date(1899, 11, 30);
+    const d = new Date(epoch.getTime() + serial * 86400000);
+    if (!isNaN(d.getTime())) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
   }
-  const d = new Date(str);
-  if (!isNaN(d.getTime())) {
+
+  // 1. DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY (Indian / European)
+  const ddmm = v.match(/^(\d{1,2})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{4})$/);
+  if (ddmm) {
+    const day = ddmm[1].padStart(2, '0');
+    const month = ddmm[2].padStart(2, '0');
+    const year = ddmm[3];
+    return `${year}-${month}-${day}`;
+  }
+
+  // 2. YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD
+  const yyyymmdd = v.match(/^(\d{4})\s*[\/\-.]\s*(\d{1,2})\s*[\/\-.]\s*(\d{1,2})$/);
+  if (yyyymmdd) {
+    const year = yyyymmdd[1];
+    const month = yyyymmdd[2].padStart(2, '0');
+    const day = yyyymmdd[3].padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // 3. "29 May 2026" or "May 29, 2026"
+  const monthNames = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const natLang = v.match(/(\d{1,2})[\s\-]+([a-zA-Z]{3,})[\s\-]+(\d{4})/);
+  if (natLang) {
+    const day = natLang[1].padStart(2, '0');
+    const mon = monthNames.indexOf(natLang[2].toLowerCase().slice(0, 3)) + 1;
+    if (mon > 0) {
+      return `${natLang[3]}-${String(mon).padStart(2, '0')}-${day}`;
+    }
+  }
+  const natLang2 = v.match(/([a-zA-Z]{3,})[\s\-]+(\d{1,2})[\s,\-]+(\d{4})/);
+  if (natLang2) {
+    const mon = monthNames.indexOf(natLang2[1].toLowerCase().slice(0, 3)) + 1;
+    if (mon > 0) {
+      const day = natLang2[2].padStart(2, '0');
+      return `${natLang2[3]}-${String(mon).padStart(2, '0')}-${day}`;
+    }
+  }
+
+  // 4. Try native Date parse as last resort
+  const d = new Date(v);
+  if (!isNaN(d.getTime()) && d.getFullYear() > 2000 && d.getFullYear() < 2100) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
+
+  console.warn('normalizeDate: unrecognized format, using today. Input was:', JSON.stringify(v));
   return todayStr();
 }
 
