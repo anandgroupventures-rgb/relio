@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { useInventory } from "@/lib/hooks/useInventory";
 import { getLead, getInteractions, addInteraction, updateLead, deleteInteraction, updateInteraction, uploadVoiceNote, uploadDocument } from "@/lib/firebase/leads";
 import { getTempStyle, getStatusLabel, getStatusColor } from "@/lib/utils/leadHelpers";
-import { formatTimelineDate, formatFollowUp, isOverdue } from "@/lib/utils/dateHelpers";
+import { formatTimelineDate, formatFollowUp, isOverdue, formatShortDate, isValidDateStr } from "@/lib/utils/dateHelpers";
 import { predictBestCallTime } from "@/lib/utils/smartSuggestions";
 import BottomSheet from "@/components/shared/BottomSheet";
 import LeadForm from "@/components/leads/LeadForm";
@@ -444,6 +444,7 @@ export default function LeadDetailPage() {
             <ReqItem icon={<MapPin size={18} />} label="Location" value={lead.projectInterest || "—"} />
             <ReqItem icon={<Wallet size={18} />} label="Budget" value={lead.budget || "—"} />
             <ReqItem icon={<Clock size={18} />} label="Timeline" value={fu ? (overdue ? `Overdue: ${fu}` : fu) : "—"} />
+            <ReqItem icon={<Calendar size={18} />} label="Captured On" value={isValidDateStr(lead.leadDate) ? formatShortDate(lead.leadDate) : "—"} />
           </div>
           {lead.email && (
             <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--r-outline-variant)" }}>

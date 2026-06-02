@@ -15,7 +15,7 @@ import { bulkDeleteLeads, bulkArchiveLeads, updateLead } from "@/lib/firebase/le
 const LeadForm = dynamic(() => import("@/components/leads/LeadForm"), { ssr: false });
 const BulkImport = dynamic(() => import("@/components/leads/BulkImport"), { ssr: false });
 const PostCallSheet = dynamic(() => import("@/components/leads/PostCallSheet"), { ssr: false });
-import { Bell, Search, Phone, MessageCircle, Plus, MapPin, Home, ChevronRight, Trash2, Archive, X, CheckSquare, Square, LayoutGrid, List, Upload, SlidersHorizontal, Calendar } from "lucide-react";
+import { Bell, Search, Phone, MessageCircle, Plus, MapPin, Home, ChevronRight, Trash2, Archive, X, CheckSquare, Square, LayoutGrid, List, Upload, SlidersHorizontal, Calendar, ArrowUpDown } from "lucide-react";
 import styles from "./leads.module.css";
 
 function ssGet(key, fallback) {
@@ -41,6 +41,7 @@ export default function LeadsPage() {
   const [showBulk, setShowBulk] = useState(false);
   const [postCall, setPostCall] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
   const [draftFilter, setDraftFilter] = useState(filter);
   const [draftSortBy, setDraftSortBy] = useState(sortBy);
   const [draftSortDir, setDraftSortDir] = useState(sortDir);
@@ -318,6 +319,31 @@ export default function LeadsPage() {
           </div>
         )}
 
+        {/* Toolbar: Filter + Sort (visible on both tabs) */}
+        <div className={styles.viewBar}>
+          <button
+            className={`${styles.filterTrigger} ${hasActiveFilters() ? styles.filterTriggerActive : ""}`}
+            onClick={openFilters}
+            aria-label="Open filters"
+          >
+            <SlidersHorizontal size={16} />
+            {hasActiveFilters() && <span className={styles.filterBadge}>{activePills.length}</span>}
+            <span className={styles.filterLabel}>Filters</span>
+          </button>
+          <button
+            className={`${styles.filterTrigger} ${styles.sortTrigger} ${activeTab !== "needs_contact" ? styles.sortTriggerActive : ""}`}
+            onClick={() => setShowSort(true)}
+            aria-label="Sort leads"
+          >
+            <ArrowUpDown size={16} />
+            <span className={styles.filterLabel}>
+              {activeTab === "needs_contact"
+                ? "Sort: Lead Date ↑"
+                : `Sort: ${sortBy === "createdAt" ? "Date" : sortBy === "leadDate" ? "Lead Date" : sortBy === "name" ? "Name" : sortBy === "priority" ? "Priority" : sortBy === "followUp" ? "Follow-up" : "Status"} ${sortDir === "asc" ? "↑" : "↓"}`}
+            </span>
+          </button>
+        </div>
+
         {/* Main Tabs: Needs Contact | Pipeline */}
         <div className={styles.tabBar} role="tablist" aria-label="Leads view">
           <button
@@ -384,17 +410,8 @@ export default function LeadsPage() {
         {/* ─── Pipeline Tab ──────────────────────────────────────────────────── */}
         {activeTab === "pipeline" && (
           <section role="tabpanel" id="panel-pipeline" aria-labelledby="tab-pipeline">
-            {/* Pipeline toolbar: filter + list/kanban/disqualified */}
-            <div className={styles.viewBar}>
-              <button
-                className={`${styles.filterTrigger} ${hasActiveFilters() ? styles.filterTriggerActive : ""}`}
-                onClick={openFilters}
-                title="Filters"
-              >
-                <SlidersHorizontal size={16} />
-                {hasActiveFilters() && <span className={styles.filterBadge}>{activePills.length}</span>}
-                <span className={styles.filterLabel}>Filters</span>
-              </button>
+            {/* Pipeline toolbar: list/kanban/bulk */}
+            <div className={styles.viewBar} style={{ justifyContent: "flex-end" }}>
               <div className={styles.viewToggle}>
                 <button className={`${styles.viewBtn} ${pipelineView === "list" ? styles.viewBtnActive : ""}`} onClick={() => handlePipelineView("list")} aria-label="List view">
                   <List size={18} />
@@ -698,6 +715,43 @@ export default function LeadsPage() {
               Apply
             </button>
           </div>
+        </div>
+      </BottomSheet>
+
+      {/* Sort Sheet */}
+      <BottomSheet open={showSort} onClose={() => setShowSort(false)} title="Sort by">
+        <div style={{ padding: "0 16px 24px" }}>
+          <p className="text-body-md" style={{ color: "var(--r-on-surface-variant)", marginBottom: 12 }}>
+            Choose a field and direction
+          </p>
+          {[
+            { key: "leadDate", label: "Lead Date" },
+            { key: "createdAt", label: "Date Created" },
+            { key: "name", label: "Name" },
+            { key: "priority", label: "Priority" },
+            { key: "followUp", label: "Follow-up" },
+            { key: "status", label: "Status" },
+          ].map(o => (
+            <button
+              key={o.key}
+              className={`${styles.sheetChip} ${sortBy === o.key ? styles.sheetChipActive : ""}`}
+              onClick={() => {
+                if (sortBy === o.key) {
+                  handleSortDir(sortDir === "asc" ? "desc" : "asc");
+                } else {
+                  handleSortBy(o.key);
+                  handleSortDir("asc");
+                }
+                setShowSort(false);
+              }}
+              style={{ width: "100%", justifyContent: "space-between", marginBottom: 8 }}
+            >
+              <span>{o.label}</span>
+              <span style={{ opacity: sortBy === o.key ? 1 : 0.4 }}>
+                {sortBy === o.key ? (sortDir === "asc" ? "↑ Ascending" : "↓ Descending") : ""}
+              </span>
+            </button>
+          ))}
         </div>
       </BottomSheet>
 
