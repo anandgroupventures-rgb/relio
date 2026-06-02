@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  collection, query, orderBy, limit, startAfter,
+  collection, query, orderBy,
   onSnapshot, getDocs, getCountFromServer, where
 } from "firebase/firestore";
 import { getDbInstance } from "@/lib/firebase/config";
@@ -9,14 +9,10 @@ import { useAuth } from "./useAuth";
 import { calcTemperature, calcLeadScore } from "@/lib/utils/leadHelpers";
 import { localLeads, syncFromFirebase, initOfflineDatabase } from "@/lib/firebase/offlineDB";
 
-const PAGE_SIZE = 50;
-
 export function useLeads() {
   const { user } = useAuth();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
-  const [lastDoc, setLastDoc] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [uncontactedCount, setUncontactedCount] = useState(0);
@@ -89,8 +85,7 @@ export function useLeads() {
 
     const q = query(
       collection(db, "users", user.uid, "leads"),
-      orderBy("createdAt", "desc"),
-      limit(PAGE_SIZE)
+      orderBy("createdAt", "desc")
     );
 
     const unsub = onSnapshot(q, async (snap) => {
@@ -133,8 +128,6 @@ export function useLeads() {
       });
 
       setLeads(enriched);
-      setLastDoc(snap.docs[snap.docs.length - 1] || null);
-      setHasMore(snap.docs.length === PAGE_SIZE);
       setIsOffline(false);
       setLoading(false);
       initialLoadDone.current = true;
@@ -148,31 +141,5 @@ export function useLeads() {
     return unsub;
   }, [user]);
 
-  // Load more (pagination)
-  const loadMore = useCallback(async () => {
-    if (!user || !hasMore || !lastDoc) return;
-    const db = getDbInstance();
-    if (!db) return;
-    const q = query(
-      collection(db, "users", user.uid, "leads"),
-      orderBy("createdAt", "desc"),
-      startAfter(lastDoc),
-      limit(PAGE_SIZE)
-    );
-    const snap = await getDocs(q);
-    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    setLeads(prev => {
-      const combined = [...prev, ...data];
-      const enriched = combined.map(l => {
-        const temperature = calcTemperature(l);
-        const { score, temp } = calcLeadScore(l, combined);
-        return { ...l, temperature, aiScore: score, aiTemp: temp };
-      });
-      return enriched;
-    });
-    setLastDoc(snap.docs[snap.docs.length - 1] || null);
-    setHasMore(snap.docs.length === PAGE_SIZE);
-  }, [user, hasMore, lastDoc]);
-
-  return { leads, loading, hasMore, loadMore, isOffline, totalCount, uncontactedCount };
+  return { leads, loading, isOffline, totalCount, uncontactedCount };
 }

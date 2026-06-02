@@ -29,7 +29,7 @@ function ssSet(key, value) {
 export default function LeadsPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { leads, loading, hasMore, loadMore, uncontactedCount } = useLeads();
+  const { leads, loading, uncontactedCount } = useLeads();
 
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
   const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false }));
@@ -394,11 +394,6 @@ export default function LeadsPage() {
                 onWA={() => handleWA(lead)}
               />
             ))}
-            {hasMore && (
-              <button className="r-btn r-btn-ghost" onClick={loadMore} style={{ width: "100%", marginTop: 8 }}>
-                Load More
-              </button>
-            )}
           </section>
         )}
 
@@ -454,11 +449,6 @@ export default function LeadsPage() {
                     onWA={() => handleWA(lead)}
                   />
                 ))}
-                {hasMore && pipelineView === "list" && (
-                  <button className="r-btn r-btn-ghost" onClick={loadMore} style={{ width: "100%", marginTop: 8 }}>
-                    Load More
-                  </button>
-                )}
               </section>
             ) : (
               <>
