@@ -806,6 +806,17 @@ function getStatusColors(status) {
   return STATUS_COLORS[status] || { bg: "var(--r-surface-container-high)", color: "var(--r-on-surface-variant)" };
 }
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
+function getInitials(name) {
+  if (!name) return "?";
+  return name
+    .split(" ")
+    .map(n => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 // ─── Shared Lead Card Shell ─────────────────────────────────────────────────
 function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA, showStatus, showBudget, showTemp }) {
   const typeInfo = getTypeColor(lead.type);
@@ -826,9 +837,7 @@ function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLo
       onContextMenu={e => e.preventDefault()}
     >
       {/* Left type strip */}
-      <div className={styles.typeStrip} style={{ background: typeInfo.bg }}>
-        <span className={styles.typeStripLabel}>{typeInfo.label}</span>
-      </div>
+      <div className={styles.typeStrip} style={{ background: typeInfo.bg }} />
 
       {/* Selection checkbox (top-right) */}
       {isSelecting && (
@@ -838,73 +847,80 @@ function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLo
       )}
 
       <div className={styles.cardInner}>
-        {/* Row 1: Name + Mobile + Actions */}
-        <div className={styles.cardRow1}>
-          <div className={styles.cardNameBlock}>
-            <h3 className="text-body-lg" style={{ fontWeight: 700, color: "var(--r-primary)", lineHeight: 1.3 }}>{lead.name}</h3>
-            <p className="text-body-md" style={{ color: "var(--r-on-surface-variant)", fontStyle: "italic" }}>+91 {lead.mobile}</p>
-          </div>
-          <div className={styles.cardActions} onClick={e => e.stopPropagation()}>
-            <button className={styles.actionBtnCircle} onClick={onCall} aria-label="Call" style={{ background: "var(--r-primary)", color: "#fff" }}>
-              <Phone size={16} />
-            </button>
-            <button className={styles.actionBtnCircle} onClick={onWA} aria-label="WhatsApp" style={{ background: "#25D366", color: "#fff" }}>
-              <MessageCircle size={16} />
-            </button>
+        {/* Avatar */}
+        <div className={styles.cardLeft}>
+          <div className={styles.cardAvatar} style={{ background: typeInfo.bg }}>
+            {getInitials(lead.name)}
           </div>
         </div>
 
-        {/* Row 2: Type + Project + Date */}
-        <div className={styles.cardRow2}>
-          <span className={styles.typePill} style={{ background: typeInfo.bg }}>{typeInfo.label}</span>
-          {lead.projectInterest && (
-            <span className={styles.cardMetaText}>
-              <MapPin size={12} color="var(--r-secondary)" /> {lead.projectInterest}
-            </span>
-          )}
-          {hasValidDate && (
-            <span className={styles.cardMetaText}>
-              <Calendar size={12} color="var(--r-outline)" /> {formatShortDate(lead.leadDate)}
-            </span>
-          )}
-          {fu && (
-            <span className={styles.cardMetaText} style={{ color: overdue ? "var(--r-error)" : "var(--r-secondary)", fontWeight: 600 }}>
-              <Calendar size={12} color={overdue ? "var(--r-error)" : "var(--r-secondary)"} /> {overdue ? "Overdue: " : ""}{fu}
-            </span>
-          )}
-        </div>
+        {/* Body */}
+        <div className={styles.cardBody}>
+          {/* Row 1: Name + Project */}
+          <div className={styles.cardRow1}>
+            <span className={styles.cardName}>{lead.name}</span>
+            {lead.projectInterest && (
+              <span className={styles.cardProject}>{lead.projectInterest}</span>
+            )}
+          </div>
 
-        {/* Row 3: Status badge */}
-        {showStatus && (
-          <div className={styles.cardRow3}>
-            <span className={styles.statusBadge} style={{ background: statusColors.bg, color: statusColors.color }}>
-              {getStatusLabel(lead.status)}
-            </span>
-            {showTemp && lead.temperature && (
-              <span className={styles.statusBadge} style={{
-                background: lead.temperature === "hot" ? "var(--r-error-bg)" : lead.temperature === "warm" ? "var(--r-secondary-fixed)" : "var(--r-surface-container-high)",
-                color: lead.temperature === "hot" ? "var(--r-error)" : lead.temperature === "warm" ? "var(--r-secondary)" : "var(--r-on-surface-variant)",
-              }}>
-                {lead.temperature}
+          {/* Row 2: Type pill + Date + Follow-up */}
+          <div className={styles.cardRow2}>
+            <span className={styles.typePill} style={{ background: typeInfo.bg }}>{typeInfo.label}</span>
+            {hasValidDate && (
+              <span className={styles.cardMetaText}>
+                <Calendar size={12} color="var(--r-outline)" /> {formatShortDate(lead.leadDate)}
               </span>
             )}
-            {typeof lead.aiScore === "number" && (
-              <span className={styles.scoreBadge} style={{
-                background: lead.aiScore >= 75 ? "var(--r-error-bg)" : lead.aiScore >= 50 ? "var(--r-secondary-fixed)" : "var(--r-surface-container-high)",
-                color: lead.aiScore >= 75 ? "var(--r-error)" : lead.aiScore >= 50 ? "var(--r-secondary)" : "var(--r-on-surface-variant)"
-              }}>{lead.aiScore}</span>
+            {fu && (
+              <span className={styles.cardMetaText} style={{ color: overdue ? "var(--r-error)" : "var(--r-secondary)", fontWeight: 600 }}>
+                <Calendar size={12} color={overdue ? "var(--r-error)" : "var(--r-secondary)"} /> {overdue ? "Overdue: " : ""}{fu}
+              </span>
             )}
           </div>
-        )}
 
-        {/* Row 4: Budget (conditional) */}
-        {showBudget && lead.budget && (
-          <div className={styles.cardRow3}>
-            <span className={styles.cardMetaText} style={{ fontWeight: 600 }}>
-              Budget: {lead.budget}
-            </span>
-          </div>
-        )}
+          {/* Row 3: Status + Temp + Score */}
+          {showStatus && (
+            <div className={styles.cardRow3}>
+              <span className={styles.statusBadge} style={{ background: statusColors.bg, color: statusColors.color }}>
+                {getStatusLabel(lead.status)}
+              </span>
+              {showTemp && lead.temperature && (
+                <span className={styles.tempBadge} style={{
+                  background: lead.temperature === "hot" ? "var(--r-error-bg)" : lead.temperature === "warm" ? "var(--r-secondary-fixed)" : "var(--r-surface-container-high)",
+                  color: lead.temperature === "hot" ? "var(--r-error)" : lead.temperature === "warm" ? "var(--r-secondary)" : "var(--r-on-surface-variant)",
+                }}>
+                  {lead.temperature}
+                </span>
+              )}
+              {typeof lead.aiScore === "number" && (
+                <span className={styles.scoreBadge} style={{
+                  background: lead.aiScore >= 75 ? "var(--r-error-bg)" : lead.aiScore >= 50 ? "var(--r-secondary-fixed)" : "var(--r-surface-container-high)",
+                  color: lead.aiScore >= 75 ? "var(--r-error)" : lead.aiScore >= 50 ? "var(--r-secondary)" : "var(--r-on-surface-variant)"
+                }}>{lead.aiScore}</span>
+              )}
+            </div>
+          )}
+
+          {/* Row 4: Budget (conditional) */}
+          {showBudget && lead.budget && (
+            <div className={styles.cardRow3}>
+              <span className={styles.cardMetaText} style={{ fontWeight: 600 }}>
+                Budget: {lead.budget}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className={styles.cardActions} onClick={e => e.stopPropagation()}>
+          <button className={styles.actionBtnCircle} onClick={onCall} aria-label="Call" style={{ background: "var(--r-primary)", color: "#fff" }}>
+            <Phone size={14} />
+          </button>
+          <button className={styles.actionBtnCircle} onClick={onWA} aria-label="WhatsApp" style={{ background: "#25D366", color: "#fff" }}>
+            <MessageCircle size={14} />
+          </button>
+        </div>
       </div>
     </div>
   );
