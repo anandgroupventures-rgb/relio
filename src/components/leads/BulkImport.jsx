@@ -18,7 +18,7 @@ const COL_MAP = {
   projectInterest: ["project","area","location","project interest","interested in","property","locality","locality interest"],
   budget:          ["budget","price range","asking price","expected price"],
   remarks:         ["remarks","notes","comment","note","comments","additional notes"],
-  leadDate:        ["lead date","date","capture date","entry date","created date","enquiry date"],
+  leadDate:        ["lead date","date","capture date","captured date","entry date","created date","enquiry date","captured on","date captured","date of capture","acquired date","date acquired"],
   bhk:             ["bhk","configuration","unit type","property type","bedroom","bedrooms","unit"],
   status:          ["status","lead status","current status","stage"],
   followUpDate:    ["follow up","follow-up","followup date","next call","reminder","callback date","next follow up"],
