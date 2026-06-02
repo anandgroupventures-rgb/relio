@@ -773,10 +773,46 @@ export default function LeadsPage() {
   );
 }
 
-// ─── Needs Contact Card ──────────────────────────────────────────────────────
-function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
-  const initials = lead.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
+// ─── Type color helper ───────────────────────────────────────────────────────
+const TYPE_COLORS = {
+  buyer:     { bg: "#2563EB", label: "Buyer" },
+  seller:    { bg: "#059669", label: "Seller" },
+  tenant:    { bg: "#D97706", label: "Tenant" },
+  landlord:  { bg: "#7C3AED", label: "Landlord" },
+};
+function getTypeColor(type) {
+  const key = (type || "").toString().trim().toLowerCase();
+  return TYPE_COLORS[key] || { bg: "var(--r-outline)", label: type || "—" };
+}
+
+const STATUS_COLORS = {
+  new:              { bg: "#e5e7eb", color: "#374151" },
+  contacted:        { bg: "#dbeafe", color: "#1e40af" },
+  interested:       { bg: "#fef3c7", color: "#92400e" },
+  details_shared:   { bg: "#e0e7ff", color: "#3730a3" },
+  visit_scheduled:  { bg: "#fce7f3", color: "#9d174d" },
+  visit_done:       { bg: "#d1fae5", color: "#065f46" },
+  negotiating:      { bg: "#ffedd5", color: "#9a3412" },
+  converted:        { bg: "#dcfce7", color: "#15803d" },
+  call_back:        { bg: "#e0f2fe", color: "#075985" },
+  not_answering:    { bg: "#fee2e2", color: "#991b1b" },
+  busy:             { bg: "#fef9c3", color: "#854d0e" },
+  switched_off:     { bg: "#f3f4f6", color: "#4b5563" },
+  not_interested:   { bg: "#fee2e2", color: "#991b1b" },
+  lost:             { bg: "#fee2e2", color: "#991b1b" },
+  invalid_number:   { bg: "#f3f4f6", color: "#4b5563" },
+};
+function getStatusColors(status) {
+  return STATUS_COLORS[status] || { bg: "var(--r-surface-container-high)", color: "var(--r-on-surface-variant)" };
+}
+
+// ─── Shared Lead Card Shell ─────────────────────────────────────────────────
+function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA, showStatus, showBudget, showTemp }) {
+  const typeInfo = getTypeColor(lead.type);
   const hasValidDate = isValidDateStr(lead.leadDate);
+  const statusColors = getStatusColors(lead.status);
+  const fu = formatFollowUp(lead.followUpDate);
+  const overdue = isOverdue(lead.followUpDate);
 
   return (
     <div
@@ -789,102 +825,69 @@ function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressSta
       onTouchEnd={onLongPressEnd}
       onContextMenu={e => e.preventDefault()}
     >
+      {/* Left type strip */}
+      <div className={styles.typeStrip} style={{ background: typeInfo.bg }}>
+        <span className={styles.typeStripLabel}>{typeInfo.label}</span>
+      </div>
+
+      {/* Selection checkbox (top-right) */}
       {isSelecting && (
         <div className={styles.selectBox}>
-          {isSelected ? <CheckSquare size={22} color="var(--r-primary)" /> : <Square size={22} color="var(--r-outline)" />}
+          {isSelected ? <CheckSquare size={20} color="var(--r-primary)" /> : <Square size={20} color="var(--r-outline)" />}
         </div>
       )}
 
-      <div className={styles.cardTop}>
-        <div className={styles.cardAvatar} style={{ background: "var(--r-error-bg)", color: "var(--r-error)" }}>
-          {initials}
-        </div>
-        <div className={styles.cardInfo} style={{ flex: 1 }}>
-          <h3 className="text-body-lg" style={{ fontWeight: 600, color: "var(--r-primary)" }}>{lead.name}</h3>
-          <p className="text-data-mono" style={{ color: "var(--r-on-surface-variant)" }}>+91 {lead.mobile}</p>
-        </div>
-        <div className={styles.needsContactActions} onClick={e => e.stopPropagation()}>
-          <button className={styles.actionBtnPrimary} onClick={onWA} aria-label="WhatsApp" style={{ background: "#25D366", color: "#fff", border: "none" }}>
-            <MessageCircle size={18} />
-          </button>
-          <button className={styles.actionBtnSecondary} onClick={onCall} aria-label="Call">
-            <Phone size={18} />
-          </button>
-        </div>
-      </div>
-
-      <div className={styles.cardMeta}>
-        {lead.projectInterest && (
-          <div className={styles.metaRow}>
-            <MapPin size={16} color="var(--r-secondary)" />
-            <span className="text-body-md" style={{ color: "var(--r-on-surface-variant)" }}>
-              {lead.bhk && `${lead.bhk} in `}{lead.projectInterest}
-            </span>
+      <div className={styles.cardInner}>
+        {/* Row 1: Name + Mobile + Actions */}
+        <div className={styles.cardRow1}>
+          <div className={styles.cardNameBlock}>
+            <h3 className="text-body-lg" style={{ fontWeight: 700, color: "var(--r-primary)", lineHeight: 1.3 }}>{lead.name}</h3>
+            <p className="text-body-md" style={{ color: "var(--r-on-surface-variant)", fontStyle: "italic" }}>+91 {lead.mobile}</p>
           </div>
-        )}
-        <div className={styles.tagRow}>
-          {lead.source && (
-            <span className={styles.tag} style={{ background: "var(--r-secondary-fixed)", color: "var(--r-on-secondary-fixed)" }}>
-              {lead.source}
+          <div className={styles.cardActions} onClick={e => e.stopPropagation()}>
+            <button className={styles.actionBtnCircle} onClick={onCall} aria-label="Call" style={{ background: "var(--r-primary)", color: "#fff" }}>
+              <Phone size={16} />
+            </button>
+            <button className={styles.actionBtnCircle} onClick={onWA} aria-label="WhatsApp" style={{ background: "#25D366", color: "#fff" }}>
+              <MessageCircle size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Row 2: Type + Project + Date */}
+        <div className={styles.cardRow2}>
+          <span className={styles.typePill} style={{ background: typeInfo.bg }}>{typeInfo.label}</span>
+          {lead.projectInterest && (
+            <span className={styles.cardMetaText}>
+              <MapPin size={12} color="var(--r-secondary)" /> {lead.projectInterest}
             </span>
           )}
           {hasValidDate && (
-            <span className={styles.tag} style={{ background: "var(--r-primary-fixed)", color: "var(--r-on-primary-fixed)" }}>
-              {formatShortDate(lead.leadDate)}
+            <span className={styles.cardMetaText}>
+              <Calendar size={12} color="var(--r-outline)" /> {formatShortDate(lead.leadDate)}
+            </span>
+          )}
+          {fu && (
+            <span className={styles.cardMetaText} style={{ color: overdue ? "var(--r-error)" : "var(--r-secondary)", fontWeight: 600 }}>
+              <Calendar size={12} color={overdue ? "var(--r-error)" : "var(--r-secondary)"} /> {overdue ? "Overdue: " : ""}{fu}
             </span>
           )}
         </div>
-      </div>
-    </div>
-  );
-}
 
-// ─── Pipeline Lead Card ────────────────────────────────────────────────────
-function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
-  const temp = getTempStyle(lead.temperature || "warm");
-  const fu = formatFollowUp(lead.followUpDate);
-  const overdue = isOverdue(lead.followUpDate);
-  const initials = lead.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "?";
-
-  return (
-    <div
-      className={`${styles.leadCard} ${isSelected ? styles.leadCardSelected : ""}`}
-      onClick={onTap}
-      onMouseDown={onLongPressStart}
-      onMouseUp={onLongPressEnd}
-      onMouseLeave={onLongPressEnd}
-      onTouchStart={onLongPressStart}
-      onTouchEnd={onLongPressEnd}
-      onContextMenu={e => e.preventDefault()}
-    >
-      {/* Selection checkbox */}
-      {isSelecting && (
-        <div className={styles.selectBox}>
-          {isSelected ? (
-            <CheckSquare size={22} color="var(--r-primary)" />
-          ) : (
-            <Square size={22} color="var(--r-outline)" />
-          )}
-        </div>
-      )}
-      {/* Temperature corner badge */}
-      {lead.temperature === "hot" && (
-        <div className={styles.cornerBadge} style={{ background: "var(--r-error)" }}>Hot</div>
-      )}
-      {lead.temperature === "warm" && (
-        <div className={styles.cornerBadge} style={{ background: "var(--r-secondary)" }}>Warm</div>
-      )}
-      {lead.temperature === "cold" && (
-        <div className={styles.cornerBadge} style={{ background: "var(--r-outline)" }}>Cold</div>
-      )}
-
-      <div className={styles.cardTop}>
-        <div className={styles.cardAvatar} style={{ background: temp.bg, color: temp.text }}>
-          {initials}
-        </div>
-        <div className={styles.cardInfo}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <h3 className="text-body-lg" style={{ fontWeight: 600, color: "var(--r-primary)" }}>{lead.name}</h3>
+        {/* Row 3: Status badge */}
+        {showStatus && (
+          <div className={styles.cardRow3}>
+            <span className={styles.statusBadge} style={{ background: statusColors.bg, color: statusColors.color }}>
+              {getStatusLabel(lead.status)}
+            </span>
+            {showTemp && lead.temperature && (
+              <span className={styles.statusBadge} style={{
+                background: lead.temperature === "hot" ? "var(--r-error-bg)" : lead.temperature === "warm" ? "var(--r-secondary-fixed)" : "var(--r-surface-container-high)",
+                color: lead.temperature === "hot" ? "var(--r-error)" : lead.temperature === "warm" ? "var(--r-secondary)" : "var(--r-on-surface-variant)",
+              }}>
+                {lead.temperature}
+              </span>
+            )}
             {typeof lead.aiScore === "number" && (
               <span className={styles.scoreBadge} style={{
                 background: lead.aiScore >= 75 ? "var(--r-error-bg)" : lead.aiScore >= 50 ? "var(--r-secondary-fixed)" : "var(--r-surface-container-high)",
@@ -892,61 +895,56 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
               }}>{lead.aiScore}</span>
             )}
           </div>
-          <p className="text-data-mono" style={{ color: "var(--r-on-surface-variant)" }}>+91 {lead.mobile}</p>
-        </div>
-      </div>
+        )}
 
-      <div className={styles.cardMeta}>
-        {lead.projectInterest && (
-          <div className={styles.metaRow}>
-            <MapPin size={16} color="var(--r-secondary)" />
-            <span className="text-body-md" style={{ color: "var(--r-on-surface-variant)" }}>
-              {lead.bhk && `${lead.bhk} in `}{lead.projectInterest}
+        {/* Row 4: Budget (conditional) */}
+        {showBudget && lead.budget && (
+          <div className={styles.cardRow3}>
+            <span className={styles.cardMetaText} style={{ fontWeight: 600 }}>
+              Budget: {lead.budget}
             </span>
           </div>
         )}
-        <div className={styles.tagRow}>
-          {lead.budget && (
-            <span className={styles.tag} style={{ background: "var(--r-primary-fixed)", color: "var(--r-on-primary-fixed)" }}>
-              {lead.budget}
-            </span>
-          )}
-          {lead.source && (
-            <span className={styles.tag} style={{ background: "var(--r-secondary-fixed)", color: "var(--r-on-secondary-fixed)" }}>
-              {lead.source}
-            </span>
-          )}
-          {fu && (
-            <span className={styles.tag} style={{
-              background: overdue ? "var(--r-error-container)" : "var(--r-primary-fixed)",
-              color: overdue ? "var(--r-error)" : "var(--r-on-primary-fixed)"
-            }}>
-              {overdue ? "⚠ " : ""}{fu}
-            </span>
-          )}
-        </div>
-        {isValidDateStr(lead.leadDate) && (
-          <div className={styles.metaRow} style={{ marginTop: 6 }}>
-            <Calendar size={14} color="var(--r-outline)" />
-            <span className="text-label-md" style={{ color: "var(--r-outline)" }}>
-              Captured {formatShortDate(lead.leadDate)}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className={styles.cardBottom}>
-        <span className={styles.statusBadge} style={{
-          background: `${getTempStyle(lead.status).bg || "var(--r-surface-container-high)"}`,
-          color: getTempStyle(lead.status).text || "var(--r-on-surface-variant)"
-        }}>
-          {getStatusLabel(lead.status)}
-        </span>
-        <button className={styles.viewDetails} onClick={e => { e.stopPropagation(); onTap(); }}>
-          VIEW DETAILS <ChevronRight size={14} />
-        </button>
       </div>
     </div>
+  );
+}
+
+// ─── Needs Contact Card ──────────────────────────────────────────────────────
+function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
+  return (
+    <LeadCard
+      lead={lead}
+      isSelecting={isSelecting}
+      isSelected={isSelected}
+      onTap={onTap}
+      onLongPressStart={onLongPressStart}
+      onLongPressEnd={onLongPressEnd}
+      onCall={onCall}
+      onWA={onWA}
+      showStatus={true}
+      showBudget={false}
+      showTemp={false}
+    />
+  );
+}
+
+// ─── Pipeline Lead Card ────────────────────────────────────────────────────
+function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
+  return (
+    <LeadCard
+      lead={lead}
+      isSelecting={isSelecting}
+      isSelected={isSelected}
+      onTap={onTap}
+      onLongPressStart={onLongPressStart}
+      onLongPressEnd={onLongPressEnd}
+      onCall={onCall}
+      onWA={onWA}
+      showStatus={true}
+      showBudget={true}
+      showTemp={true}
+    />
   );
 }
 
