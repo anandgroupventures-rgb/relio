@@ -34,7 +34,7 @@ export default function LeadsPage() {
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
   const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false }));
   const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy", "leadDate"));
-  const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "asc"));
+  const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "desc"));
   const [activeTab, setActiveTab] = useState(() => ssGet("leads_tab", "needs_contact")); // needs_contact | pipeline
   const [pipelineView, setPipelineView] = useState(() => ssGet("leads_pipelineView", "list")); // list | kanban
   const [showAdd,  setShowAdd]  = useState(false);
@@ -174,9 +174,9 @@ export default function LeadsPage() {
   // ─── Active filter pills ────────────────────────────────────────────────────
   function getActivePills() {
     const pills = [];
-    if (sortBy !== "leadDate" || sortDir !== "asc") {
+    if (sortBy !== "leadDate" || sortDir !== "desc") {
       const sortLabel = { leadDate: "Lead Date", name: "Name", priority: "Priority", followUp: "Follow-up", status: "Status" }[sortBy] || sortBy;
-      pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("leadDate"); handleSortDir("asc"); } });
+      pills.push({ key: "sort", label: `Sort: ${sortLabel} ${sortDir === "asc" ? "↑" : "↓"}`, onRemove: () => { handleSortBy("leadDate"); handleSortDir("desc"); } });
     }
     if (filter.status) pills.push({ key: "status", label: `Status: ${filter.status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}`, onRemove: () => handleFilter(f => ({ ...f, status: "" })) });
     if (filter.type) pills.push({ key: "type", label: `Type: ${filter.type}`, onRemove: () => handleFilter(f => ({ ...f, type: "" })) });
@@ -226,10 +226,10 @@ export default function LeadsPage() {
     const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "", showDisqualified: false };
     setDraftFilter(empty);
     setDraftSortBy("leadDate");
-    setDraftSortDir("asc");
+    setDraftSortDir("desc");
     setFilter(empty);
     setSortBy("leadDate");
-    setSortDir("asc");
+    setSortDir("desc");
   }
 
   function handlePreset(preset) {
@@ -555,7 +555,7 @@ export default function LeadsPage() {
                   className={`${styles.sheetChip} ${draftSortBy === o.key ? styles.sheetChipActive : ""}`}
                   onClick={() => {
                     if (draftSortBy === o.key) setDraftSortDir(draftSortDir === "asc" ? "desc" : "asc");
-                    else { setDraftSortBy(o.key); setDraftSortDir("asc"); }
+                    else { setDraftSortBy(o.key); setDraftSortDir("desc"); }
                   }}
                 >
                   {o.label} {draftSortBy === o.key ? (draftSortDir === "asc" ? "↑" : "↓") : ""}
@@ -723,7 +723,7 @@ export default function LeadsPage() {
                   handleSortDir(sortDir === "asc" ? "desc" : "asc");
                 } else {
                   handleSortBy(o.key);
-                  handleSortDir("asc");
+                  handleSortDir("desc");
                 }
                 setShowSort(false);
               }}
