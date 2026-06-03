@@ -10,7 +10,7 @@ import { formatFollowUp, isOverdue, DATE_PRESETS, getPresetRange, formatShortDat
 import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
 import { SkeletonList } from "@/components/shared/Skeleton";
-import { bulkDeleteLeads, bulkArchiveLeads, updateLead } from "@/lib/firebase/leads";
+import { bulkDeleteLeads, bulkArchiveLeads, updateLead, addInteraction } from "@/lib/firebase/leads";
 
 const LeadForm = dynamic(() => import("@/components/leads/LeadForm"), { ssr: false });
 const BulkImport = dynamic(() => import("@/components/leads/BulkImport"), { ssr: false });
@@ -88,16 +88,22 @@ export default function LeadsPage() {
     }
   }
 
-  function handleCall(lead) {
+  async function handleCall(lead) {
     const digits = lead.mobile?.replace(/\D/g, "") || "";
     const clean = digits.startsWith("91") ? digits.slice(2) : digits;
     window.open(`tel:${clean}`, "_self");
+    if (user) {
+      await addInteraction(user.uid, lead.id, { type: "call", note: "Call attempted" });
+    }
     setPostCall(lead);
   }
-  function handleWA(lead) {
+  async function handleWA(lead) {
     const digits = lead.mobile?.replace(/\D/g, "") || "";
     const clean = digits.startsWith("91") ? digits.slice(2) : digits;
     window.open(`https://wa.me/91${clean}`, "_blank");
+    if (user) {
+      await addInteraction(user.uid, lead.id, { type: "whatsapp", note: "Sent WhatsApp message" });
+    }
   }
 
   // Multi-select handlers
