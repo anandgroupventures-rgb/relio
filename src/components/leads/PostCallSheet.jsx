@@ -42,34 +42,28 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
         callAttempt: attempts,
       };
 
-      // Map outcome to status / callStatus and qualification
-      const pipelineMap = {
-        interested:       "qualified",
-        details_shared:   "details_shared",
-        visit_confirmed:  "visit_scheduled",
-        negotiating:      "deal_meeting_awaited",
-        converted:        "won",
-      };
-
       let newStatus = lead.status;
       let newCallStatus = lead.callStatus;
       let isQualified = lead.isQualified;
       let isArchived = lead.isArchived || lead.archived;
 
       if (answered) {
-        if (outcome === "not_interested") {
+        if (outcome === "interested") {
+          newStatus = "qualified";
+          isQualified = true;
+        } else if (outcome === "call_back") {
+          newCallStatus = "call_back";
+          isQualified = false;
+        } else if (outcome === "not_interested") {
           newCallStatus = "disqualified";
           isQualified = false;
           isArchived = true;
-        } else if (outcome === "call_back") {
-          newCallStatus = "call_back";
+        } else if (outcome === "broker") {
+          newCallStatus = "broker";
           isQualified = false;
         } else if (outcome === "other") {
           newCallStatus = "not_answering";
           isQualified = false;
-        } else if (pipelineMap[outcome]) {
-          newStatus = pipelineMap[outcome];
-          isQualified = true;
         }
       } else {
         // Not answered
@@ -161,7 +155,7 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
             {isDeadWarning && (
               <div className={styles.deadWarning}>
                 <span>⚠</span>
-                <span>5th unanswered call. Consider marking as <strong>Lost</strong> or <strong>Invalid Number</strong>.</span>
+                <span>5th unanswered call. Lead will be marked as <strong>Disqualified</strong>.</span>
               </div>
             )}
 

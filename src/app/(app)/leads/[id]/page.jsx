@@ -491,8 +491,9 @@ export default function LeadDetailPage() {
             <ReqItem icon={<Building size={18} />} label="Property Type" value={lead.type || "—"} />
             <ReqItem icon={<MapPin size={18} />} label="Location" value={lead.projectInterest || "—"} />
             <ReqItem icon={<Wallet size={18} />} label="Budget" value={lead.budget || "—"} />
-            <ReqItem icon={<Clock size={18} />} label="Timeline" value={fu ? (overdue ? `Overdue: ${fu}` : fu) : "—"} />
+            <ReqItem icon={<Clock size={18} />} label="Follow Up Date" value={fu ? (overdue ? `Overdue: ${fu}` : fu) : "—"} />
             <ReqItem icon={<Calendar size={18} />} label="Captured On" value={isValidDateStr(lead.leadDate) ? formatShortDate(lead.leadDate) : "—"} />
+            {lead.remarks && <ReqItem icon={<Edit size={18} />} label="Notes" value={lead.remarks} />}
           </div>
           {lead.email && (
             <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--r-outline-variant)" }}>

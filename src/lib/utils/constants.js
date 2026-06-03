@@ -26,14 +26,11 @@ export const ALL_STATUSES = [...CALL_STATUSES, ...PIPELINE_STATUSES];
 export const LEAD_STATUSES = ALL_STATUSES;
 
 export const CALL_OUTCOMES = [
-  { value: "interested",        label: "Interested — wants more info" },
-  { value: "details_shared",    label: "Sent details / brochure"      },
-  { value: "visit_confirmed",   label: "Site visit confirmed"         },
-  { value: "call_back",         label: "Call back later"              },
-  { value: "not_interested",    label: "Not interested"               },
-  { value: "negotiating",       label: "In negotiation"               },
-  { value: "converted",         label: "Deal closed 🎉"              },
-  { value: "other",             label: "Other"                        },
+  { value: "interested",     label: "Interested"       },
+  { value: "call_back",      label: "Call back later"  },
+  { value: "not_interested", label: "Not interested"   },
+  { value: "broker",         label: "Broker"           },
+  { value: "other",          label: "Other / No answer"},
 ];
 
 export const LEAD_SOURCES = [
