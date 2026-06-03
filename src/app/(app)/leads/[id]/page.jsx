@@ -185,7 +185,9 @@ export default function LeadDetailPage() {
 
   function handleCall() {
     if (!lead) return;
-    window.open(`tel:${lead.mobile}`, "_self");
+    const digits = lead.mobile?.replace(/\D/g, "") || "";
+    const clean = digits.startsWith("91") ? digits.slice(2) : digits;
+    window.open(`tel:${clean}`, "_self");
     addInteraction(user.uid, lead.id, { type: "call", note: "Call attempted" });
   }
 

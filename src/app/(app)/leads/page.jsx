@@ -89,7 +89,9 @@ export default function LeadsPage() {
   }
 
   function handleCall(lead) {
-    window.open(`tel:${lead.mobile}`, "_self");
+    const digits = lead.mobile?.replace(/\D/g, "") || "";
+    const clean = digits.startsWith("91") ? digits.slice(2) : digits;
+    window.open(`tel:${clean}`, "_self");
     setPostCall(lead);
   }
   function handleWA(lead) {
