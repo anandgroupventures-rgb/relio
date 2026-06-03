@@ -1,21 +1,29 @@
-// ─── Lead Statuses ────────────────────────────────────────────────────────────
-export const LEAD_STATUSES = [
-  { value: "new",               label: "New",                  color: "#8A8070" },
-  { value: "contacted",         label: "Contacted",            color: "#3A6EA8" },
-  { value: "interested",        label: "Interested",           color: "#1A7842" },
-  { value: "details_shared",    label: "Details Shared",       color: "#0E7490" },
-  { value: "visit_scheduled",   label: "Visit Scheduled",      color: "#5C3A8C" },
-  { value: "visit_done",        label: "Visit Done",           color: "#3A208C" },
-  { value: "negotiating",       label: "Negotiating",          color: "#B06020" },
-  { value: "converted",         label: "Converted ✓",          color: "#1A7842" },
-  { value: "call_back",         label: "Call Back",            color: "#3A6EA8" },
-  { value: "not_answering",     label: "Not Answering",        color: "#C49A2A" },
-  { value: "busy",              label: "Busy",                 color: "#C49A2A" },
-  { value: "switched_off",      label: "Switched Off",         color: "#8A8070" },
-  { value: "not_interested",    label: "Not Interested",       color: "#C43018" },
-  { value: "lost",              label: "Lost",                 color: "#C43018" },
-  { value: "invalid_number",    label: "Invalid Number",       color: "#8A8070" },
+// ─── Call Statuses (pre-pipeline) ─────────────────────────────────────────────
+export const CALL_STATUSES = [
+  { value: "new",           label: "New (Uncontacted)",  color: "#8A8070" },
+  { value: "not_answering", label: "Not Answering",      color: "#C49A2A" },
+  { value: "call_back",     label: "Call Back",          color: "#3A6EA8" },
+  { value: "qualified",     label: "Qualified",          color: "#1A7842" },
+  { value: "disqualified",  label: "Disqualified",       color: "#C43018" },
+  { value: "broker",        label: "Broker",             color: "#7C3AED" },
 ];
+
+// ─── Pipeline Statuses ────────────────────────────────────────────────────────
+export const PIPELINE_STATUSES = [
+  { value: "qualified",            label: "Qualified",             color: "#3A6EA8" },
+  { value: "details_shared",       label: "Details Shared",        color: "#0E7490" },
+  { value: "visit_scheduled",      label: "Visit Scheduled",     color: "#5C3A8C" },
+  { value: "visit_done",           label: "Visit Done",            color: "#3A208C" },
+  { value: "deal_meeting_awaited", label: "Deal Meeting Awaited",  color: "#B06020" },
+  { value: "won",                  label: "Won ✓",                 color: "#1A7842" },
+  { value: "lost",                 label: "Lost",                  color: "#C43018" },
+];
+
+// ─── Backward-compat: all statuses in one array for forms that need both ──────
+export const ALL_STATUSES = [...CALL_STATUSES, ...PIPELINE_STATUSES];
+
+// ─── Legacy export name for components still importing LEAD_STATUSES ──────────
+export const LEAD_STATUSES = ALL_STATUSES;
 
 export const CALL_OUTCOMES = [
   { value: "interested",        label: "Interested — wants more info" },
@@ -73,5 +81,10 @@ export const TEMP_COLORS = {
 
 // Status → colour map for quick lookup
 export const STATUS_COLOR = Object.fromEntries(
-  LEAD_STATUSES.map((s) => [s.value, s.color])
+  PIPELINE_STATUSES.map((s) => [s.value, s.color])
+);
+
+// Call status → colour map
+export const CALL_STATUS_COLOR = Object.fromEntries(
+  CALL_STATUSES.map((s) => [s.value, s.color])
 );

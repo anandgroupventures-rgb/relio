@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useLeads } from "@/lib/hooks/useLeads";
-import { filterLeads, sortLeads, getTempStyle, getStatusLabel, isUncontacted, isPipeline, isDisqualified } from "@/lib/utils/leadHelpers";
-import { LEAD_STATUSES, LEAD_SOURCES, BHK_OPTIONS } from "@/lib/utils/constants";
+import { filterLeads, sortLeads, getTempStyle, getStatusLabel, getCallStatusLabel, getCallStatusColor, isNew, isPipeline, isDisqualified, isBroker } from "@/lib/utils/leadHelpers";
+import { CALL_STATUSES, PIPELINE_STATUSES, LEAD_SOURCES, BHK_OPTIONS } from "@/lib/utils/constants";
 import { formatFollowUp, isOverdue, DATE_PRESETS, getPresetRange, formatShortDate, isValidDateStr } from "@/lib/utils/dateHelpers";
 import BottomSheet from "@/components/shared/BottomSheet";
 import EmptyState from "@/components/shared/EmptyState";
@@ -32,10 +32,10 @@ export default function LeadsPage() {
   const { leads, loading, uncontactedCount } = useLeads();
 
   const [search,  setSearch]  = useState(() => ssGet("leads_search", ""));
-  const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false }));
+  const [filter,  setFilter]  = useState(() => ssGet("leads_filter", { status:"", source:"", type:"", priority:"", archived: false, dateFrom:"", dateTo:"", datePreset:"", showDisqualified: false, showBrokers: false }));
   const [sortBy,  setSortBy]  = useState(() => ssGet("leads_sortBy", "leadDate"));
   const [sortDir, setSortDir] = useState(() => ssGet("leads_sortDir", "desc"));
-  const [activeTab, setActiveTab] = useState(() => ssGet("leads_tab", "needs_contact")); // needs_contact | pipeline
+  const [activeTab, setActiveTab] = useState(() => ssGet("leads_tab", "new")); // new | pipeline
   const [pipelineView, setPipelineView] = useState(() => ssGet("leads_pipelineView", "list")); // list | kanban
   const [showAdd,  setShowAdd]  = useState(false);
   const [showBulk, setShowBulk] = useState(false);
@@ -74,7 +74,7 @@ export default function LeadsPage() {
   function handlePipelineView(val) { setPipelineView(val); ssSet("leads_pipelineView", val); }
 
   const displayed = useMemo(() => {
-    let bucket = activeTab === "needs_contact" ? "needs_contact" : (filter.showDisqualified ? "disqualified" : "pipeline");
+    const bucket = activeTab === "new" ? "new" : "pipeline";
     const filtered = filterLeads(leads, { search, ...filter, bucket });
     return sortLeads(filtered, sortBy, sortDir);
   }, [leads, search, filter, sortBy, sortDir, activeTab]);
@@ -183,7 +183,8 @@ export default function LeadsPage() {
     if (filter.source) pills.push({ key: "source", label: `Source: ${filter.source}`, onRemove: () => handleFilter(f => ({ ...f, source: "" })) });
     if (filter.priority) pills.push({ key: "priority", label: `Priority: ${filter.priority.charAt(0).toUpperCase() + filter.priority.slice(1)}`, onRemove: () => handleFilter(f => ({ ...f, priority: "" })) });
     if (filter.archived) pills.push({ key: "archived", label: "Archived", onRemove: () => handleFilter(f => ({ ...f, archived: false })) });
-    if (activeTab === "pipeline" && filter.showDisqualified) pills.push({ key: "disqualified", label: "Disqualified", onRemove: () => handleFilter(f => ({ ...f, showDisqualified: false })) });
+    if (activeTab === "new" && filter.showBrokers) pills.push({ key: "brokers", label: "Brokers", onRemove: () => handleFilter(f => ({ ...f, showBrokers: false })) });
+    if (activeTab === "new" && filter.showDisqualified) pills.push({ key: "disqualified", label: "Disqualified", onRemove: () => handleFilter(f => ({ ...f, showDisqualified: false })) });
     if (filter.dateFrom || filter.dateTo) {
       let dLabel = "Date: ";
       if (filter.datePreset && filter.datePreset !== "custom") {
@@ -223,7 +224,7 @@ export default function LeadsPage() {
   }
 
   function clearAllFilters() {
-    const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "", showDisqualified: false };
+    const empty = { status: "", source: "", type: "", priority: "", archived: false, dateFrom: "", dateTo: "", datePreset: "", showDisqualified: false, showBrokers: false };
     setDraftFilter(empty);
     setDraftSortBy("leadDate");
     setDraftSortDir("desc");
@@ -242,7 +243,8 @@ export default function LeadsPage() {
   }
 
   // Counts
-  const needsContactCount = uncontactedCount || leads.filter(isUncontacted).length;
+  const newCount = leads.filter(l => isNew(l) && !isBroker(l) && !isDisqualified(l)).length;
+  const brokerCount = leads.filter(isBroker).length;
   const disqualifiedCount = leads.filter(isDisqualified).length;
 
   return (
@@ -328,7 +330,7 @@ export default function LeadsPage() {
             <span className={styles.filterLabel}>Filters</span>
           </button>
           <button
-            className={`${styles.filterTrigger} ${styles.sortTrigger} ${activeTab !== "needs_contact" ? styles.sortTriggerActive : ""}`}
+            className={`${styles.filterTrigger} ${styles.sortTrigger} ${activeTab !== "new" ? styles.sortTriggerActive : ""}`}
             onClick={() => setShowSort(true)}
             aria-label="Sort leads"
           >
@@ -339,18 +341,18 @@ export default function LeadsPage() {
           </button>
         </div>
 
-        {/* Main Tabs: Needs Contact | Pipeline */}
+        {/* Main Tabs: New | Pipeline */}
         <div className={styles.tabBar} role="tablist" aria-label="Leads view">
           <button
-            className={`${styles.tabBtn} ${activeTab === "needs_contact" ? styles.tabBtnActive : ""}`}
-            onClick={() => handleActiveTab("needs_contact")}
+            className={`${styles.tabBtn} ${activeTab === "new" ? styles.tabBtnActive : ""}`}
+            onClick={() => handleActiveTab("new")}
             role="tab"
-            aria-selected={activeTab === "needs_contact"}
-            id="tab-needs-contact"
-            aria-controls="panel-needs-contact"
+            aria-selected={activeTab === "new"}
+            id="tab-new"
+            aria-controls="panel-new"
           >
-            Needs Contact
-            {needsContactCount > 0 && <span className={styles.tabBadge}>{needsContactCount}</span>}
+            New
+            {newCount > 0 && <span className={styles.tabBadge}>{newCount}</span>}
           </button>
           <button
             className={`${styles.tabBtn} ${activeTab === "pipeline" ? styles.tabBtnActive : ""}`}
@@ -364,22 +366,22 @@ export default function LeadsPage() {
           </button>
         </div>
 
-        {/* ─── Needs Contact Tab ─────────────────────────────────────────────── */}
-        {activeTab === "needs_contact" && (
-          <section className={styles.grid} role="tabpanel" id="panel-needs-contact" aria-labelledby="tab-needs-contact">
+        {/* ─── New Tab ───────────────────────────────────────────────────────── */}
+        {activeTab === "new" && (
+          <section className={styles.grid} role="tabpanel" id="panel-new" aria-labelledby="tab-new">
             {loading && <SkeletonList count={5} />}
             {!loading && displayed.length === 0 && (
               <EmptyState
                 icon={<UsersIcon />}
                 title="All caught up!"
-                body="Every lead has been contacted. New enquiries will appear here."
+                body="No new leads to contact. New enquiries will appear here."
                 action={
                   <button className="r-btn r-btn-primary" onClick={() => router.push("/leads/new")}>+ Add Lead</button>
                 }
               />
             )}
             {displayed.map(lead => (
-              <NeedsContactCard
+              <NewTabCard
                 key={lead.id}
                 lead={lead}
                 isSelecting={isSelecting}
@@ -428,7 +430,7 @@ export default function LeadsPage() {
                       filter.showDisqualified ? (
                         <button className="r-btn r-btn-ghost" onClick={() => handleFilter(f => ({ ...f, showDisqualified: false }))}>View Active Pipeline</button>
                       ) : (
-                        <button className="r-btn r-btn-primary" onClick={() => handleActiveTab("needs_contact")}>Contact New Leads</button>
+                        <button className="r-btn r-btn-primary" onClick={() => handleActiveTab("new")}>Contact New Leads</button>
                       )
                     }
                   />
@@ -518,6 +520,33 @@ export default function LeadsPage() {
       {/* Filter & Sort Sheet */}
       <BottomSheet open={showFilters} onClose={() => setShowFilters(false)} title="Filters & Sort" tall>
         <div style={{ padding: "0 16px 24px", maxHeight: "70vh", overflowY: "auto" }}>
+          {/* New View Toggle */}
+          {activeTab === "new" && (
+            <section style={{ marginBottom: 24 }}>
+              <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>New View</h4>
+              <div className={styles.sheetChips}>
+                <button
+                  className={`${styles.sheetChip} ${!draftFilter.showBrokers && !draftFilter.showDisqualified ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, showBrokers: false, showDisqualified: false }))}
+                >
+                  Active New
+                </button>
+                <button
+                  className={`${styles.sheetChip} ${draftFilter.showBrokers ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, showBrokers: true, showDisqualified: false }))}
+                >
+                  Brokers ({brokerCount})
+                </button>
+                <button
+                  className={`${styles.sheetChip} ${draftFilter.showDisqualified ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, showBrokers: false, showDisqualified: true }))}
+                >
+                  Disqualified ({disqualifiedCount})
+                </button>
+              </div>
+            </section>
+          )}
+
           {/* Pipeline View Toggle */}
           {activeTab === "pipeline" && (
             <section style={{ marginBottom: 24 }}>
@@ -533,7 +562,7 @@ export default function LeadsPage() {
                   className={`${styles.sheetChip} ${draftFilter.showDisqualified ? styles.sheetChipActive : ""}`}
                   onClick={() => setDraftFilter(f => ({ ...f, showDisqualified: true }))}
                 >
-                  Disqualified ({disqualifiedCount})
+                  Show Lost
                 </button>
               </div>
             </section>
@@ -607,26 +636,28 @@ export default function LeadsPage() {
             <h4 className="text-label-md" style={{ color: "var(--r-outline)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Status</h4>
             <div className={styles.sheetChips}>
               <button
-                className={`${styles.sheetChip} ${!draftFilter.status && !draftFilter.archived ? styles.sheetChipActive : ""}`}
-                onClick={() => setDraftFilter(f => ({ ...f, status: "", archived: false }))}
+                className={`${styles.sheetChip} ${!draftFilter.status ? styles.sheetChipActive : ""}`}
+                onClick={() => setDraftFilter(f => ({ ...f, status: "" }))}
               >
-                All Active
+                All
               </button>
-              {LEAD_STATUSES.map(s => (
+              {activeTab === "new" ? CALL_STATUSES.map(s => (
                 <button
                   key={s.value}
                   className={`${styles.sheetChip} ${draftFilter.status === s.value ? styles.sheetChipActive : ""}`}
-                  onClick={() => setDraftFilter(f => ({ ...f, status: s.value, archived: false }))}
+                  onClick={() => setDraftFilter(f => ({ ...f, status: s.value }))}
+                >
+                  {s.label}
+                </button>
+              )) : PIPELINE_STATUSES.map(s => (
+                <button
+                  key={s.value}
+                  className={`${styles.sheetChip} ${draftFilter.status === s.value ? styles.sheetChipActive : ""}`}
+                  onClick={() => setDraftFilter(f => ({ ...f, status: s.value }))}
                 >
                   {s.label}
                 </button>
               ))}
-              <button
-                className={`${styles.sheetChip} ${draftFilter.archived ? styles.sheetChipActive : ""}`}
-                onClick={() => setDraftFilter(f => ({ ...f, status: "", archived: true }))}
-              >
-                Archived
-              </button>
             </div>
           </section>
 
@@ -795,12 +826,11 @@ const STATUS_COLORS = {
   negotiating:      { bg: "#ffedd5", color: "#9a3412" },
   converted:        { bg: "#dcfce7", color: "#15803d" },
   call_back:        { bg: "#e0f2fe", color: "#075985" },
-  not_answering:    { bg: "#fee2e2", color: "#991b1b" },
-  busy:             { bg: "#fef9c3", color: "#854d0e" },
-  switched_off:     { bg: "#f3f4f6", color: "#4b5563" },
-  not_interested:   { bg: "#fee2e2", color: "#991b1b" },
-  lost:             { bg: "#fee2e2", color: "#991b1b" },
-  invalid_number:   { bg: "#f3f4f6", color: "#4b5563" },
+  not_answering:    { bg: "#fef3c7", color: "#92400e" },
+  call_back:        { bg: "#dbeafe", color: "#1e40af" },
+  qualified:        { bg: "#dcfce7", color: "#15803d" },
+  disqualified:     { bg: "#fee2e2", color: "#991b1b" },
+  broker:           { bg: "#ede9fe", color: "#5b21b6" },
 };
 function getStatusColors(status) {
   return STATUS_COLORS[status] || { bg: "var(--r-surface-container-high)", color: "var(--r-on-surface-variant)" };
@@ -818,12 +848,13 @@ function getInitials(name) {
 }
 
 // ─── Shared Lead Card Shell ─────────────────────────────────────────────────
-function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA, showStatus, showBudget, showTemp }) {
+function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA, showStatus, showCallStatus, showBudget, showTemp }) {
   const typeInfo = getTypeColor(lead.type);
   const hasValidDate = isValidDateStr(lead.leadDate);
-  const statusColors = getStatusColors(lead.status);
+  const statusColors = getStatusColors(showCallStatus ? lead.callStatus : lead.status);
   const fu = formatFollowUp(lead.followUpDate);
   const overdue = isOverdue(lead.followUpDate);
+  const statusLabel = showCallStatus ? getCallStatusLabel(lead.callStatus) : getStatusLabel(lead.status);
 
   return (
     <div
@@ -874,16 +905,17 @@ function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLo
             )}
             {fu && (
               <span className={styles.cardMetaText} style={{ color: overdue ? "var(--r-error)" : "var(--r-secondary)", fontWeight: 600 }}>
-                <Calendar size={12} color={overdue ? "var(--r-error)" : "var(--r-secondary)"} /> {overdue ? "Overdue: " : ""}{fu}
+                <Calendar size={12} color={overdue ? "var(--r-error)" : "var(--r-secondary)"} />
+                <span>{overdue ? "Overdue: " : ""}{fu}</span>
               </span>
             )}
           </div>
 
           {/* Row 3: Status + Temp + Score */}
-          {showStatus && (
+          {(showStatus || showCallStatus) && (
             <div className={styles.cardRow3}>
               <span className={styles.statusBadge} style={{ background: statusColors.bg, color: statusColors.color }}>
-                {getStatusLabel(lead.status)}
+                {statusLabel}
               </span>
               {showTemp && lead.temperature && (
                 <span className={styles.tempBadge} style={{
@@ -926,8 +958,8 @@ function LeadCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLo
   );
 }
 
-// ─── Needs Contact Card ──────────────────────────────────────────────────────
-function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
+// ─── New Tab Card ─────────────────────────────────────────────────────────────
+function NewTabCard({ lead, isSelecting, isSelected, onTap, onLongPressStart, onLongPressEnd, onCall, onWA }) {
   return (
     <LeadCard
       lead={lead}
@@ -938,7 +970,8 @@ function NeedsContactCard({ lead, isSelecting, isSelected, onTap, onLongPressSta
       onLongPressEnd={onLongPressEnd}
       onCall={onCall}
       onWA={onWA}
-      showStatus={true}
+      showCallStatus={true}
+      showStatus={false}
       showBudget={false}
       showTemp={false}
     />
@@ -958,6 +991,7 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
       onCall={onCall}
       onWA={onWA}
       showStatus={true}
+      showCallStatus={false}
       showBudget={true}
       showTemp={true}
     />
@@ -968,13 +1002,12 @@ function LeadCardDesign({ lead, isSelecting, isSelected, onTap, onLongPressStart
 function KanbanBoard({ leads, loading, isSelecting, selectedIds, onTap, onLongPressStart, onLongPressEnd, onMove }) {
   const router = useRouter();
   const columns = [
-    { value: "contacted", label: "Contacted", color: "var(--r-primary)" },
-    { value: "interested", label: "Interested", color: "var(--r-secondary)" },
-    { value: "details_shared", label: "Details Shared", color: "var(--r-secondary-container)" },
+    { value: "qualified", label: "Qualified", color: "var(--r-primary)" },
+    { value: "details_shared", label: "Details Shared", color: "var(--r-secondary)" },
     { value: "visit_scheduled", label: "Visit Scheduled", color: "var(--r-on-primary-container)" },
     { value: "visit_done", label: "Visited", color: "var(--r-success)" },
-    { value: "negotiating", label: "Negotiation", color: "var(--r-warning)" },
-    { value: "converted", label: "Won", color: "var(--r-secondary)" },
+    { value: "deal_meeting_awaited", label: "Deal Meeting", color: "var(--r-warning)" },
+    { value: "won", label: "Won", color: "var(--r-secondary)" },
   ];
 
   if (loading) return <p className={styles.loadingMsg}>Loading leads…</p>;

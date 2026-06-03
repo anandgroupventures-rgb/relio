@@ -42,46 +42,64 @@ export default function PostCallSheet({ lead, open, onClose, onDone }) {
         callAttempt: attempts,
       };
 
-      // Map outcome to status and qualification
-      const statusMap = {
-        interested:       "interested",
+      // Map outcome to status / callStatus and qualification
+      const pipelineMap = {
+        interested:       "qualified",
         details_shared:   "details_shared",
         visit_confirmed:  "visit_scheduled",
-        call_back:        "call_back",
-        not_interested:   "not_interested",
-        negotiating:      "negotiating",
-        converted:        "converted",
+        negotiating:      "deal_meeting_awaited",
+        converted:        "won",
       };
 
       let newStatus = lead.status;
+      let newCallStatus = lead.callStatus;
       let isQualified = lead.isQualified;
+      let isArchived = lead.isArchived || lead.archived;
 
       if (answered) {
         if (outcome === "not_interested") {
-          newStatus = "not_interested";
+          newCallStatus = "disqualified";
           isQualified = false;
-        } else if (statusMap[outcome]) {
-          newStatus = statusMap[outcome];
-          isQualified = true; // Any positive outcome qualifies the lead
+          isArchived = true;
+        } else if (outcome === "call_back") {
+          newCallStatus = "call_back";
+          isQualified = false;
         } else if (outcome === "other") {
-          newStatus = "contacted";
+          newCallStatus = "not_answering";
+          isQualified = false;
+        } else if (pipelineMap[outcome]) {
+          newStatus = pipelineMap[outcome];
           isQualified = true;
         }
       } else {
-        // Not answered — pick disposition based on attempts or keep not_answering
-        newStatus = attempts >= 5 ? "lost" : "not_answering";
+        // Not answered
+        if (attempts >= 5) {
+          newCallStatus = "disqualified";
+          isArchived = true;
+        } else {
+          newCallStatus = "not_answering";
+        }
         isQualified = false;
       }
 
       const updates = {
         lastContactedAt: new Date(),
         callAttempts: attempts,
-        status: newStatus,
         isQualified,
-        ...(answered && statusMap[outcome] ? { status: statusMap[outcome] } : {}),
-        ...(!answered ? { status: newStatus } : {}),
         ...(fuDate ? { followUpDate: fuDate } : {}),
       };
+
+      if (isQualified) {
+        updates.status = newStatus;
+        updates.callStatus = "qualified";
+        updates.isArchived = false;
+        updates.archived = false;
+      } else {
+        updates.callStatus = newCallStatus;
+        updates.status = "new";
+        updates.isArchived = isArchived;
+        updates.archived = isArchived;
+      }
 
       await updateLead(user.uid, lead.id, updates);
       await addInteraction(user.uid, lead.id, interaction);

@@ -4,8 +4,9 @@ import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useInventory } from "@/lib/hooks/useInventory";
 import { getLead, getInteractions, addInteraction, updateLead, deleteInteraction, updateInteraction, uploadVoiceNote, uploadDocument } from "@/lib/firebase/leads";
-import { getTempStyle, getStatusLabel, getStatusColor } from "@/lib/utils/leadHelpers";
+import { getTempStyle, getStatusLabel, getCallStatusLabel, getStatusColor, getCallStatusColor } from "@/lib/utils/leadHelpers";
 import { formatTimelineDate, formatFollowUp, isOverdue, formatShortDate, isValidDateStr } from "@/lib/utils/dateHelpers";
+import { CALL_STATUSES, PIPELINE_STATUSES } from "@/lib/utils/constants";
 import { predictBestCallTime } from "@/lib/utils/smartSuggestions";
 import BottomSheet from "@/components/shared/BottomSheet";
 import LeadForm from "@/components/leads/LeadForm";
@@ -17,16 +18,8 @@ import {
 } from "lucide-react";
 import styles from "./detail.module.css";
 
-const PIPELINE = [
-  { value: "new", label: "New" },
-  { value: "contacted", label: "Contacted" },
-  { value: "interested", label: "Interested" },
-  { value: "details_shared", label: "Details Shared" },
-  { value: "visit_scheduled", label: "Visit Scheduled" },
-  { value: "visit_done", label: "Visited" },
-  { value: "negotiating", label: "Negotiation" },
-  { value: "converted", label: "Won" },
-];
+const PIPELINE = PIPELINE_STATUSES;
+const CALL_STATUS_LIST = CALL_STATUSES;
 
 function loadTemplates() {
   if (typeof window === "undefined") return [];
@@ -100,7 +93,7 @@ export default function LeadDetailPage() {
     setTemplates(loadTemplates());
   }, [user, id]);
 
-  async function handleStatusChange(status) {
+  async function handlePipelineStatusChange(status) {
     if (!user || !lead) return;
     const currentLabel = getStatusLabel(lead.status);
     const newLabel = getStatusLabel(status);
@@ -108,10 +101,41 @@ export default function LeadDetailPage() {
     if (!window.confirm(`Move lead from "${currentLabel}" to "${newLabel}"?`)) return;
     await updateLead(user.uid, lead.id, { status });
     await addInteraction(user.uid, lead.id, {
-      type: "status_change", note: `Status changed to ${newLabel}`, from: lead.status, to: status,
+      type: "status_change", note: `Pipeline status changed to ${newLabel}`, from: lead.status, to: status,
     });
     setLead(prev => ({ ...prev, status }));
-    setInteractions(prev => [{ id: Date.now().toString(), type: "status_change", note: `Status changed to ${newLabel}`, createdAt: { toDate: () => new Date() } }, ...prev]);
+    setInteractions(prev => [{ id: Date.now().toString(), type: "status_change", note: `Pipeline status changed to ${newLabel}`, createdAt: { toDate: () => new Date() } }, ...prev]);
+  }
+
+  async function handleCallStatusChange(callStatus) {
+    if (!user || !lead) return;
+    const currentLabel = getCallStatusLabel(lead.callStatus);
+    const newLabel = getCallStatusLabel(callStatus);
+    if (callStatus === lead.callStatus) return;
+    if (!window.confirm(`Move lead from "${currentLabel}" to "${newLabel}"?`)) return;
+
+    const updates = { callStatus };
+    const note = `Call status changed to ${newLabel}`;
+
+    if (callStatus === "qualified") {
+      updates.isQualified = true;
+      updates.status = "qualified";
+    } else if (callStatus === "disqualified") {
+      updates.isArchived = true;
+      updates.archived = true;
+    } else {
+      updates.isQualified = false;
+      updates.status = "new";
+      updates.isArchived = false;
+      updates.archived = false;
+    }
+
+    await updateLead(user.uid, lead.id, updates);
+    await addInteraction(user.uid, lead.id, {
+      type: "status_change", note, from: lead.callStatus, to: callStatus,
+    });
+    setLead(prev => ({ ...prev, ...updates }));
+    setInteractions(prev => [{ id: Date.now().toString(), type: "status_change", note, createdAt: { toDate: () => new Date() } }, ...prev]);
   }
 
   async function handleAddNote() {
@@ -405,7 +429,11 @@ export default function LeadDetailPage() {
             </div>
           </div>
           <div className={styles.profileBadges}>
-            <span className="r-badge" style={{ background: getStatusColor(lead.status) + "15", color: getStatusColor(lead.status) }}>{getStatusLabel(lead.status)}</span>
+            {lead.isQualified ? (
+              <span className="r-badge" style={{ background: getStatusColor(lead.status) + "15", color: getStatusColor(lead.status) }}>{getStatusLabel(lead.status)}</span>
+            ) : (
+              <span className="r-badge" style={{ background: getCallStatusColor(lead.callStatus) + "15", color: getCallStatusColor(lead.callStatus) }}>{getCallStatusLabel(lead.callStatus)}</span>
+            )}
             <span className={`r-badge r-badge-${lead.temperature || "warm"}`}>{lead.temperature || "warm"}</span>
             {lead.source && <span className="r-badge" style={{ background: "var(--r-primary-fixed)", color: "var(--r-on-primary-fixed)" }}>{lead.source}</span>}
           </div>
@@ -419,22 +447,40 @@ export default function LeadDetailPage() {
           </div>
         </section>
 
-        {/* Pipeline — Current Stage Only */}
-        <section className={`r-card ${styles.pipelineCard}`}>
-          <h3 className="text-headline-md" style={{ marginBottom: 12 }}>Pipeline Status</h3>
-          <div className={styles.currentStageCard} onClick={() => setShowStatusSheet(true)}>
-            <div className={styles.currentStageLeft}>
-              <div className={styles.currentStageDot} />
-              <div>
-                <p className="text-body-md" style={{ fontWeight: 700, color: "var(--r-on-surface)" }}>
-                  {PIPELINE.find(p => p.value === lead.status)?.label || getStatusLabel(lead.status)}
-                </p>
-                <p className="text-label-md" style={{ color: "var(--r-outline)", marginTop: 2 }}>Current stage</p>
+        {/* Call Status (unqualified) or Pipeline Status (qualified) */}
+        {lead.isQualified ? (
+          <section className={`r-card ${styles.pipelineCard}`}>
+            <h3 className="text-headline-md" style={{ marginBottom: 12 }}>Pipeline Status</h3>
+            <div className={styles.currentStageCard} onClick={() => setShowStatusSheet(true)}>
+              <div className={styles.currentStageLeft}>
+                <div className={styles.currentStageDot} />
+                <div>
+                  <p className="text-body-md" style={{ fontWeight: 700, color: "var(--r-on-surface)" }}>
+                    {PIPELINE.find(p => p.value === lead.status)?.label || getStatusLabel(lead.status)}
+                  </p>
+                  <p className="text-label-md" style={{ color: "var(--r-outline)", marginTop: 2 }}>Current stage</p>
+                </div>
               </div>
+              <ChevronRight size={20} color="var(--r-outline)" />
             </div>
-            <ChevronRight size={20} color="var(--r-outline)" />
-          </div>
-        </section>
+          </section>
+        ) : (
+          <section className={`r-card ${styles.pipelineCard}`}>
+            <h3 className="text-headline-md" style={{ marginBottom: 12 }}>Call Status</h3>
+            <div className={styles.currentStageCard} onClick={() => setShowStatusSheet(true)}>
+              <div className={styles.currentStageLeft}>
+                <div className={styles.currentStageDot} />
+                <div>
+                  <p className="text-body-md" style={{ fontWeight: 700, color: "var(--r-on-surface)" }}>
+                    {CALL_STATUS_LIST.find(p => p.value === lead.callStatus)?.label || getCallStatusLabel(lead.callStatus)}
+                  </p>
+                  <p className="text-label-md" style={{ color: "var(--r-outline)", marginTop: 2 }}>Current call status</p>
+                </div>
+              </div>
+              <ChevronRight size={20} color="var(--r-outline)" />
+            </div>
+          </section>
+        )}
 
         {/* Requirement */}
         <section className={`r-card ${styles.reqCard}`}>
@@ -736,16 +782,25 @@ export default function LeadDetailPage() {
       </BottomSheet>
 
       {/* Status Update Sheet */}
-      <BottomSheet open={showStatusSheet} onClose={() => setShowStatusSheet(false)} title="Update Status">
+      <BottomSheet open={showStatusSheet} onClose={() => setShowStatusSheet(false)} title={lead?.isQualified ? "Update Pipeline Status" : "Update Call Status"}>
         <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-          {PIPELINE.map(step => (
+          {lead?.isQualified ? PIPELINE.map(step => (
             <button
               key={step.value}
               className={`r-btn ${lead?.status === step.value ? "r-btn-primary" : "r-btn-ghost"}`}
-              onClick={() => { handleStatusChange(step.value); setShowStatusSheet(false); }}
+              onClick={() => { handlePipelineStatusChange(step.value); setShowStatusSheet(false); }}
               style={{ justifyContent: "flex-start", width: "100%" }}
             >
               <Check size={16} style={{ opacity: lead?.status === step.value ? 1 : 0 }} /> {step.label}
+            </button>
+          )) : CALL_STATUS_LIST.map(step => (
+            <button
+              key={step.value}
+              className={`r-btn ${lead?.callStatus === step.value ? "r-btn-primary" : "r-btn-ghost"}`}
+              onClick={() => { handleCallStatusChange(step.value); setShowStatusSheet(false); }}
+              style={{ justifyContent: "flex-start", width: "100%" }}
+            >
+              <Check size={16} style={{ opacity: lead?.callStatus === step.value ? 1 : 0 }} /> {step.label}
             </button>
           ))}
         </div>

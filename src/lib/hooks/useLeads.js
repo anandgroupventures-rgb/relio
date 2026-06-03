@@ -58,10 +58,10 @@ export function useLeads() {
         const totalSnap = await getCountFromServer(collection(db, "users", user.uid, "leads"));
         setTotalCount(totalSnap.data().count);
 
-        // Uncontacted leads (status === "new")
+        // New tab leads (isQualified !== true)
         const uncontactedQ = query(
           collection(db, "users", user.uid, "leads"),
-          where("status", "==", "new")
+          where("isQualified", "!=", true)
         );
         const uncontactedSnap = await getCountFromServer(uncontactedQ);
         setUncontactedCount(uncontactedSnap.data().count);
@@ -69,7 +69,7 @@ export function useLeads() {
         console.error("[useLeads] Count query failed:", e);
         // Fallback to loaded leads length
         setTotalCount(leads.length);
-        setUncontactedCount(leads.filter(l => l.status === "new").length);
+        setUncontactedCount(leads.filter(l => l.isQualified !== true).length);
       }
     }
 

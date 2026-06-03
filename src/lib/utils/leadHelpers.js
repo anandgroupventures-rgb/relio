@@ -1,6 +1,6 @@
 import { todayStr, addDays, daysSince } from "./dateHelpers";
 
-import { TEMP_COLORS, STATUS_COLOR } from "./constants";
+import { TEMP_COLORS, STATUS_COLOR, CALL_STATUS_COLOR } from "./constants";
 
 // Auto-calculate temperature from lead data
 // FIX #2: Previously, brand-new leads always showed as "Hot" because
@@ -9,8 +9,8 @@ import { TEMP_COLORS, STATUS_COLOR } from "./constants";
 // or a follow-up date that is very soon. A fresh lead with no calls
 // starts as "warm" until there is real engagement.
 export function calcTemperature(lead) {
-  const dead = ["converted", "lost", "disqualified", "invalid_number"];
-  if (dead.includes(lead.status)) return "dormant";
+  const dead = ["won", "lost", "disqualified"];
+  if (dead.includes(lead.status) || dead.includes(lead.callStatus)) return "dormant";
 
   const followUp   = lead.followUpDate;
   const today      = todayStr();
@@ -51,8 +51,23 @@ export function getStatusColor(status) {
   return STATUS_COLOR[status] || "#8A8070";
 }
 
+export function getCallStatusColor(callStatus) {
+  return CALL_STATUS_COLOR[callStatus] || "#8A8070";
+}
+
 export function getStatusLabel(status) {
-  return status?.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "";
+  if (!status) return "";
+  // Handle special labels
+  const labels = {
+    new: "New (Uncontacted)",
+    won: "Won ✓",
+    deal_meeting_awaited: "Deal Meeting Awaited",
+  };
+  return labels[status] || status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+export function getCallStatusLabel(callStatus) {
+  return getStatusLabel(callStatus);
 }
 
 // ─── 4.6: AI Lead Scoring v2 ────────────────────────────────────────────────
@@ -75,8 +90,8 @@ export function calcLeadScore(lead, allLeads = []) {
 
   // 2. Status progression (0-25 pts)
   const statusWeights = {
-    new: 5, contacted: 10, interested: 15, details_shared: 18,
-    visit_scheduled: 20, visit_done: 22, negotiating: 24, converted: 25,
+    qualified: 5, details_shared: 10, visit_scheduled: 15,
+    visit_done: 20, deal_meeting_awaited: 22, won: 25, lost: 0,
   };
   const statusScore = statusWeights[lead.status] || 5;
   breakdown.status = statusScore;
@@ -138,7 +153,7 @@ function buildConversionStats(leads) {
     const src = l.source || "Unknown";
     if (!sourceStats[src]) sourceStats[src] = { total: 0, converted: 0 };
     sourceStats[src].total += 1;
-    if (l.status === "converted") sourceStats[src].converted += 1;
+    if (l.status === "won") sourceStats[src].converted += 1;
   }
 
   const sourceConversion = {};
@@ -180,31 +195,36 @@ export function sortLeads(leads, sortBy, sortDir) {
 }
 
 // ─── Qualification helpers ────────────────────────────────────────────────────
-export const DISQUALIFIED_STATUSES = [
-  "invalid_number","not_interested","lost","not_answering","busy","switched_off"
-];
+export const DISQUALIFIED_STATUSES = ["disqualified"];
 
 export function isDisqualified(lead) {
-  // Explicitly disqualified: isQualified=false and past the new stage
-  if (lead.isQualified === false && lead.status !== "new") return true;
-  // Backward-compat: old leads without isQualified that have dead statuses
-  if (lead.isQualified === undefined && DISQUALIFIED_STATUSES.includes(lead.status)) return true;
+  if (lead.callStatus === "disqualified") return true;
+  if (lead.isQualified === false && lead.status !== "new" && lead.status !== undefined) return true;
   return false;
 }
 
-export function isUncontacted(lead) {
-  // Uncontacted = status is "new" and hasn't been explicitly qualified
+export function isBroker(lead) {
+  return lead.callStatus === "broker";
+}
+
+export function isNew(lead) {
+  // "New" tab = not qualified, not archived
   if (lead.isQualified === true) return false;
-  return lead.status === "new";
+  if (lead.archived === true || lead.isArchived === true) return false;
+  return true;
 }
 
 export function isPipeline(lead) {
-  // Pipeline = NOT uncontacted AND NOT disqualified
-  return !isUncontacted(lead) && !isDisqualified(lead);
+  return lead.isQualified === true;
+}
+
+// Backward-compat alias
+export function isUncontacted(lead) {
+  return isNew(lead);
 }
 
 // Filter leads
-export function filterLeads(leads, { search, status, source, type, priority, archived, dateFrom, dateTo, bucket }) {
+export function filterLeads(leads, { search, status, source, type, priority, archived, dateFrom, dateTo, bucket, showBrokers, showDisqualified, callStatus }) {
   return leads.filter(l => {
     // By default, hide archived leads unless explicitly viewing archived
     if (archived) {
@@ -214,10 +234,17 @@ export function filterLeads(leads, { search, status, source, type, priority, arc
     }
     // Bucket filter
     if (bucket) {
-      if (bucket === "needs_contact" && !isUncontacted(l)) return false;
+      if (bucket === "new" && !isNew(l)) return false;
+      if (bucket === "needs_contact" && !isNew(l)) return false;
       if (bucket === "pipeline" && !isPipeline(l)) return false;
       if (bucket === "disqualified" && !isDisqualified(l)) return false;
     }
+    // Broker / Disqualified toggles for New tab
+    if (bucket === "new" || bucket === "needs_contact") {
+      if (!showBrokers && isBroker(l)) return false;
+      if (!showDisqualified && isDisqualified(l)) return false;
+    }
+    if (callStatus && l.callStatus !== callStatus) return false;
     if (search) {
       const q = search.toLowerCase();
       const match = [l.name, l.mobile, l.projectInterest, l.remarks, l.source]

@@ -4,7 +4,7 @@ import { addLead, updateLead } from "@/lib/firebase/leads";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { findDuplicate } from "@/lib/utils/leadHelpers";
 import { todayStr } from "@/lib/utils/dateHelpers";
-import { LEAD_STATUSES, LEAD_SOURCES, LEAD_TYPES, BHK_OPTIONS } from "@/lib/utils/constants";
+import { CALL_STATUSES, PIPELINE_STATUSES, LEAD_SOURCES, LEAD_TYPES, BHK_OPTIONS } from "@/lib/utils/constants";
 import styles from "./LeadForm.module.css";
 
 function Row({ label, children }) {
@@ -50,6 +50,8 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
     budget:          lead?.budget          || "",
     source:          lead?.source          || "",
     status:          lead?.status          || "new",
+    callStatus:      lead?.callStatus      || "new",
+    isQualified:     lead?.isQualified     || false,
     leadDate:        lead?.leadDate        || todayStr(),
     followUpDate:    lead?.followUpDate    || "",
     remarks:         lead?.remarks         || "",
@@ -83,6 +85,12 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
     setError(""); setBusy(true);
     try {
       const data = { ...form, name: form.name.trim(), mobile: form.mobile.trim() };
+      // Ensure new leads have callStatus and isQualified set
+      if (!isEdit) {
+        data.callStatus = data.callStatus || "new";
+        data.isQualified = data.isQualified || false;
+        data.status = data.status || "new";
+      }
       if (isEdit) await updateLead(user.uid, lead.id, data);
       else        await addLead(user.uid, data);
       onDone?.();
@@ -174,9 +182,24 @@ export default function LeadForm({ lead, leads = [], onDone, onCancel, quickMode
             </select>
           </Row>
 
-          <Row label="Status">
-            <select className="relio-input" value={form.status} onChange={set("status")}>
-              {LEAD_STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+          <Row label={form.isQualified ? "Pipeline Status" : "Call Status"}>
+            <select className="relio-input" value={form.isQualified ? form.status : form.callStatus} onChange={e => {
+              const val = e.target.value;
+              if (form.isQualified) {
+                setForm(f => ({ ...f, status: val }));
+              } else {
+                const updates = { callStatus: val };
+                if (val === "qualified") {
+                  updates.isQualified = true;
+                  updates.status = "qualified";
+                } else if (val === "disqualified") {
+                  updates.isArchived = true;
+                  updates.archived = true;
+                }
+                setForm(f => ({ ...f, ...updates }));
+              }
+            }}>
+              {(form.isQualified ? PIPELINE_STATUSES : CALL_STATUSES).map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </Row>
 
