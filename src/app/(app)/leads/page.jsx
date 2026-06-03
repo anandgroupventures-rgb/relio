@@ -95,7 +95,6 @@ export default function LeadsPage() {
     if (user) {
       await addInteraction(user.uid, lead.id, { type: "call", note: "Call attempted" });
     }
-    setPostCall(lead);
   }
   async function handleWA(lead) {
     const digits = lead.mobile?.replace(/\D/g, "") || "";
@@ -111,7 +110,7 @@ export default function LeadsPage() {
     longPressTimer.current = setTimeout(() => {
       setIsSelecting(true);
       toggleSelection(leadId);
-    }, 600);
+    }, 1200);
   }
   function cancelLongPress() {
     if (longPressTimer.current) {
